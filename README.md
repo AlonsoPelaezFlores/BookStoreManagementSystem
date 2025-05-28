@@ -8,7 +8,6 @@ Management system for a bookstore that includes functionalities such as a sales 
 - Spring Boot
 - Spring Data JPA
 - Postgresql
-- Docker
 
 ## Modules
 - Book and Author Management
