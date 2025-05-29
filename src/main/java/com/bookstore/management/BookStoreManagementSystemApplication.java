@@ -1,4 +1,4 @@
-package com.example.bookstoremanagementsystem;
+package com.bookstore.management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
