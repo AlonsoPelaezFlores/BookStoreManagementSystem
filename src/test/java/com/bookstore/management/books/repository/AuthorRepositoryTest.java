@@ -20,15 +20,15 @@ class AuthorRepositoryTest {
     public TestEntityManager entityManager;
 
     @Nested
-    @DisplayName("Find authors by name")
+    @DisplayName("Find authors by name test")
     class FindByNameTest{
 
 
 
 
         @Test
-        @DisplayName("Should find authors by partial name ignoring case")
-        void findByPartialNameShouldFindGarcia() {
+        @DisplayName("Should return authors by partial name")
+        void shouldReturnAuthor_WhenFindPartialName() {
             Author garcia1 = new Author("Gabriel García Márquez", "Colombiana", LocalDate.of(1927, 3, 6));
             Author garcia2 = new Author("Federico García Lorca", "Española", LocalDate.of(1898, 6, 5));
             Author other = new Author("Mario Vargas Llosa", "Peruana", LocalDate.of(1936, 3, 28));
@@ -37,7 +37,7 @@ class AuthorRepositoryTest {
             entityManager.persist(other);
             entityManager.flush();
 
-            List<Author> authorsFound = authorRepository.findByNameContainingIgnoreCase("garcía");
+            List<Author> authorsFound = authorRepository.findByNameContainingIgnoreCase("García");
 
             assertThat(authorsFound)
                     .hasSize(2)
@@ -50,17 +50,19 @@ class AuthorRepositoryTest {
 
         @Test
         @DisplayName("Should return empty list when no author match")
-        void findByPartialNameShouldReturnEmptyList() {
+        void shouldReturnEmpty_WhenNoAuthorMatch() {
             Author author = new Author("Mario Vargas Llosa", "Peruana", LocalDate.of(1936, 3, 28));
             entityManager.persist(author);
             entityManager.flush();
 
             List<Author> authorsFound = authorRepository.findByNameContainingIgnoreCase("shakespeare");
+
+            assertThat(authorsFound).isNotNull();
             assertThat(authorsFound).isEmpty();
         }
         @Test
         @DisplayName("Should handle case insensitive search correctly")
-        void findByPartialNameShouldBeCaseInsensitive() {
+        void shouldReturnAuthor_whenNotCaseInsensitive() {
             Author author = new Author("Gabriel García Márquez", "Colombiana", LocalDate.of(1927, 3, 6));
             entityManager.persist(author);
             entityManager.flush();
@@ -74,11 +76,11 @@ class AuthorRepositoryTest {
     }
 
     @Nested
-    @DisplayName("Find authors by nationality")
+    @DisplayName("Find authors by nationality test")
     class FindByNationalityTest{
         @Test
-        @DisplayName("Should find spanish authors")
-        void findByNationalityShouldFindSpanishAuthors(){
+        @DisplayName("Should return author by nationality")
+        void shouldReturnAuthor_WhenNationalityMatches() {
             Author spanish1 = new Author("Miguel de Cervantes", "Spanish", LocalDate.of(1547, 9, 29));
             Author spanish2 = new Author("Federico García Lorca", "Spanish", LocalDate.of(1898, 6, 5));
             Author colombian = new Author("Gabriel García Márquez", "Colombian ", LocalDate.of(1927, 3, 6));
@@ -95,8 +97,8 @@ class AuthorRepositoryTest {
                     .containsExactlyInAnyOrder("Miguel de Cervantes","Federico García Lorca");
         }
         @Test
-        @DisplayName("return empty list when no author is found if the nationality does not match")
-        void findByNationalityShouldReturnEmptyList() {
+        @DisplayName("Should return empty when nationality does not matches")
+        void shouldReturnEmpty_WhenNationalityDoesNotMatches() {
 
             Author author = new Author("Mario Vargas Llosa", "Peruvian", LocalDate.of(1936, 3, 28));
             entityManager.persist(author);
