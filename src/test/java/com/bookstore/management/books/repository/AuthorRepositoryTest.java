@@ -107,7 +107,7 @@ class AuthorRepositoryTest {
 
     @Nested
     @DisplayName("Find authors by gender test")
-    class FindByGender{
+    class FindByGenderTest{
         @BeforeEach
         void beforeEach() {
             Author maleAuthor = new Author(
