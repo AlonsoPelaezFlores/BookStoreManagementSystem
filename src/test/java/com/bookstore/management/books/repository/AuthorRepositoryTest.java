@@ -23,9 +23,6 @@ class AuthorRepositoryTest {
     @DisplayName("Find authors by name test")
     class FindByNameTest{
 
-
-
-
         @Test
         @DisplayName("Should return authors by partial name")
         void shouldReturnAuthor_WhenFindPartialName() {
@@ -105,6 +102,76 @@ class AuthorRepositoryTest {
             entityManager.flush();
             List<Author> authorFound = authorRepository.findByNationality("Japanese");
             assertThat(authorFound).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("Find authors by gender test")
+    class FindByGender{
+        @BeforeEach
+        void beforeEach() {
+            Author maleAuthor = new Author(
+                    "Gabriel García Márquez",
+                    "Colombiana",
+                    LocalDate.of(1927, 3, 6),
+                    Author.Gender.MALE);
+            Author maleAuthor2 = new Author(
+                    "Mario Vargas Llosa",
+                    "Peruana",
+                    LocalDate.of(1936, 3, 28),
+                    Author.Gender.MALE);
+            Author femaleAuthor = new Author(
+                    "Isabel Allende",
+                    "Chilean",
+                    LocalDate.of(1942, 8, 2),
+                    Author.Gender.FEMALE);
+            Author preferNotToSayAuthor = new Author(
+                    "Jorge Luis Borges",
+                    "Argentine",
+                    LocalDate.of(1899,8,24),
+                    Author.Gender.PREFER_NOT_TO_SAY);
+            entityManager.persist(maleAuthor);
+            entityManager.persist(maleAuthor2);
+            entityManager.persist(femaleAuthor);
+            entityManager.persist(preferNotToSayAuthor);
+            entityManager.flush();
+        }
+
+        @Test
+        @DisplayName("Should return male authors when male gender is provided")
+        void shouldReturnMaleAuthors_WhenMaleGenderProvided() {
+
+            List<Author> maleAuthors = authorRepository.findByGender(Author.Gender.MALE);
+
+            assertThat(maleAuthors)
+                    .hasSize(2)
+                    .extracting(Author::getName)
+                    .containsExactlyInAnyOrder("Mario Vargas Llosa","Gabriel García Márquez");
+
+        }
+
+        @Test
+        @DisplayName("Should return female authors when female gender is provided")
+        void shouldReturnFemaleAuthors_WhenFemaleGenderProvided() {
+
+            List<Author> femaleAuthors = authorRepository.findByGender(Author.Gender.FEMALE);
+
+            assertThat(femaleAuthors)
+                    .hasSize(1)
+                    .extracting(Author::getName)
+                    .containsExactlyInAnyOrder("Isabel Allende");
+        }
+
+        @Test
+        @DisplayName("Should return prefer not to say gender when prefer not to say gender is provided")
+        void shouldReturnPreferNotToSayAuthors_WhenPreferNotToSayGenderProvided() {
+
+            List<Author> preferNotToSayAuthors = authorRepository.findByGender(Author.Gender.PREFER_NOT_TO_SAY);
+
+            assertThat(preferNotToSayAuthors)
+                    .hasSize(1)
+                    .extracting(Author::getName)
+                    .containsExactlyInAnyOrder("Jorge Luis Borges");
         }
     }
 }
