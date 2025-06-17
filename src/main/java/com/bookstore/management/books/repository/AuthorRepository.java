@@ -12,4 +12,6 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
     List<Author> findByNameContainingIgnoreCase(String name);
 
     List<Author> findByNationality(String nationality);
+
+    List<Author> findByGender(Author.Gender gender);
 }
