@@ -60,4 +60,13 @@ public class Book {
         this.author = author;
     }
 
+    public Book(String ISBN, String title, LocalDate publishDate, String description, Integer pages, String genre, Author author) {
+        this.ISBN = ISBN;
+        this.title = title;
+        this.publishDate = publishDate;
+        this.description = description;
+        this.pages = pages;
+        this.genre = genre;
+        this.author = author;
+    }
 }
