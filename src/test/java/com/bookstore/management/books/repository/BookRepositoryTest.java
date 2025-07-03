@@ -56,7 +56,7 @@ public class BookRepositoryTest {
 
         }
         @Test
-        @DisplayName("Shold return empty when isbn does not exist")
+        @DisplayName("Should return empty when isbn does not exist")
         void shouldReturnEmpty_WhenIsbnDoesNotExist() {
 
             Optional<Book> bookFound = bookRepository.findBookByISBN("978-0-374-18082-8");
