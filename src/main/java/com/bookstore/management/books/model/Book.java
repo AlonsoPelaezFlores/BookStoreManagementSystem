@@ -1,5 +1,6 @@
 package com.bookstore.management.books.model;
 
+import com.bookstore.management.books.validation.ValidIsbn;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "The ISBN is obligatory")
+    @Column(name = "isbn", unique = true, nullable = false)
+    @ValidIsbn(message = "Isbn must be valid (ISBN-10 or ISBN-13)")
     private String ISBN;
 
     @Column(name = "title", nullable = false)
