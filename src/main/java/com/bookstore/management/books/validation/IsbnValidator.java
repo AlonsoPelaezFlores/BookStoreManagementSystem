@@ -11,8 +11,8 @@ public class IsbnValidator implements ConstraintValidator<ValidIsbn, String> {
 
     @Override
     public void initialize(ValidIsbn constraintAnnotation) {
-        this.allowIsbn10 = constraintAnnotation.allosIsbn10();
-        this.allowIsbn13 = constraintAnnotation.allosIsbn13();
+        this.allowIsbn10 = constraintAnnotation.allowIsbn10();
+        this.allowIsbn13 = constraintAnnotation.allowIsbn13();
     }
 
     @Override
