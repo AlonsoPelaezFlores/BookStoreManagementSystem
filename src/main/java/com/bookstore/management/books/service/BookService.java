@@ -33,6 +33,12 @@ public class BookService {
         return bookRepository.findBookByISBN(isbn).
                 orElseThrow(()-> new BookNotFoundException("Book", "ISBN", isbn));
     }
+    public List<Book> booksByAuthorId(Long authorId) {
+        if (!authorRepository.existsById(authorId)) {
+            throw new AuthorNotFoundException("Author","Id",authorId);
+        }
+        return bookRepository.findBooksByAuthorId(authorId);
+    }
     @Transactional
     public Book createBook(BookDto bookDto) {
 
