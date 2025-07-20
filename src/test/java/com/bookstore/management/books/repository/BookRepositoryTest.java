@@ -30,7 +30,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return book when ISBN exists")
-        void shouldReturnBook_WhenIsbnExists() {
+        void shouldReturnBookWhenIsbnExists() {
             Author author  = new Author(
                     "Gabriel García Márquez",
                     "Colombian",
@@ -57,7 +57,7 @@ public class BookRepositoryTest {
         }
         @Test
         @DisplayName("Should return empty when isbn does not exist")
-        void shouldReturnEmpty_WhenIsbnDoesNotExist() {
+        void shouldReturnEmptyWhenIsbnDoesNotExist() {
 
             Optional<Book> bookFound = bookRepository.findBookByISBN("978-0-374-18082-8");
             assertThat(bookFound).isNotNull();
@@ -72,7 +72,7 @@ public class BookRepositoryTest {
     class FindBookByTitleTest {
         @Test
         @DisplayName("Should return book when exact title matches")
-        void shouldReturnBook_WhenExactTitleMatches() {
+        void shouldReturnBookWhenExactTitleMatches() {
             Author author = new Author(
                     "Mario Vargas Llosa",
                     "Peruvian",
@@ -109,7 +109,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return books when the partial title matches")
-        void shouldReturnEmpty_WhenPartialTitleMatches() {
+        void shouldReturnEmptyWhenPartialTitleMatches() {
             Author author1 = new Author(
                     "Gabriel García Márquez",
                     "Colombian",
@@ -153,7 +153,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return empty list when no title matches")
-        void shouldReturnEmptyList_WhenNoTitleMatches() {
+        void shouldReturnEmptyListWhenNoTitleMatches() {
 
 
             Author author = new Author(
@@ -179,7 +179,7 @@ public class BookRepositoryTest {
         }
         @Test
         @DisplayName("Should return all books when the title is empty")
-        void shouldReturnAllBooks_WhenTheTitleIsEmpty() {
+        void shouldReturnAllBooksWhenTheTitleIsEmpty() {
             Author author  = new Author(
                     "Gabriel García Márquez",
                     "Colombian",
@@ -228,7 +228,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return book when search is case insensitive")
-        void shouldReturnBook_WhenSearchIsCaseInsensitive() {
+        void shouldReturnBookWhenSearchIsCaseInsensitive() {
 
             Author author  = new Author(
                     "Gabriel García Márquez",
@@ -259,7 +259,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return books when author ID exists")
-        void shouldReturnBooks_WhenAuthorIdExists() {
+        void shouldReturnBooksWhenAuthorIdExists() {
             Author author = new Author(
                     "Jorge Luis Borges",
                     "Argentine",
@@ -298,7 +298,7 @@ public class BookRepositoryTest {
 
         @Test
         @DisplayName("Should return empty list when author ID does not exists")
-        void shouldReturnEmptyList_WhenAuthorIdDoesNotExist() {
+        void shouldReturnEmptyListWhenAuthorIdDoesNotExist() {
 
             List<Book> booksFound = bookRepository.findBooksByAuthorId(2L);
 
@@ -307,7 +307,7 @@ public class BookRepositoryTest {
         }
         @Test
         @DisplayName("Should return empty list when author no has books")
-        void shouldReturnEmptyList_WhenAuthorHasNoBooks() {
+        void shouldReturnEmptyListWhenAuthorHasNoBooks() {
             Author author  = new Author(
                     "Mario Vargas Llosa",
                     "Peruvian",
@@ -322,7 +322,7 @@ public class BookRepositoryTest {
         }
         @Test
         @DisplayName("Should return empty list when author ID is negative")
-        void shouldReturnEmptyList_WhenAuthorIdIsNegative() {
+        void shouldReturnEmptyListWhenAuthorIdIsNegative() {
 
             List<Book> booksFound = bookRepository.findBooksByAuthorId(-2L);
 
