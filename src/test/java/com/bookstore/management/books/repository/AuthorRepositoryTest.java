@@ -77,7 +77,7 @@ class AuthorRepositoryTest {
     class FindByNationalityTest{
         @Test
         @DisplayName("Should return author by nationality")
-        void shouldReturnAuthor_WhenNationalityMatches() {
+        void shouldReturnAuthorWhenNationalityMatches() {
             Author spanish1 = new Author("Miguel de Cervantes", "Spanish", LocalDate.of(1547, 9, 29));
             Author spanish2 = new Author("Federico García Lorca", "Spanish", LocalDate.of(1898, 6, 5));
             Author colombian = new Author("Gabriel García Márquez", "Colombian ", LocalDate.of(1927, 3, 6));
@@ -95,7 +95,7 @@ class AuthorRepositoryTest {
         }
         @Test
         @DisplayName("Should return empty when nationality does not matches")
-        void shouldReturnEmpty_WhenNationalityDoesNotMatches() {
+        void shouldReturnEmptyWhenNationalityDoesNotMatches() {
 
             Author author = new Author("Mario Vargas Llosa", "Peruvian", LocalDate.of(1936, 3, 28));
             entityManager.persist(author);
@@ -139,7 +139,7 @@ class AuthorRepositoryTest {
 
         @Test
         @DisplayName("Should return male authors when male gender is provided")
-        void shouldReturnMaleAuthors_WhenMaleGenderProvided() {
+        void shouldReturnMaleAuthorsWhenMaleGenderProvided() {
 
             List<Author> maleAuthors = authorRepository.findByGender(Author.Gender.MALE);
 
@@ -152,7 +152,7 @@ class AuthorRepositoryTest {
 
         @Test
         @DisplayName("Should return female authors when female gender is provided")
-        void shouldReturnFemaleAuthors_WhenFemaleGenderProvided() {
+        void shouldReturnFemaleAuthorsWhenFemaleGenderProvided() {
 
             List<Author> femaleAuthors = authorRepository.findByGender(Author.Gender.FEMALE);
 
@@ -164,7 +164,7 @@ class AuthorRepositoryTest {
 
         @Test
         @DisplayName("Should return prefer not to say gender when prefer not to say gender is provided")
-        void shouldReturnPreferNotToSayAuthors_WhenPreferNotToSayGenderProvided() {
+        void shouldReturnPreferNotToSayAuthorsWhenPreferNotToSayGenderProvided() {
 
             List<Author> preferNotToSayAuthors = authorRepository.findByGender(Author.Gender.PREFER_NOT_TO_SAY);
 
