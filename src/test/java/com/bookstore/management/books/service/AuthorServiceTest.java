@@ -31,7 +31,7 @@ class AuthorServiceTest {
     class findAll{
         @Test
         @DisplayName("Should return all authors when authors exist")
-        void whenAuthorsExist_ShouldReturnAllAuthors(){
+        void shouldReturnAllAuthorsWhenAuthorsExist() {
             Author author= Author.builder()
                     .id(1L)
                     .name("Gabriel García Márquez")
@@ -59,7 +59,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should return empty list when no authors exist")
-        void whenNoAuthorsExist_ShouldReturnEmptyList(){
+        void shouldReturnEmptyListWhenNoAuthorsExist(){
             List<Author> expectAuthors = Collections.emptyList();
             when(authorRepository.findAll()).thenReturn(expectAuthors);
 
@@ -72,7 +72,7 @@ class AuthorServiceTest {
     class findById{
         @Test
         @DisplayName("Should return author when author exist")
-        void whenAuthorExists_ShouldReturnAuthor(){
+        void shouldReturnAuthorWhenAuthorExists(){
             Author author= Author.builder()
                     .id(1L)
                     .name("Gabriel García Márquez")
@@ -88,7 +88,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should throw author not found exception when author not found")
-        void whenAuthorNotFound_ShouldThrowAuthorNotFoundException(){
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorNotFound(){
 
             Long nonExistentId = 888L;
             when(authorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
@@ -127,7 +127,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should return author saved when creating author with valid data")
-        void withValidData_ShouldReturnSavedAuthor(){
+        void shouldReturnSavedAuthorWithValidData(){
 
             when(authorRepository.save(any(Author.class))).thenReturn(savedAuthor);
 
@@ -144,7 +144,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should call save repository when creating a new author with valid data")
-        void withValidData_ShouldCallRepositorySave(){
+        void shouldCallRepositorySaveWithValidData(){
 
             when(authorRepository.save(any(Author.class))).thenReturn(savedAuthor);
 
@@ -200,7 +200,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should return update author when author exist")
-        void whenAuthorExists_ShouldReturnUpdatedAuthor(){
+        void shouldReturnUpdatedAuthorWhenAuthorExists(){
 
             Long authorId = 1L;
 
@@ -217,7 +217,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should throw author not found exception when author not found")
-        void whenAuthorNotFound_ShouldThrowAuthorNotFoundException(){
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorNotFound(){
             Long nonExistentId = 999L;
 
             when(authorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
@@ -231,7 +231,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should update all fields of the author with valid data")
-        void withValidData_ShouldUpdateAllFields(){
+        void shouldUpdateAllFieldsWithValidData(){
             Long authorId = 1L;
 
             when(authorRepository.findById(authorId)).thenReturn(Optional.of(author));
@@ -247,7 +247,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should call save repository")
-        void withValidData_shouldCallRepositorySave(){
+        void shouldCallRepositorySaveWithValidData(){
             Long authorId = 1L;
 
             when(authorRepository.findById(authorId)).thenReturn(Optional.ofNullable(author));
@@ -271,7 +271,7 @@ class AuthorServiceTest {
 
         @Test
         @DisplayName("Should delete successfully when author exists")
-        void whenAuthorExists_ShouldDeleteSuccessfully(){
+        void shouldDeleteSuccessfullyWhenAuthorExists(){
             Long authorId = 1L;
 
             when(authorRepository.existsById(authorId)).thenReturn(true);
@@ -284,7 +284,7 @@ class AuthorServiceTest {
         }
         @Test
         @DisplayName("Should throw author not found exception when author not found")
-        void whenAuthorNotFound_ShouldThrowAuthorNotFoundException(){
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorNotFound(){
             Long nonExistentId = 999L;
 
             when(authorRepository.existsById(nonExistentId)).thenReturn(false);
