@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
@@ -566,4 +566,122 @@ class BookServiceTest {
         }
     }
 
+    @Nested
+    class booksByAuthorId {
+        private Author author;
+        private Author author2;
+        private Book book1;
+        private Book book2;
+        @BeforeEach
+        void setUp() {
+            author = Author.builder()
+                    .id(1L)
+                    .name("Haruki Murakami")
+                    .nationality("Japanese")
+                    .gender(Author.Gender.MALE)
+                    .build();
+            author2 = Author.builder()
+                    .id(2L)
+                    .name("Alex Jordan")
+                    .nationality("Canadian")
+                    .gender(Author.Gender.PREFER_NOT_TO_SAY)
+                    .build();
+            book1 = Book.builder()
+                    .id(1L)
+                    .ISBN("9780099448822")
+                    .title("Kafka on the Shore")
+                    .publishDate(LocalDate.of(2002, 9, 12))
+                    .description("A surreal journey of a teenage boy and a man who talks to cats.")
+                    .pages(505)
+                    .genre("Magical Realism")
+                    .author(author)
+                    .build();
+            book2 = Book.builder()
+                    .id(2L)
+                    .ISBN("9780007356348")
+                    .title("Half of a Yellow Sun")
+                    .publishDate(LocalDate.of(2006, 8, 10))
+                    .description("A story set during the Nigerian Civil War.")
+                    .pages(433)
+                    .genre("Historical Fiction")
+                    .author(author)
+                    .build();
+
+        }
+        @Test
+        @DisplayName("Should return books when author exist")
+        void shouldReturnBooksWhenAuthorExist() {
+            Long authorId = 1L;
+
+            List<Book> expectedBooks = Arrays.asList(book1, book2);
+
+            when(authorRepository.existsById(authorId)).thenReturn(true);
+            when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
+
+            List<Book> actualBooks = bookService.booksByAuthorId(authorId);
+
+            assertThat(actualBooks).isNotEmpty();
+            assertThat(actualBooks).hasSize(2);
+            assertThat(actualBooks).isEqualTo(expectedBooks);
+
+
+        }
+
+        @Test
+        @DisplayName("Should return empty list when author exists but has no books")
+        void shouldReturnEmptyListWhenAuthorExistsButHasNoBooks() {
+            Long authorId = 2L;
+
+            List<Book> expectedBooks = Collections.emptyList();
+
+            when(authorRepository.existsById(authorId)).thenReturn(true);
+            when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
+
+            List<Book> actualBooks = bookService.booksByAuthorId(authorId);
+
+            assertThat(actualBooks).isEmpty();
+            assertThat(actualBooks).hasSize(0);
+
+            verify(authorRepository).existsById(authorId);
+            verify(bookRepository).findBooksByAuthorId(authorId);
+
+        }
+
+        @Test
+        @DisplayName("Should throw AuthorNotFound exception when author does not exist")
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorDoesNotExist() {
+            Long authorIdNotExist = 999L;
+
+            when(authorRepository.existsById(authorIdNotExist)).thenReturn(false);
+
+            assertThatThrownBy(()-> bookService.booksByAuthorId(authorIdNotExist))
+                    .isInstanceOf(AuthorNotFoundException.class)
+                    .hasMessageContaining("Author")
+                    .hasMessageContaining("Id")
+                    .hasMessageContaining("999");
+
+            verify(authorRepository).existsById(authorIdNotExist);
+            verify(bookRepository,never()).findBooksByAuthorId(anyLong());
+
+        }
+
+        @Test
+        @DisplayName("Should throw AuthorNotFound exception when author id is null")
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorIdIsNull() {
+            Long nullAuthorId = null;
+
+            when(authorRepository.existsById(nullAuthorId)).thenReturn(false);
+
+            assertThatThrownBy(()-> bookService.booksByAuthorId(nullAuthorId))
+                    .isInstanceOf(AuthorNotFoundException.class)
+                    .hasMessageContaining("Author")
+                    .hasMessageContaining("Id")
+                    .hasMessageContaining("null");
+
+            verify(authorRepository).existsById(nullAuthorId);
+            verify(bookRepository,never()).findBooksByAuthorId(anyLong());
+
+        }
+
+    }
 }
