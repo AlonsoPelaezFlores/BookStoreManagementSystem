@@ -74,7 +74,7 @@ class BookServiceTest {
 
         @Test
         @DisplayName("Should return all books when books exist in repository")
-        void whenBooksExist_ShouldReturnAllBooks(){
+        void shouldReturnAllBooksWhenBooksExist(){
             List<Book> expectedBooks = Arrays.asList(book, book2);
             when(bookRepository.findAll()).thenReturn(expectedBooks);
 
@@ -87,8 +87,8 @@ class BookServiceTest {
 
         }
         @Test
-        @DisplayName("Should return empty list when no books exist in repository")
-        void whenNoBooksExist_ShouldReturnEmptyList(){
+        @DisplayName("Should return empty list when no books exist")
+        void shouldReturnEmptyListWhenNoBooksExist(){
             List<Book> expectBooks = Collections.emptyList();
             when(bookRepository.findAll()).thenReturn(expectBooks);
 
@@ -125,7 +125,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should return book when book exist")
-        void whenBookExists_ShouldReturnBook(){
+        void shouldReturnBookWhenBookIdExist(){
             Long bookId = 1L;
 
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
@@ -140,7 +140,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should throw BookNotFoundException when book is missing")
-        void whenBookNotFound_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenBookDoesNotExist(){
 
             Long nonExistentId = 888L;
             when(bookRepository.findById(nonExistentId)).thenReturn(Optional.empty());
@@ -182,7 +182,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should return the book when the book is found by isbn")
-        void whenBookExists_ShouldReturnBook(){
+        void shouldReturnBookWhenBookIsFoundByIsbn(){
             String bookISBN = "9780007356348";
             when(bookRepository.findBookByISBN(bookISBN)).thenReturn(Optional.ofNullable(book));
 
@@ -192,7 +192,7 @@ class BookServiceTest {
 
         @Test
         @DisplayName("Should throw BookNotFoundException when the book is missing ")
-        void whenBookNotFound_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenBookIsNotFoundByIsbn(){
             String nonExistentISBN = "1234678990";
             when(bookRepository.findBookByISBN(nonExistentISBN)).thenReturn(Optional.empty());
 
@@ -205,7 +205,7 @@ class BookServiceTest {
 
         @Test
         @DisplayName("Should throw BookNotFoundException when the isbn from book is null")
-        void whenISBNIsNull_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenIsbnIsNull(){
             String nonExistentISBN = null;
             when(bookRepository.findBookByISBN(nonExistentISBN)).thenReturn(Optional.empty());
 
@@ -257,7 +257,7 @@ class BookServiceTest {
 
         @Test
         @DisplayName("Should return book saved when creating book with valid data")
-        void withValidData_ShouldReturnSavedBook(){
+        void shouldReturnSavedBookWithValidData(){
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
             Book actualBook = bookService.createBook(bookDto);
@@ -276,7 +276,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should call repository save when creating book with valid data")
-        void withValidData_ShouldCallRepositorySave(){
+        void shouldCallRepositorySaveWithValidData(){
 
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
@@ -334,7 +334,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should return update book when book exists")
-        void whenBookExists_ShouldReturnUpdatedBook(){
+        void shouldReturnUpdatedBookWhenBookExists(){
             Long bookId = 1L;
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
@@ -348,7 +348,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should throw BookNotFoundException book is not found on update")
-        void whenBookNotFound_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenBookNotFound(){
             Long nonExistingBookId = 999L;
 
             when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
@@ -362,7 +362,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should update all fields with valid data")
-        void withValidData_ShouldUpdateAllFields(){
+        void shouldUpdateAllFieldsWithValidData(){
             Long bookId = 1L;
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
@@ -408,7 +408,7 @@ class BookServiceTest {
 
         @Test
         @DisplayName("Should delete successfully when the book exists")
-        void whenBookExists_ShouldDeleteSuccessfully(){
+        void shouldDeleteSuccessfullyWhenBookExists(){
             Long bookId = 1L;
 
             when(bookRepository.existsById(bookId)).thenReturn(true);
@@ -420,7 +420,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should throw BookNotFoundException when book is missing")
-        void whenBookNotFound_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenBookNotFound(){
             Long nonExistingBookId = 999L;
 
             when(bookRepository.existsById(nonExistingBookId)).thenReturn(false);
@@ -494,7 +494,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should return update book author when author and book exist")
-        void WhenBookAndAuthorExist_ShouldReturnUpdateBookAuthor(){
+        void shouldReturnUpdateBookAuthorWhenBookAndAuthorExist(){
 
             when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
             when(authorRepository.findById(2L)).thenReturn(Optional.of(newAuthor));
@@ -515,7 +515,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should not call repository and return unchanged when book already has same author id")
-        void WhenBookAlreadyHasSameAuthor_ShouldNotCallRepositoryAndReturnUnchanged(){
+        void shouldNotCallRepositoryAndReturnUnchangedWhenBookAlreadyHasSameAuthorId(){
 
             when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -532,7 +532,7 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should throw BookNotFoundException when book is missing")
-        void WhenBookNotFound_ShouldThrowBookNotFoundException(){
+        void shouldThrowBookNotFoundExceptionWhenBookNotFound(){
             Long nonExistingBookId = 999L;
 
             when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
@@ -547,7 +547,8 @@ class BookServiceTest {
         }
         @Test
         @DisplayName("Should throw AuthorNotFoundException when author is missing")
-        void WhenAuthorNotFound_ShouldThrowAuthorNotFoundException(){
+        void shouldThrowAuthorNotFoundExceptionWhenAuthorNotFound(){
+
             Long nonExistingAuthorId = 999L;
             Long bookId = 1L;
 
