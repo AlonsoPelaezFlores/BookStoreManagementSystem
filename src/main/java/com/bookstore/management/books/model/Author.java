@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -23,22 +20,23 @@ public class Author {
     private Long id;
 
     @Column ( name = "name", nullable = false)
-    @NotBlank(message = "The author's name is obligatory")
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
 
     @Column(name = "nationality", nullable = false)
-    @NotBlank(message = "The nationality is obligatory")
+    @NotBlank
     @Size(min = 2,max = 50,message = "The nationality must be between 2 and 50 characters")
     private String nationality;
 
     @Column(name = "date_of_birth", nullable = false)
-    @NotBlank(message = "The date of birth is obligatory")
-    @Past(message = "Date of birth must be before today")
+    @NotNull
+    @Past
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "The gender is obligatory")
+    @NotNull
     private Gender gender;
 
     @Column(name = "biography", columnDefinition = "TEXT")
@@ -59,11 +57,18 @@ public class Author {
         this.gender = gender;
     }
 
+    @Getter
     public enum Gender{
-        MALE,
-        FEMALE,
-        OTHER,
-        PREFER_NOT_TO_SAY
+        MALE("Male"),
+        FEMALE("Female"),
+        OTHER("Other"),
+        PREFER_NOT_TO_SAY("Prefer not to say");
+        private final String displayName;
+
+        Gender(String displayName) {
+            this.displayName = displayName;
+        }
+
     }
 }
 
