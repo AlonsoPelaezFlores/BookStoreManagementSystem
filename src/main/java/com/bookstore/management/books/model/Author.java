@@ -26,7 +26,7 @@ public class Author {
 
     @Column(name = "nationality", nullable = false)
     @NotBlank
-    @Size(min = 2,max = 50,message = "The nationality must be between 2 and 50 characters")
+    @Size(min = 2,max = 50)
     private String nationality;
 
     @Column(name = "date_of_birth", nullable = false)
@@ -40,7 +40,7 @@ public class Author {
     private Gender gender;
 
     @Column(name = "biography", columnDefinition = "TEXT")
-    @Size(max = 2000, message = "The biography cannot exceed 2000 characters")
+    @Size(max = 2000)
     private String biography;
 
     public Author(String name, String nationality, LocalDate dateOfBirth) {
