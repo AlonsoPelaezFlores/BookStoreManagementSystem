@@ -21,30 +21,30 @@ public class Book {
     private Long id;
 
     @Column(name = "isbn", unique = true, nullable = false)
-    @ValidIsbn(message = "Isbn must be valid (ISBN-10 or ISBN-13)")
+    @ValidIsbn
     private String ISBN;
 
     @Column(name = "title", nullable = false)
-    @NotBlank(message = "The title is obligatory")
+    @NotBlank
     private String title;
 
     @Column(name = "publish_date", nullable = false)
-    @NotNull(message = "the publish date is obligatory")
-    @PastOrPresent(message = "the publish date cannot be in the future")
+    @NotNull
+    @PastOrPresent
     private LocalDate publishDate;
 
     @Column(name = "description", length = 1024)
-    @Size(max = 1024, message = "Description cannot exceed 1024 characters")
+    @Size(max = 1024)
     private String description;
 
     @Column(name = "pages", nullable = false)
-    @NotNull(message = "The number of pages is obligatory")
-    @Min(value = 1,message = "The book must have at least one page")
-    @Max(value = 10000, message = "The number of page must not exceed 10,000")
+    @NotNull
+    @Positive
+    @Max(value = 10000)
     private Integer pages;
 
     @Column(name = "genre")
-    @Size(max = 50, message = "The genre cannot exceed 50 characters")
+    @Size(max = 50)
     private String genre;
 
     @ManyToOne
