@@ -51,7 +51,7 @@ class BookServiceTest {
 
             book = Book.builder()
                     .id(1L)
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")
@@ -62,7 +62,7 @@ class BookServiceTest {
 
             book2 = Book.builder()
                     .id(2L)
-                    .ISBN("9780307455925")
+                    .isbn("9780307455925")
                     .title("Americanah")
                     .publishDate(LocalDate.of(2013, 5, 14))
                     .description("A powerful story of love and race spanning Nigeria and America.")
@@ -114,7 +114,7 @@ class BookServiceTest {
                     .build();
             book = Book.builder()
                     .id(1L)
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")
@@ -170,7 +170,7 @@ class BookServiceTest {
 
             book = Book.builder()
                     .id(1L)
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")
@@ -184,7 +184,7 @@ class BookServiceTest {
         @DisplayName("Should return the book when the book is found by isbn")
         void shouldReturnBookWhenBookIsFoundByIsbn(){
             String bookISBN = "9780007356348";
-            when(bookRepository.findBookByISBN(bookISBN)).thenReturn(Optional.ofNullable(book));
+            when(bookRepository.findBookByIsbn(bookISBN)).thenReturn(Optional.ofNullable(book));
 
             Book actualBook = bookService.findByISBN(bookISBN);
             assertThat(actualBook).isEqualTo(book);
@@ -194,7 +194,7 @@ class BookServiceTest {
         @DisplayName("Should throw BookNotFoundException when the book is missing ")
         void shouldThrowBookNotFoundExceptionWhenBookIsNotFoundByIsbn(){
             String nonExistentISBN = "1234678990";
-            when(bookRepository.findBookByISBN(nonExistentISBN)).thenReturn(Optional.empty());
+            when(bookRepository.findBookByIsbn(nonExistentISBN)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.findByISBN(nonExistentISBN))
                     .isInstanceOf(BookNotFoundException.class)
@@ -207,7 +207,7 @@ class BookServiceTest {
         @DisplayName("Should throw BookNotFoundException when the isbn from book is null")
         void shouldThrowBookNotFoundExceptionWhenIsbnIsNull(){
             String nonExistentISBN = null;
-            when(bookRepository.findBookByISBN(nonExistentISBN)).thenReturn(Optional.empty());
+            when(bookRepository.findBookByIsbn(nonExistentISBN)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.findByISBN(nonExistentISBN))
             .isInstanceOf(BookNotFoundException.class)
@@ -234,7 +234,7 @@ class BookServiceTest {
 
             expectBook = Book.builder()
                     .id(1L)
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")
@@ -244,7 +244,7 @@ class BookServiceTest {
                     .build();
 
             bookDto = BookDto.builder()
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")
@@ -264,7 +264,7 @@ class BookServiceTest {
 
             assertThat(actualBook).isNotNull();
             assertThat(actualBook.getId()).isEqualTo(expectBook.getId());
-            assertThat(actualBook.getISBN()).isEqualTo(expectBook.getISBN());
+            assertThat(actualBook.getIsbn()).isEqualTo(expectBook.getIsbn());
             assertThat(actualBook.getTitle()).isEqualTo(expectBook.getTitle());
             assertThat(actualBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
             assertThat(actualBook.getDescription()).isEqualTo(expectBook.getDescription());
@@ -288,7 +288,7 @@ class BookServiceTest {
 
             Book capturedBook = bookCaptor.getValue();
 
-            assertThat(capturedBook.getISBN()).isEqualTo(expectBook.getISBN());
+            assertThat(capturedBook.getIsbn()).isEqualTo(expectBook.getIsbn());
             assertThat(capturedBook.getTitle()).isEqualTo(expectBook.getTitle());
             assertThat(capturedBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
             assertThat(capturedBook.getDescription()).isEqualTo(expectBook.getDescription());
@@ -312,7 +312,7 @@ class BookServiceTest {
                     .gender(Author.Gender.MALE)
                     .build();
             bookDto =  BookDto.builder()
-                    .ISBN("9780099448822")
+                    .isbn("9780099448822")
                     .title("Kafka on the Shore")
                     .publishDate(LocalDate.of(2002, 9, 12))
                     .description("A surreal journey of a teenage boy and a man who talks to cats.")
@@ -322,7 +322,7 @@ class BookServiceTest {
                     .build();
             expectBook = Book.builder()
                     .id(1L)
-                    .ISBN("9780099448822")
+                    .isbn("9780099448822")
                     .title("Kafka on the Shore")
                     .publishDate(LocalDate.of(2002, 9, 12))
                     .description("A surreal journey of a teenage boy and a man who talks to cats.")
@@ -369,7 +369,7 @@ class BookServiceTest {
 
             Book actualBook = bookService.updateBook(bookDto, bookId);
 
-            assertThat(actualBook.getISBN()).isEqualTo(expectBook.getISBN());
+            assertThat(actualBook.getIsbn()).isEqualTo(expectBook.getIsbn());
             assertThat(actualBook.getTitle()).isEqualTo(expectBook.getTitle());
             assertThat(actualBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
             assertThat(actualBook.getDescription()).isEqualTo(expectBook.getDescription());
@@ -394,7 +394,7 @@ class BookServiceTest {
 
             Book captureBook = bookCaptor.getValue();
 
-            assertThat(captureBook.getISBN()).isEqualTo(expectBook.getISBN());
+            assertThat(captureBook.getIsbn()).isEqualTo(expectBook.getIsbn());
             assertThat(captureBook.getTitle()).isEqualTo(expectBook.getTitle());
             assertThat(captureBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
             assertThat(captureBook.getDescription()).isEqualTo(expectBook.getDescription());
@@ -472,7 +472,7 @@ class BookServiceTest {
 
             book = Book.builder()
                     .id(1L)
-                    .ISBN("9789876543210")
+                    .isbn("9789876543210")
                     .title("Silent Variations")
                     .publishDate(LocalDate.of(2019, 3, 12))
                     .description("A collection of introspective short stories.")
@@ -482,7 +482,7 @@ class BookServiceTest {
                     .build();
             expectBook = Book.builder()
                     .id(1L)
-                    .ISBN("9789876543210")
+                    .isbn("9789876543210")
                     .title("Silent Variations")
                     .publishDate(LocalDate.of(2019, 3, 12))
                     .description("A collection of introspective short stories.")
@@ -589,7 +589,7 @@ class BookServiceTest {
                     .build();
             book1 = Book.builder()
                     .id(1L)
-                    .ISBN("9780099448822")
+                    .isbn("9780099448822")
                     .title("Kafka on the Shore")
                     .publishDate(LocalDate.of(2002, 9, 12))
                     .description("A surreal journey of a teenage boy and a man who talks to cats.")
@@ -599,7 +599,7 @@ class BookServiceTest {
                     .build();
             book2 = Book.builder()
                     .id(2L)
-                    .ISBN("9780007356348")
+                    .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
                     .description("A story set during the Nigerian Civil War.")

@@ -16,7 +16,7 @@ public class BookDto {
 
         @NotBlank(message = "ISBN cannot be blank")
         @ValidIsbn(message = "Isbn must be valid (ISBN-10 or ISBN-13)")
-        private String ISBN;
+        private String isbn;
 
         @NotBlank(message = "Title cannot be blank")
         private String title;

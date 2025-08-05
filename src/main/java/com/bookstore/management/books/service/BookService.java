@@ -30,7 +30,7 @@ public class BookService {
         return bookRepository.findById(id).orElseThrow(()-> new BookNotFoundException("Book","Id",id));
     }
     public Book findByISBN(String isbn) {
-        return bookRepository.findBookByISBN(isbn).
+        return bookRepository.findBookByIsbn(isbn).
                 orElseThrow(()-> new BookNotFoundException("Book", "ISBN", isbn));
     }
     public List<Book> booksByAuthorId(Long authorId) {
@@ -43,7 +43,7 @@ public class BookService {
     public Book createBook(BookDto bookDto) {
 
         Book book = Book.builder()
-                .ISBN(bookDto.getISBN())
+                .isbn(bookDto.getIsbn())
                 .title(bookDto.getTitle())
                 .publishDate(bookDto.getPublishDate())
                 .description(bookDto.getDescription())

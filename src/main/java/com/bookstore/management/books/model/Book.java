@@ -22,7 +22,7 @@ public class Book {
 
     @Column(name = "isbn", unique = true, nullable = false)
     @ValidIsbn
-    private String ISBN;
+    private String isbn;
 
     @Column(name = "title", nullable = false)
     @NotBlank
@@ -52,8 +52,8 @@ public class Book {
     private Author author;
 
 
-    public Book(String ISBN, String title, LocalDate publishDate, String description, Integer pages, Author author) {
-        this.ISBN = ISBN;
+    public Book(String isbn, String title, LocalDate publishDate, String description, Integer pages, Author author) {
+        this.isbn = isbn;
         this.title = title;
         this.publishDate = publishDate;
         this.description = description;
@@ -61,8 +61,8 @@ public class Book {
         this.author = author;
     }
 
-    public Book(String ISBN, String title, LocalDate publishDate, String description, Integer pages, String genre, Author author) {
-        this.ISBN = ISBN;
+    public Book(String isbn, String title, LocalDate publishDate, String description, Integer pages, String genre, Author author) {
+        this.isbn = isbn;
         this.title = title;
         this.publishDate = publishDate;
         this.description = description;
