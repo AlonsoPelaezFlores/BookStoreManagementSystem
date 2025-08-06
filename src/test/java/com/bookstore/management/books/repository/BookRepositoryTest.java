@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BookRepositoryTest {
 
     @Autowired
-    public BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Autowired
-    public TestEntityManager entityManager;
+    private TestEntityManager entityManager;
 
     @Nested
     @DisplayName("Find books by ISBN")
@@ -31,24 +32,30 @@ public class BookRepositoryTest {
         @Test
         @DisplayName("Should return book when ISBN exists")
         void shouldReturnBookWhenIsbnExists() {
-            Author author  = new Author(
-                    "Gabriel García Márquez",
-                    "Colombian",
-                    LocalDate.of(1927,3,6));
 
-            Book book = new Book(
-                    "978-0-06-088328-7",
-                    "One Hundred Years of Solitude",
-                    LocalDate.of(1967, 5, 30),
-                    "The story of seven generations of the Buendía family in the mythical town of Macondo.",
-                    417,
-                    author);
+            Author author = Author.builder()
+                    .name("John Doe")
+                    .nationality("Americano")
+                    .dateOfBirth(LocalDate.of(1980,5,15))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
+
+            Book book = Book.builder()
+                    .isbn("978-0-06-088328-7")
+                    .title("Orgullo y prejuicio")
+                    .publishDate(LocalDate.of(1813, 1, 28))
+                    .description("Una novela romántica que explora los temas del amor, la reputación y la clase social en la Inglaterra del siglo XIX.")
+                    .pages(432)
+                    .genre("Romance")
+                    .author(author)
+                    .build();
 
             entityManager.persist(author);
             entityManager.persist(book);
             entityManager.flush();
 
-            Optional<Book> bookFound = bookRepository.findBookByISBN(book.getISBN());
+            Optional<Book> bookFound = bookRepository.findBookByIsbn(book.getIsbn());
 
             assertThat(bookFound).isNotNull();
             assertThat(bookFound).get().extracting(Book::getAuthor).isEqualTo(author);
@@ -59,7 +66,7 @@ public class BookRepositoryTest {
         @DisplayName("Should return empty when isbn does not exist")
         void shouldReturnEmptyWhenIsbnDoesNotExist() {
 
-            Optional<Book> bookFound = bookRepository.findBookByISBN("978-0-374-18082-8");
+            Optional<Book> bookFound = bookRepository.findBookByIsbn("978-0-374-18082-8");
             assertThat(bookFound).isNotNull();
             assertThat(bookFound).isEmpty();
 
@@ -73,106 +80,128 @@ public class BookRepositoryTest {
         @Test
         @DisplayName("Should return book when exact title matches")
         void shouldReturnBookWhenExactTitleMatches() {
-            Author author = new Author(
-                    "Mario Vargas Llosa",
-                    "Peruvian",
-                    LocalDate.of(1936, 3, 28));
-            Book book = new Book(
-                    "978-0-374-18082-9",
-                    "The Time of the Hero",
-                    LocalDate.of(1963, 1, 1),
-                    "A novel set in a military academy in Lima, Peru.",
-                    419,
-                    author);
+            Author author = Author.builder()
+                    .name("Mario Vargas Llosa")
+                    .nationality("Peruano")
+                    .dateOfBirth(LocalDate.of(1936, 3, 28))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
 
-            Book book2 = new Book(
-                    "978-0-374-52700-8",
-                    "Conversation in the Cathedral",
-                    LocalDate.of(1969, 1, 1),
-                    "A complex novel about politics and society in Peru.",
-                    601,
-                    author);
+            Book book = Book.builder()
+                    .isbn("978-0-374-18082-9")
+                    .title("El tiempo del heroe")
+                    .publishDate(LocalDate.of(1813, 1, 28))
+                    .description("Una novela ambientada en una academia militar en Lima, Peru")
+                    .pages(419)
+                    .genre("Militar")
+                    .author(author)
+                    .build();
+            Book book2 = Book.builder()
+                    .isbn("978-84-376-2181-4")
+                    .title("Conversacion en la Catedral")
+                    .publishDate(LocalDate.of(1813, 1, 28))
+                    .description("Una compleja novela acerca de politicos y una sociedad en Peru")
+                    .pages(601)
+                    .genre("Politica")
+                    .author(author)
+                    .build();
+
             entityManager.persist(author);
             entityManager.persist(book);
             entityManager.persist(book2);
             entityManager.flush();
 
             List<Book> bookFound = bookRepository.
-                    findBookByTitleContainingIgnoreCase("The Time of the Hero");
+                    findBookByTitleContainingIgnoreCase("El tiempo del heroe");
 
             assertThat(bookFound).isNotNull();
             assertThat(bookFound).
                     hasSize(1).
                     extracting(Book::getTitle).
-                    containsExactly("The Time of the Hero");
+                    containsExactly("El tiempo del heroe");
         }
 
         @Test
         @DisplayName("Should return books when the partial title matches")
         void shouldReturnEmptyWhenPartialTitleMatches() {
-            Author author1 = new Author(
-                    "Gabriel García Márquez",
-                    "Colombian",
-                    LocalDate.of(1927, 3, 6));
+            Author author = Author.builder()
+                    .name("Mario Vargas Llosa")
+                    .nationality("Peruano")
+                    .dateOfBirth(LocalDate.of(1936, 3, 28))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
 
-            Book book1 = new Book(
-                    "978-0-06-088328-7",
-                    "One Hundred Years of Solitude",
-                    LocalDate.of(1967, 5, 30),
-                    "The story of seven generations of the Buendía family in the mythical town of Macondo.",
-                    417,
-                    author1);
-            entityManager.persist(author1);
-            entityManager.persist(book1);
+            Book book = Book.builder()
+                    .isbn("978-0-374-18082-9")
+                    .title("El tiempo del heroe")
+                    .publishDate(LocalDate.of(1813, 1, 28))
+                    .description("Una novela ambientada en una academia militar en Lima, Peru")
+                    .pages(419)
+                    .genre("Militar")
+                    .author(author)
+                    .build();
+            entityManager.persist(author);
+            entityManager.persist(book);
             entityManager.flush();
 
-            Author author2 = new Author(
-                    "Isabel Allende",
-                    "Chilean",
-                    LocalDate.of(1942, 8, 2));
+            Author author2 = Author.builder()
+                    .name("Isabel Allende")
+                    .nationality("Chilena")
+                    .dateOfBirth(LocalDate.of(1942, 8, 2))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Famosa Novelista")
+                    .build();
 
-            Book book2 = new Book(
-                    "978-0-06-088329-4",
-                    "One Hundred Years",
-                    LocalDate.of(2020, 1, 1),
-                    "A different book with similar title for testing partial matches.",
-                    200,
-                    author2);
+            Book book2 = Book.builder()
+                    .isbn("978-84-376-2181-4")
+                    .title("El tiempo escondido")
+                    .publishDate(LocalDate.of(1965, 8, 1))
+                    .description("Una épica de ciencia ficción ambientada en el planeta desértico Arrakis, hogar de la especia más valiosa del universo.")
+                    .pages(688)
+                    .genre("Ciencia ficción")
+                    .author(author2)
+                    .build();
             entityManager.persist(author2);
             entityManager.persist(book2);
             entityManager.flush();
 
-            List<Book> booksFound = bookRepository.findBookByTitleContainingIgnoreCase("One Hundred Years");
+            List<Book> booksFound = bookRepository.findBookByTitleContainingIgnoreCase("El tiempo");
 
             assertThat(booksFound).isNotNull();
             assertThat(booksFound).
                     hasSize(2).
                     extracting(Book::getTitle).
-                    containsExactlyInAnyOrder("One Hundred Years", "One Hundred Years of Solitude");
+                    containsExactlyInAnyOrder("El tiempo del heroe", "El tiempo escondido");
         }
 
         @Test
         @DisplayName("Should return empty list when no title matches")
         void shouldReturnEmptyListWhenNoTitleMatches() {
 
+            Author author = Author.builder()
+                    .name("Isabel Allende")
+                    .nationality("Chilena")
+                    .dateOfBirth(LocalDate.of(1942, 8, 2))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Famosa Novelista")
+                    .build();
 
-            Author author = new Author(
-                    "Jorge Luis Borges",
-                    "Argentine",
-                    LocalDate.of(1899, 8, 24));
-
-            Book book = new Book(
-                    "978-0-8112-0012-7",
-                    "Labyrinths",
-                    LocalDate.of(1962, 1, 1),
-                    "A collection of short stories and essays exploring themes of infinity and reality.",
-                    256,
-                    author);
+            Book book = Book.builder()
+                    .isbn("978-84-376-2181-4")
+                    .title("El tiempo escondido")
+                    .publishDate(LocalDate.of(1965, 8, 1))
+                    .description("Una épica de ciencia ficción ambientada en el planeta desértico Arrakis, hogar de la especia más valiosa del universo.")
+                    .pages(688)
+                    .genre("Ciencia ficción")
+                    .author(author)
+                    .build();
             entityManager.persist(author);
             entityManager.persist(book);
             entityManager.flush();
 
-            List<Book> bookFound = bookRepository.findBookByTitleContainingIgnoreCase("Different Title");
+            List<Book> bookFound = bookRepository.findBookByTitleContainingIgnoreCase("Titulo diferente");
 
             assertThat(bookFound).isNotNull();
             assertThat(bookFound).isEmpty();
@@ -180,36 +209,44 @@ public class BookRepositoryTest {
         @Test
         @DisplayName("Should return all books when the title is empty")
         void shouldReturnAllBooksWhenTheTitleIsEmpty() {
-            Author author  = new Author(
-                    "Gabriel García Márquez",
-                    "Colombian",
-                    LocalDate.of(1927,3,6));
+            Author author = Author.builder()
+                    .name("Gabriel Garcia Marquezx")
+                    .nationality("Colombiano")
+                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
 
-            Book book1 = new Book(
-                    "978-0-06-088328-7",
-                    "One Hundred Years of Solitude",
-                    LocalDate.of(1967, 5, 30),
-                    "The story of seven generations of the Buendía family in the mythical town of Macondo.",
-                    417,
-                    author);
+            Book book = Book.builder()
+                    .isbn("0439708184")
+                    .title("Harry Potter y la piedra filosofal")
+                    .publishDate(LocalDate.of(1997, 6, 26))
+                    .description("La historia de un joven mago que descubre su herencia mágica y su destino en el mundo de la hechicería.")
+                    .pages(223)
+                    .genre("Fantasía juvenil")
+                    .author(author)
+                    .build();
+            Book book2 = Book.builder()
+                    .isbn("9780307474278")
+                    .title("El código Da Vinci")
+                    .publishDate(LocalDate.of(2003, 3, 18))
+                    .description("Un thriller que combina arte, historia y conspiración mientras el protagonista resuelve un misterio ancestral.")
+                    .pages(489)
+                    .genre("Thriller")
+                    .author(author)
+                    .build();
 
-            Book book2 = new Book(
-                    "978-0-06-114962-5",
-                    "Love in the Time of Cholera",
-                    LocalDate.of(1985, 9, 5),
-                    "A love story that spans over fifty years in the Caribbean coast of Colombia.",
-                    368,
-                    author);
-
-            Book book3 = new Book(
-                    "978-0-06-093264-8",
-                    "Chronicle of a Death Foretold",
-                    LocalDate.of(1981, 4, 1),
-                    "A novella about honor, fate, and collective responsibility in a small town.",
-                    120,
-                    author);
+            Book book3 = Book.builder()
+                    .isbn("0143034901")
+                    .title("La sombra del viento")
+                    .publishDate(LocalDate.of(2001, 4, 17))
+                    .description("Una novela ambientada en la Barcelona de posguerra que gira en torno a un misterioso libro y su autor desaparecido.")
+                    .pages(565)
+                    .genre("Misterio")
+                    .author(author)
+                    .build();
             entityManager.persist(author);
-            entityManager.persist(book1);
+            entityManager.persist(book);
             entityManager.persist(book2);
             entityManager.persist(book3);
             entityManager.flush();
@@ -220,8 +257,8 @@ public class BookRepositoryTest {
             assertThat(booksFound).isNotEmpty();
             assertThat(booksFound).
                     hasSize(3).
-                    extracting(Book::getISBN).
-                    containsExactlyInAnyOrder("978-0-06-088328-7","978-0-06-114962-5","978-0-06-093264-8");
+                    extracting(Book::getIsbn).
+                    containsExactlyInAnyOrder("0439708184","9780307474278","0143034901");
 
 
         }
@@ -230,26 +267,31 @@ public class BookRepositoryTest {
         @DisplayName("Should return book when search is case insensitive")
         void shouldReturnBookWhenSearchIsCaseInsensitive() {
 
-            Author author  = new Author(
-                    "Gabriel García Márquez",
-                    "Colombian",
-                    LocalDate.of(1927,3,6));
-            Book book = new Book(
-                    "978-0-06-088328-7",
-                    "One Hundred Years of Solitude",
-                    LocalDate.of(1967, 5, 30),
-                    "The story of seven generations of the Buendía family in the mythical town of Macondo.",
-                    417,
-                    author);
+            Author author = Author.builder()
+                    .name("Gabriel Garcia Marquezx")
+                    .nationality("Colombiano")
+                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
+
+            Book book = Book.builder()
+                    .isbn("0439708184")
+                    .title("Harry Potter y la piedra filosofal")
+                    .publishDate(LocalDate.of(1997, 6, 26))
+                    .description("La historia de un joven mago que descubre su herencia mágica y su destino en el mundo de la hechicería.")
+                    .pages(223)
+                    .genre("Fantasía juvenil")
+                    .author(author)
+                    .build();
             entityManager.persist(author);
             entityManager.persist(book);
             entityManager.flush();
 
-            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("ONE HUNDRED YEARS OF SOLITUDE")).hasSize(1);
-            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("one hundred years of solitude")).hasSize(1);
-            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("oNE hUNDred YEArs oF SOLITUDE")).hasSize(1);
-            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("one HUNDRED years OF solitude")).hasSize(1);
-            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("OnE hUnDrEd yEaRs Of SoLiTuDe")).hasSize(1);
+            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("HARRY POTTER Y LA PIEDRA FILOSOFAL")).hasSize(1);
+            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("harry potter y la piedra filosofal")).hasSize(1);
+            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("HARRY potter Y la PIEDRA filosofal")).hasSize(1);
+            assertThat(bookRepository.findBookByTitleContainingIgnoreCase("HaRrY pOtTeR y lA pIeDrA fIlOsOfAL")).hasSize(1);
         }
     }
 
@@ -260,26 +302,32 @@ public class BookRepositoryTest {
         @Test
         @DisplayName("Should return books when author ID exists")
         void shouldReturnBooksWhenAuthorIdExists() {
-            Author author = new Author(
-                    "Jorge Luis Borges",
-                    "Argentine",
-                    LocalDate.of(1899,8,24));
+            Author author = Author.builder()
+                    .name("Gabriel Garcia Marquezx")
+                    .nationality("Colombiano")
+                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
 
-            Book book = new Book(
-                    "978-0-8112-0012-7",
-                    "Labyrinths",
-                    LocalDate.of(1962, 1, 1),
-                    "A collection of short stories and essays exploring themes of infinity and reality.",
-                    256,
-                    author);
-
-            Book book2 = new Book(
-                    "978-0-8112-1012-6",
-                    "Ficciones",
-                    LocalDate.of(1944, 1, 1),
-                    "A collection of fantastical short stories that challenge conventional narrative.",
-                    174,
-                    author);
+            Book book = Book.builder()
+                    .isbn("0439708184")
+                    .title("Harry Potter y la piedra filosofal")
+                    .publishDate(LocalDate.of(1997, 6, 26))
+                    .description("La historia de un joven mago que descubre su herencia mágica y su destino en el mundo de la hechicería.")
+                    .pages(223)
+                    .genre("Fantasía juvenil")
+                    .author(author)
+                    .build();
+            Book book2 = Book.builder()
+                    .isbn("9780307474278")
+                    .title("El código Da Vinci")
+                    .publishDate(LocalDate.of(2003, 3, 18))
+                    .description("Un thriller que combina arte, historia y conspiración mientras el protagonista resuelve un misterio ancestral.")
+                    .pages(489)
+                    .genre("Thriller")
+                    .author(author)
+                    .build();
             entityManager.persist(author);
             entityManager.persist(book);
             entityManager.persist(book2);
@@ -292,7 +340,7 @@ public class BookRepositoryTest {
             assertThat(booksFound).
                     hasSize(2).
                     extracting(Book::getTitle).
-                    containsExactlyInAnyOrder("Ficciones", "Labyrinths");
+                    containsExactlyInAnyOrder("Harry Potter y la piedra filosofal", "El código Da Vinci");
 
         }
 
@@ -308,12 +356,14 @@ public class BookRepositoryTest {
         @Test
         @DisplayName("Should return empty list when author no has books")
         void shouldReturnEmptyListWhenAuthorHasNoBooks() {
-            Author author  = new Author(
-                    "Mario Vargas Llosa",
-                    "Peruvian",
-                    LocalDate.of(1936,3,28));
-            entityManager.persist(author);
-            entityManager.flush();
+            Author author = Author.builder()
+                    .name("Gabriel Garcia Marquezx")
+                    .nationality("Colombiano")
+                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .gender(Author.Gender.MALE)
+                    .biography("Famoso Novelista")
+                    .build();
+            entityManager.persistAndFlush(author);
 
             List<Book> booksFound = bookRepository.findBooksByAuthorId(author.getId());
 

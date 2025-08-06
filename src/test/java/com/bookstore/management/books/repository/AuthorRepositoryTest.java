@@ -26,12 +26,32 @@ class AuthorRepositoryTest {
         @Test
         @DisplayName("Should return authors by partial name")
         void shouldReturnAuthor_WhenFindPartialName() {
-            Author garcia1 = new Author("Gabriel García Márquez", "Colombiana", LocalDate.of(1927, 3, 6));
-            Author garcia2 = new Author("Federico García Lorca", "Española", LocalDate.of(1898, 6, 5));
-            Author other = new Author("Mario Vargas Llosa", "Peruana", LocalDate.of(1936, 3, 28));
-            entityManager.persist(garcia1);
-            entityManager.persist(garcia2);
-            entityManager.persist(other);
+            Author author = Author.builder()
+                    .name("Gabriel García Márquez")
+                    .nationality("Colombian")
+                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .gender(Author.Gender.MALE)
+                    .biography("Escritor colombiano, premio Nobel de Literatura en 1982. Máximo exponente del realismo mágico y autor de obras como 'Cien años de soledad'. Su obra ha sido traducida a múltiples idiomas.")
+                    .build();
+
+            Author author2 = Author.builder()
+                    .name("Cristina García López")
+                    .nationality("Cuban-American")
+                    .dateOfBirth(LocalDate.of(1958, 7, 4))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Novelista cubano-americana conocida por su exploración de temas de identidad cultural y experiencia inmigrante. Sus obras han sido aclamadas por la crítica internacional.")
+                    .build();
+
+            Author author3 = Author.builder()
+                    .name("George Orwell")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1903, 6, 25))
+                    .gender(Author.Gender.MALE)
+                    .biography("Escritor británico famoso por sus novelas distópicas '1984' y 'Rebelión en la granja'. Crítico social y político, sus obras exploran temas de totalitarismo y control social.")
+                    .build();
+            entityManager.persist(author);
+            entityManager.persist(author2);
+            entityManager.persist(author3);
             entityManager.flush();
 
             List<Author> authorsFound = authorRepository.findByNameContainingIgnoreCase("García");
@@ -41,16 +61,21 @@ class AuthorRepositoryTest {
                     .extracting(Author::getName)
                     .containsExactlyInAnyOrder(
                             "Gabriel García Márquez",
-                            "Federico García Lorca"
+                            "Cristina García López"
                     );
         }
 
         @Test
         @DisplayName("Should return empty list when no author match")
         void shouldReturnEmpty_WhenNoAuthorMatch() {
-            Author author = new Author("Mario Vargas Llosa", "Peruana", LocalDate.of(1936, 3, 28));
-            entityManager.persist(author);
-            entityManager.flush();
+            Author author = Author.builder()
+                    .name("George Orwell")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1903, 6, 25))
+                    .gender(Author.Gender.MALE)
+                    .biography("Escritor británico famoso por sus novelas distópicas '1984' y 'Rebelión en la granja'. Crítico social y político, sus obras exploran temas de totalitarismo y control social.")
+                    .build();
+            entityManager.persistAndFlush(author);
 
             List<Author> authorsFound = authorRepository.findByNameContainingIgnoreCase("shakespeare");
 
@@ -60,9 +85,15 @@ class AuthorRepositoryTest {
         @Test
         @DisplayName("Should handle case insensitive search correctly")
         void shouldReturnAuthor_whenNotCaseInsensitive() {
-            Author author = new Author("Gabriel García Márquez", "Colombiana", LocalDate.of(1927, 3, 6));
-            entityManager.persist(author);
-            entityManager.flush();
+            Author author = Author.builder()
+                    .name("Cristina García López")
+                    .nationality("Cuban-American")
+                    .dateOfBirth(LocalDate.of(1958, 7, 4))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Novelista cubano-americana conocida por su exploración de temas de identidad cultural y experiencia inmigrante. Sus obras han sido aclamadas por la crítica internacional.")
+                    .build();
+
+            entityManager.persistAndFlush(author);
 
             assertThat(authorRepository.findByNameContainingIgnoreCase("GARCÍA")).hasSize(1);
             assertThat(authorRepository.findByNameContainingIgnoreCase("GarCía")).hasSize(1);
@@ -78,28 +109,43 @@ class AuthorRepositoryTest {
         @Test
         @DisplayName("Should return author by nationality")
         void shouldReturnAuthorWhenNationalityMatches() {
-            Author spanish1 = new Author("Miguel de Cervantes", "Spanish", LocalDate.of(1547, 9, 29));
-            Author spanish2 = new Author("Federico García Lorca", "Spanish", LocalDate.of(1898, 6, 5));
-            Author colombian = new Author("Gabriel García Márquez", "Colombian ", LocalDate.of(1927, 3, 6));
-            entityManager.persist(spanish1);
-            entityManager.persist(spanish2);
-            entityManager.persist(colombian);
+            Author author = Author.builder()
+                    .name("Jane Austen")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1775, 12, 16))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Novelista británica conocida por sus agudas observaciones sociales y su wit. Sus obras como 'Orgullo y prejuicio' siguen siendo populares más de dos siglos después.")
+                    .build();
+
+            Author author2 = Author.builder()
+                    .name("George Orwell")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1903, 6, 25))
+                    .gender(Author.Gender.MALE)
+                    .biography("Escritor británico famoso por sus novelas distópicas '1984' y 'Rebelión en la granja'. Crítico social y político, sus obras exploran temas de totalitarismo y control social.")
+                    .build();
+            entityManager.persist(author);
+            entityManager.persist(author2);
             entityManager.flush();
 
-            List<Author> authorsFound = authorRepository.findByNationality("Spanish");
+            List<Author> authorsFound = authorRepository.findByNationality("British");
 
             assertThat(authorsFound)
                     .hasSize(2)
                     .extracting(Author::getName)
-                    .containsExactlyInAnyOrder("Miguel de Cervantes","Federico García Lorca");
+                    .containsExactlyInAnyOrder("George Orwell","Jane Austen");
         }
         @Test
         @DisplayName("Should return empty when nationality does not matches")
         void shouldReturnEmptyWhenNationalityDoesNotMatches() {
-
-            Author author = new Author("Mario Vargas Llosa", "Peruvian", LocalDate.of(1936, 3, 28));
-            entityManager.persist(author);
-            entityManager.flush();
+            Author author = Author.builder()
+                    .name("Jane Austen")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1775, 12, 16))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Novelista británica conocida por sus agudas observaciones sociales y su wit. Sus obras como 'Orgullo y prejuicio' siguen siendo populares más de dos siglos después.")
+                    .build();
+            entityManager.persistAndFlush(author);
             List<Author> authorFound = authorRepository.findByNationality("Japanese");
             assertThat(authorFound).isEmpty();
         }
@@ -110,30 +156,41 @@ class AuthorRepositoryTest {
     class FindByGenderTest{
         @BeforeEach
         void beforeEach() {
-            Author maleAuthor = new Author(
-                    "Gabriel García Márquez",
-                    "Colombiana",
-                    LocalDate.of(1927, 3, 6),
-                    Author.Gender.MALE);
-            Author maleAuthor2 = new Author(
-                    "Mario Vargas Llosa",
-                    "Peruana",
-                    LocalDate.of(1936, 3, 28),
-                    Author.Gender.MALE);
-            Author femaleAuthor = new Author(
-                    "Isabel Allende",
-                    "Chilean",
-                    LocalDate.of(1942, 8, 2),
-                    Author.Gender.FEMALE);
-            Author preferNotToSayAuthor = new Author(
-                    "Jorge Luis Borges",
-                    "Argentine",
-                    LocalDate.of(1899,8,24),
-                    Author.Gender.PREFER_NOT_TO_SAY);
-            entityManager.persist(maleAuthor);
-            entityManager.persist(maleAuthor2);
-            entityManager.persist(femaleAuthor);
-            entityManager.persist(preferNotToSayAuthor);
+
+            Author author = Author.builder()
+                    .name("Frank Herbert")
+                    .nationality("American")
+                    .dateOfBirth(LocalDate.of(1920, 10, 8))
+                    .gender(Author.Gender.MALE)
+                    .biography("Escritor estadounidense de ciencia ficción, creador de la épica saga 'Dune'. Periodista y ecologista, incorporó temas ambientales y políticos en sus obras futuristas.")
+                    .build();
+            Author author2 = Author.builder()
+                    .name("Carlos Martínez Fernández")
+                    .nationality("Spanish")
+                    .dateOfBirth(LocalDate.of(1971, 9, 22))
+                    .gender(Author.Gender.MALE)
+                    .biography("Novelista español conocido por sus thrillers psicológicos y novelas de misterio. Ha ganado varios premios literarios nacionales por su contribución al género negro español.")
+                    .build();
+
+            Author author3 = Author.builder()
+                    .name("Harper Lee")
+                    .nationality("American")
+                    .dateOfBirth(LocalDate.of(1926, 4, 28))
+                    .gender(Author.Gender.FEMALE)
+                    .biography("Escritora estadounidense famosa por su novela 'Matar a un ruiseñor'. Recibió el Premio Pulitzer por su única obra publicada durante décadas, convirtiéndose en un clásico de la literatura.")
+                    .build();
+
+            Author author4 = Author.builder()
+                    .name("J.K. Rowling")
+                    .nationality("British")
+                    .dateOfBirth(LocalDate.of(1965, 7, 31))
+                    .gender(Author.Gender.PREFER_NOT_TO_SAY)
+                    .biography("Escritora británica creadora de la saga Harry Potter. Una de las autoras más exitosas de la historia, sus libros han sido traducidos a más de 80 idiomas y adaptados al cine.")
+                    .build();
+            entityManager.persist(author);
+            entityManager.persist(author2);
+            entityManager.persist(author3);
+            entityManager.persist(author4);
             entityManager.flush();
         }
 
@@ -146,7 +203,7 @@ class AuthorRepositoryTest {
             assertThat(maleAuthors)
                     .hasSize(2)
                     .extracting(Author::getName)
-                    .containsExactlyInAnyOrder("Mario Vargas Llosa","Gabriel García Márquez");
+                    .containsExactlyInAnyOrder("Frank Herbert","Carlos Martínez Fernández");
 
         }
 
@@ -159,7 +216,7 @@ class AuthorRepositoryTest {
             assertThat(femaleAuthors)
                     .hasSize(1)
                     .extracting(Author::getName)
-                    .containsExactlyInAnyOrder("Isabel Allende");
+                    .containsExactlyInAnyOrder("Harper Lee");
         }
 
         @Test
@@ -171,7 +228,7 @@ class AuthorRepositoryTest {
             assertThat(preferNotToSayAuthors)
                     .hasSize(1)
                     .extracting(Author::getName)
-                    .containsExactlyInAnyOrder("Jorge Luis Borges");
+                    .containsExactlyInAnyOrder("J.K. Rowling");
         }
     }
 }
