@@ -171,7 +171,7 @@ class AuthorControllerTest {
                             .content(objectMapper.writeValueAsString(authorDto)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.name").value("John Doe"));
+                    .andExpect(jsonPath("$.id").value(1L));
 
             verify(authorService).createAuthor(any(AuthorDto.class));
 
@@ -250,7 +250,7 @@ class AuthorControllerTest {
                     .content(objectMapper.writeValueAsString(authorDto)))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.name").value("John Updated"));
+                    .andExpect(jsonPath("$.id").value(authorId));
 
             verify(authorService).updateAuthor(any(AuthorDto.class),eq(authorId));
         }
