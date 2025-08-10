@@ -36,7 +36,7 @@ public class AuthorController {
     @PostMapping
     public ResponseEntity<?> save(@RequestBody @Valid AuthorDto authorDto) {
         Author author = authorService.createAuthor(authorDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthorResponse(author.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthorResponse(author.getId()));
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteById(@PathVariable @Positive Long id) {
@@ -46,7 +46,7 @@ public class AuthorController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody @Valid AuthorDto authorDto, @PathVariable @Positive Long id) {
         Author author = authorService.updateAuthor(authorDto, id);
-        return ResponseEntity.ok(new AuthorResponse(author.getName()));
+        return ResponseEntity.ok(new AuthorResponse(author.getId()));
 
     }
 
