@@ -32,7 +32,7 @@ public class AuthorService {
         Author author = Author.builder()
                 .name(authorDto.getName())
                 .nationality(authorDto.getNationality())
-                .dateOfBirth(authorDto.getDateOfBirth())
+                .birthDate(authorDto.getBirthDate())
                 .gender(authorDto.getGender())
                 .biography(authorDto.getBiography())
                 .build();
@@ -58,7 +58,7 @@ public class AuthorService {
 
         author.setName(authorDto.getName());
         author.setNationality(authorDto.getNationality());
-        author.setDateOfBirth(authorDto.getDateOfBirth());
+        author.setBirthDate(authorDto.getBirthDate());
         author.setGender(authorDto.getGender());
         author.setBiography(authorDto.getBiography());
 

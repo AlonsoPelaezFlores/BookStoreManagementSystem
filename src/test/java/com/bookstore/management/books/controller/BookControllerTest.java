@@ -53,7 +53,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -132,7 +132,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -195,7 +195,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -250,7 +250,7 @@ public class BookControllerTest {
                     .id(authorId)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -341,7 +341,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -473,7 +473,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -550,7 +550,7 @@ public class BookControllerTest {
                     .id(1L)
                     .name("new author")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.FEMALE)
                     .biography("new famous novelist")
                     .build();

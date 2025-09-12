@@ -36,7 +36,7 @@ class AuthorServiceTest {
                     .id(1L)
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist, short-story writer, screenwriter, and journalist, known affectionately as Gabo or Gabito throughout Latin America.")
                     .build();
@@ -44,7 +44,7 @@ class AuthorServiceTest {
                     .id(2L)
                     .name("Jane Austen")
                     .nationality("British")
-                    .dateOfBirth(LocalDate.of(1775, 12, 16))
+                    .birthDate(LocalDate.of(1775, 12, 16))
                     .gender(Author.Gender.FEMALE)
                     .biography("English novelist known primarily for her six major novels, which interpret, critique and comment upon the British landed gentry at the end of the 18th century.")
                     .build();
@@ -77,7 +77,7 @@ class AuthorServiceTest {
                     .id(1L)
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist, short-story writer, screenwriter, and journalist, known affectionately as Gabo or Gabito throughout Latin America.")
                     .build();
@@ -112,7 +112,7 @@ class AuthorServiceTest {
             authorDto = AuthorDto.builder()
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist and Nobel Prize winner.")
                     .build();
@@ -120,7 +120,7 @@ class AuthorServiceTest {
                     .id(1L)
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist and Nobel Prize winner.")
                     .build();
@@ -137,7 +137,7 @@ class AuthorServiceTest {
             assertThat(actualAuthor.getId()).isEqualTo(1L);
             assertThat(actualAuthor.getName()).isEqualTo("Gabriel García Márquez");
             assertThat(actualAuthor.getNationality()).isEqualTo("Colombian");
-            assertThat(actualAuthor.getDateOfBirth()).isEqualTo(LocalDate.of(1927,3,6));
+            assertThat(actualAuthor.getBirthDate()).isEqualTo(LocalDate.of(1927,3,6));
             assertThat(actualAuthor.getGender()).isEqualTo(Author.Gender.MALE);
             assertThat(actualAuthor.getBiography()).isEqualTo("Colombian novelist and Nobel Prize winner.");
 
@@ -156,7 +156,7 @@ class AuthorServiceTest {
             Author capturedAuthor = authorCaptor.getValue();
             assertThat(capturedAuthor.getName()).isEqualTo("Gabriel García Márquez");
             assertThat(capturedAuthor.getNationality()).isEqualTo("Colombian");
-            assertThat(capturedAuthor.getDateOfBirth()).isEqualTo(LocalDate.of(1927, 3, 6));
+            assertThat(capturedAuthor.getBirthDate()).isEqualTo(LocalDate.of(1927, 3, 6));
             assertThat(capturedAuthor.getGender()).isEqualTo(Author.Gender.MALE);
             assertThat(capturedAuthor.getBiography()).isEqualTo("Colombian novelist and Nobel Prize winner.");
             assertThat(capturedAuthor.getId()).isNull();
@@ -175,7 +175,7 @@ class AuthorServiceTest {
             authorDto = AuthorDto.builder()
                     .name("Gabriel")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist.")
                     .build();
@@ -183,7 +183,7 @@ class AuthorServiceTest {
                     .id(1L)
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist and Nobel Prize winner.")
                     .build();
@@ -191,7 +191,7 @@ class AuthorServiceTest {
                     .id(1L)
                     .name("Gabriel")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist.")
                     .build();
@@ -241,7 +241,7 @@ class AuthorServiceTest {
 
             assertThat(actualAuthor.getName()).isEqualTo(expectAuthor.getName());
             assertThat(actualAuthor.getNationality()).isEqualTo(expectAuthor.getNationality());
-            assertThat(actualAuthor.getDateOfBirth()).isEqualTo(expectAuthor.getDateOfBirth());
+            assertThat(actualAuthor.getBirthDate()).isEqualTo(expectAuthor.getBirthDate());
             assertThat(actualAuthor.getGender()).isEqualTo(expectAuthor.getGender());
             assertThat(actualAuthor.getBiography()).isEqualTo(expectAuthor.getBiography());
         }
@@ -261,7 +261,7 @@ class AuthorServiceTest {
             Author capturedAuthor = authorCaptor.getValue();
             assertThat(capturedAuthor.getName()).isEqualTo("Gabriel");
             assertThat(capturedAuthor.getNationality()).isEqualTo("Colombian");
-            assertThat(capturedAuthor.getDateOfBirth()).isEqualTo(LocalDate.of(1927, 3, 6));
+            assertThat(capturedAuthor.getBirthDate()).isEqualTo(LocalDate.of(1927, 3, 6));
             assertThat(capturedAuthor.getGender()).isEqualTo(Author.Gender.MALE);
             assertThat(capturedAuthor.getBiography()).isEqualTo("Colombian novelist.");
         }

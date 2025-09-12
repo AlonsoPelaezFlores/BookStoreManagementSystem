@@ -108,7 +108,7 @@ class BookServiceTest {
                     .id(1L)
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
-                    .dateOfBirth(LocalDate.of(1927, 3, 6))
+                    .birthDate(LocalDate.of(1927, 3, 6))
                     .gender(Author.Gender.MALE)
                     .biography("Colombian novelist, short-story writer, screenwriter, and journalist, known affectionately as Gabo or Gabito throughout Latin America.")
                     .build();

@@ -21,8 +21,8 @@ public class Author {
     @Column(name = "nationality", nullable = false, length = 100)
     private String nationality;
 
-    @Column(name = "date_of_birth", nullable = false)
-    private LocalDate dateOfBirth;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -34,14 +34,14 @@ public class Author {
     public Author(String name, String nationality, LocalDate dateOfBirth) {
         this.name = name;
         this.nationality = nationality;
-        this.dateOfBirth = dateOfBirth;
+        this.birthDate = dateOfBirth;
         this.gender = Gender.PREFER_NOT_TO_SAY;
     }
 
     public Author(String name, String nationality, LocalDate dateOfBirth, Gender gender) {
         this.name = name;
         this.nationality = nationality;
-        this.dateOfBirth = dateOfBirth;
+        this.birthDate = dateOfBirth;
         this.gender = gender;
     }
 

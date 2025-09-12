@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,7 +35,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("John Doe")
                     .nationality("Americano")
-                    .dateOfBirth(LocalDate.of(1980,5,15))
+                    .birthDate(LocalDate.of(1980,5,15))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -83,7 +82,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Mario Vargas Llosa")
                     .nationality("Peruano")
-                    .dateOfBirth(LocalDate.of(1936, 3, 28))
+                    .birthDate(LocalDate.of(1936, 3, 28))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -128,7 +127,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Mario Vargas Llosa")
                     .nationality("Peruano")
-                    .dateOfBirth(LocalDate.of(1936, 3, 28))
+                    .birthDate(LocalDate.of(1936, 3, 28))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -149,7 +148,7 @@ public class BookRepositoryTest {
             Author author2 = Author.builder()
                     .name("Isabel Allende")
                     .nationality("Chilena")
-                    .dateOfBirth(LocalDate.of(1942, 8, 2))
+                    .birthDate(LocalDate.of(1942, 8, 2))
                     .gender(Author.Gender.FEMALE)
                     .biography("Famosa Novelista")
                     .build();
@@ -183,7 +182,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Isabel Allende")
                     .nationality("Chilena")
-                    .dateOfBirth(LocalDate.of(1942, 8, 2))
+                    .birthDate(LocalDate.of(1942, 8, 2))
                     .gender(Author.Gender.FEMALE)
                     .biography("Famosa Novelista")
                     .build();
@@ -212,7 +211,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
-                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .birthDate(LocalDate.of(1927,3,6))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -270,7 +269,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
-                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .birthDate(LocalDate.of(1927,3,6))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -305,7 +304,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
-                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .birthDate(LocalDate.of(1927,3,6))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
@@ -359,7 +358,7 @@ public class BookRepositoryTest {
             Author author = Author.builder()
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
-                    .dateOfBirth(LocalDate.of(1927,3,6))
+                    .birthDate(LocalDate.of(1927,3,6))
                     .gender(Author.Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();

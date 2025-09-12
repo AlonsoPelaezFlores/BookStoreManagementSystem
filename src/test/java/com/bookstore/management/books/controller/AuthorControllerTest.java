@@ -49,7 +49,7 @@ class AuthorControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980,5,15))
+                    .birthDate(LocalDate.of(1980,5,15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -57,7 +57,7 @@ class AuthorControllerTest {
                     .id(2L)
                     .name("Jane Smith")
                     .nationality("British")
-                    .dateOfBirth(LocalDate.of(1975, 3, 22))
+                    .birthDate(LocalDate.of(1975, 3, 22))
                     .gender(Author.Gender.FEMALE)
                     .biography("Bestselling author")
                     .build();
@@ -103,7 +103,7 @@ class AuthorControllerTest {
                     .id(authorId)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -151,7 +151,7 @@ class AuthorControllerTest {
             AuthorDto authorDto = AuthorDto.builder()
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -159,7 +159,7 @@ class AuthorControllerTest {
                     .id(1L)
                     .name("John Doe")
                     .nationality("American")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
@@ -230,7 +230,7 @@ class AuthorControllerTest {
             AuthorDto authorDto = AuthorDto.builder()
                     .name("John Updated")
                     .nationality("Canadian")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("Updated biography")
                     .build();
@@ -238,7 +238,7 @@ class AuthorControllerTest {
                     .id(authorId)
                     .name("John Updated")
                     .nationality("Canadian")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("Updated biography")
                     .build();
@@ -272,7 +272,7 @@ class AuthorControllerTest {
             AuthorDto authorDto = AuthorDto.builder()
                     .name("John Updated")
                     .nationality("Canadian")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("Updated biography")
                     .build();
@@ -291,7 +291,7 @@ class AuthorControllerTest {
             AuthorDto authorDto = AuthorDto.builder()
                     .name("John Updated")
                     .nationality("Canadian")
-                    .dateOfBirth(LocalDate.of(1980, 5, 15))
+                    .birthDate(LocalDate.of(1980, 5, 15))
                     .gender(Author.Gender.MALE)
                     .biography("Updated biography")
                     .build();

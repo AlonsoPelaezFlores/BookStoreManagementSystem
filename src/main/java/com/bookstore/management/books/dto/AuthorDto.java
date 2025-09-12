@@ -28,7 +28,7 @@ public class AuthorDto {
 
     @NotNull(message = "The date of birth is obligatory")
     @Past(message = "Date of birth must be before today")
-    public LocalDate dateOfBirth;
+    public LocalDate birthDate;
 
     @NotNull(message = "The gender is obligatory")
     public Author.Gender gender;
