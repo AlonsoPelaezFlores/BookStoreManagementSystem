@@ -72,7 +72,7 @@ class CustomerServiceTest {
         @DisplayName("Should return empty list when no customers exist")
         void shouldReturnEmptyListWhenNoCustomersExist() {
 
-            when(customerRepository.findAll()).thenReturn(Arrays.asList());
+            when(customerRepository.findAll()).thenReturn(List.of());
 
             List<Customer> result = customerService.findAll();
 
