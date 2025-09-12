@@ -1,10 +1,6 @@
 package com.bookstore.management.books.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,28 +15,20 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column ( name = "name", nullable = false)
-    @NotBlank
-    @Size(min = 2, max = 100)
+    @Column ( name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "nationality", nullable = false)
-    @NotBlank
-    @Size(min = 2,max = 50)
+    @Column(name = "nationality", nullable = false, length = 100)
     private String nationality;
 
     @Column(name = "date_of_birth", nullable = false)
-    @NotNull
-    @Past
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull
     private Gender gender;
 
     @Column(name = "biography", columnDefinition = "TEXT")
-    @Size(max = 2000)
     private String biography;
 
     public Author(String name, String nationality, LocalDate dateOfBirth) {
