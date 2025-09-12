@@ -1,8 +1,6 @@
 package com.bookstore.management.books.model;
 
-import com.bookstore.management.books.validation.ValidIsbn;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,30 +19,21 @@ public class Book {
     private Long id;
 
     @Column(name = "isbn", unique = true, nullable = false)
-    @ValidIsbn
     private String isbn;
 
     @Column(name = "title", nullable = false)
-    @NotBlank
     private String title;
 
     @Column(name = "publish_date", nullable = false)
-    @NotNull
-    @PastOrPresent
     private LocalDate publishDate;
 
     @Column(name = "description", length = 1024)
-    @Size(max = 1024)
     private String description;
 
     @Column(name = "pages", nullable = false)
-    @NotNull
-    @Positive
-    @Max(value = 10000)
     private Integer pages;
 
-    @Column(name = "genre")
-    @Size(max = 50)
+    @Column(name = "genre", length = 100)
     private String genre;
 
     @ManyToOne
