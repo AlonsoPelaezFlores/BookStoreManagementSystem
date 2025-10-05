@@ -1,14 +1,15 @@
 package com.bookstore.management.books.service;
 
 import com.bookstore.management.books.dto.BookDto;
+import com.bookstore.management.books.mapper.BookMapper;
 import com.bookstore.management.books.model.Author;
 import com.bookstore.management.books.model.Book;
 import com.bookstore.management.books.repository.AuthorRepository;
 import com.bookstore.management.books.repository.BookRepository;
 import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
 import com.bookstore.management.shared.exception.custom.BookNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -17,11 +18,14 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class BookService {
-    @Autowired
-    private BookRepository bookRepository;
-    @Autowired
-    private AuthorRepository authorRepository;
+
+    private final BookRepository bookRepository;
+
+    private final AuthorRepository authorRepository;
+
+    private final BookMapper bookMapper;
 
     public List<Book> findAll() {
         return bookRepository.findAll();
@@ -42,35 +46,27 @@ public class BookService {
     @Transactional
     public Book createBook(BookDto bookDto) {
 
-        Book book = Book.builder()
-                .isbn(bookDto.getIsbn())
-                .title(bookDto.getTitle())
-                .publishDate(bookDto.getPublishDate())
-                .description(bookDto.getDescription())
-                .pages(bookDto.getPages())
-                .genre(bookDto.getGenre())
-                .author(bookDto.getAuthor())
-                .build();
+        if(bookRepository.existsBookByIsbn(bookDto.getIsbn())){
+            throw new IllegalArgumentException("Book already exists");
+        }
+
+        Book book = bookMapper.toEntity(bookDto);
+
         log.info("Created new book with id: {}", book.getId());
 
         return bookRepository.save(book);
     }
     @Transactional
     public Book updateBook(BookDto bookDto, Long id){
-        Book bookToModified = bookRepository
+        Book existingBook = bookRepository
                 .findById(id)
                 .orElseThrow(()-> new BookNotFoundException("Book", "Id", id));
 
-        bookToModified.setTitle(bookDto.getTitle());
-        bookToModified.setPublishDate(bookDto.getPublishDate());
-        bookToModified.setDescription(bookDto.getDescription());
-        bookToModified.setPages(bookDto.getPages());
-        bookToModified.setGenre(bookDto.getGenre());
-        bookToModified.setAuthor(bookDto.getAuthor());
+        bookMapper.updateEntityFromDto(bookDto, existingBook);
 
-        log.info("Book updated with id: {}", bookToModified.getId());
+        log.info("Book updated with id: {}", existingBook.getId());
 
-        return bookRepository.save(bookToModified);
+        return bookRepository.save(existingBook);
     }
     @Transactional
     public void deleteById(Long id){
@@ -82,23 +78,23 @@ public class BookService {
     }
     @Transactional
     public Book updateAuthor(Long bookId, Long newAuthorId){
-        Book bookModified = bookRepository
+        Book existingBook = bookRepository
                 .findById(bookId)
                 .orElseThrow(()-> new BookNotFoundException("Book", "Id", bookId));
 
-        if (bookModified.getAuthor()!= null && newAuthorId.equals(bookModified.getAuthor().getId())) {
+        if (existingBook.getAuthor()!= null && newAuthorId.equals(existingBook.getAuthor().getId())) {
             log.info("Book already has the same author with id: {}", newAuthorId);
-            return bookModified;
+            return existingBook;
         }
         Author newAuthor = authorRepository
                 .findById(newAuthorId)
                         .orElseThrow(()-> new AuthorNotFoundException("Author", "Id", newAuthorId));
 
-        bookModified.setAuthor(newAuthor);
+        existingBook.setAuthor(newAuthor);
 
-        log.info("Modified author with id: {}", bookModified.getAuthor().getId());
+        log.info("Modified author with id: {}", existingBook.getAuthor().getId());
 
-        return bookRepository.save(bookModified);
+        return bookRepository.save(existingBook);
     }
 
 
