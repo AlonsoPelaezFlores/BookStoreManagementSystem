@@ -1,14 +1,17 @@
 package com.bookstore.management.books.service;
 
 import com.bookstore.management.books.dto.AuthorDto;
+import com.bookstore.management.books.mapper.AuthorMapper;
 import com.bookstore.management.books.model.Author;
 import com.bookstore.management.books.repository.AuthorRepository;
 import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -24,6 +27,8 @@ import static org.mockito.Mockito.*;
 class AuthorServiceTest {
     @Mock
     private AuthorRepository authorRepository;
+    @Spy
+    private AuthorMapper authorMapper = Mappers.getMapper(AuthorMapper.class);
     @InjectMocks
     private AuthorService authorService;
 
@@ -213,6 +218,7 @@ class AuthorServiceTest {
 
             verify(authorRepository).save(any(Author.class));
             verify(authorRepository).findById(authorId);
+            verify(authorMapper).updateEntityFromDto(authorDto, author);
 
         }
         @Test

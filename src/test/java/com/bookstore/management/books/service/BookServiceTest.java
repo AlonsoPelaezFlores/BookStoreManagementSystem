@@ -1,6 +1,7 @@
 package com.bookstore.management.books.service;
 
 import com.bookstore.management.books.dto.BookDto;
+import com.bookstore.management.books.mapper.BookMapper;
 import com.bookstore.management.books.model.Author;
 import com.bookstore.management.books.model.Book;
 import com.bookstore.management.books.repository.AuthorRepository;
@@ -12,9 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -32,6 +35,9 @@ class BookServiceTest {
     @Mock
     private AuthorRepository authorRepository;
 
+    @Spy
+    private BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
+
     @InjectMocks
     private BookService bookService;
 
@@ -39,7 +45,7 @@ class BookServiceTest {
     class findAll{
         private Book book;
         private Book book2;
-        private Author author;
+        public Author author;
         @BeforeEach
         void setUp() {
             author = Author.builder()
@@ -101,7 +107,7 @@ class BookServiceTest {
     @Nested
     class findById{
         private Book book;
-        private Author author;
+        public Author author;
         @BeforeEach
         void setUp() {
             author= Author.builder()
@@ -158,7 +164,7 @@ class BookServiceTest {
     @Nested
     class findByISBN{
         private Book book;
-        private Author author;
+        public Author author;
         @BeforeEach
         void setUp() {
             author = Author.builder()
@@ -221,7 +227,7 @@ class BookServiceTest {
     @Nested
     class createBook{
         private Book expectBook;
-        private Author author;
+        public Author author;
         private BookDto bookDto;
         @BeforeEach
         void setUp() {
@@ -302,7 +308,7 @@ class BookServiceTest {
     @Nested
     class updateBook{
         private Book expectBook;
-        private Author author;
+        public Author author;
         private BookDto bookDto;
         @BeforeEach
         void setUp() {
@@ -345,6 +351,7 @@ class BookServiceTest {
 
             verify(bookRepository).findById(bookId);
             verify(bookRepository).save(any(Book.class));
+            verify(bookMapper).updateEntityFromDto(bookDto,expectBook);
         }
         @Test
         @DisplayName("Should throw BookNotFoundException book is not found on update")
@@ -569,10 +576,10 @@ class BookServiceTest {
 
     @Nested
     class booksByAuthorId {
-        private Author author;
-        private Author author2;
-        private Book book1;
-        private Book book2;
+        public Author author;
+        public Author author2;
+        public Book book1;
+        public Book book2;
         @BeforeEach
         void setUp() {
             author = Author.builder()
