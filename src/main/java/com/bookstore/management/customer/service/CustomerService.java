@@ -1,11 +1,12 @@
 package com.bookstore.management.customer.service;
 
 import com.bookstore.management.customer.dto.CustomerDto;
+import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
 import com.bookstore.management.shared.exception.custom.CustomerNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +15,11 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class CustomerService {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
     public List<Customer> findAll() {
         return customerRepository.findAll();
@@ -29,29 +31,22 @@ public class CustomerService {
     @Transactional
     public Customer create(CustomerDto customerDto) {
 
-        Customer customer = Customer.builder()
-                .name(customerDto.getName())
-                .surname(customerDto.getSurname())
-                .email(customerDto.getEmail())
-                .birthDate(customerDto.getBirthDate())
-                .build();
+        Customer customer = customerMapper.toEntity(customerDto);
+
         log.info("Creating customer with id: {}", customer.getId());
 
         return customerRepository.save(customer);
     }
     @Transactional
     public Customer update(CustomerDto customerDto, Long id) {
-        Customer customer = customerRepository.findById(id)
+        Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(()-> new CustomerNotFoundException("Customer","Id",id));
 
-        customer.setName(customerDto.getName());
-        customer.setSurname(customerDto.getSurname());
-        customer.setEmail(customerDto.getEmail());
-        customer.setBirthDate(customerDto.getBirthDate());
+        customerMapper.updateEntityFromDto(customerDto, existingCustomer);
 
-        log.info("Updating customer with id: {}", customer.getId());
+        log.info("Updating customer with id: {}", existingCustomer.getId());
 
-        return customerRepository.save(customer);
+        return customerRepository.save(existingCustomer);
     }
     @Transactional
     public void deleteById(Long id) {

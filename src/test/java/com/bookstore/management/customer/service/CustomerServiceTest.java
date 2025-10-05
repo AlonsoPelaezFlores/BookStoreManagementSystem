@@ -1,10 +1,12 @@
 package com.bookstore.management.customer.service;
 
 import com.bookstore.management.customer.dto.CustomerDto;
+import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
 import com.bookstore.management.shared.exception.custom.CustomerNotFoundException;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
@@ -23,6 +25,8 @@ class CustomerServiceTest {
     private CustomerRepository customerRepository;
     @InjectMocks
     private CustomerService customerService;
+    @Spy
+    private CustomerMapper customerMapper = Mappers.getMapper(CustomerMapper.class);
 
     private Customer customer;
     private Customer anotherCustomer;
