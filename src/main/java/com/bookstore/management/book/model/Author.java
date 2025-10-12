@@ -2,7 +2,6 @@ package com.bookstore.management.book.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -10,6 +9,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 @Entity
+@Table(name = "authors")
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
