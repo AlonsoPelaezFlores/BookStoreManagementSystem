@@ -1,6 +1,6 @@
 package com.bookstore.management.book.mapper;
 
-import com.bookstore.management.book.dto.AuthorDto;
+import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.model.Author;
 import org.mapstruct.*;
 
@@ -8,7 +8,7 @@ import org.mapstruct.*;
 public interface AuthorMapper {
 
     @Mapping(target = "id", ignore = true)
-    Author toEntity(AuthorDto authorDto);
+    Author toEntity(CreateAuthorDTO createAuthorDto);
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDto(AuthorDto authorDto,@MappingTarget Author author);
+    void updateEntityFromDto(CreateAuthorDTO createAuthorDto, @MappingTarget Author author);
 }

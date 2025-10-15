@@ -1,6 +1,6 @@
 package com.bookstore.management.book.service;
 
-import com.bookstore.management.book.dto.AuthorDto;
+import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.mapper.AuthorMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.repository.AuthorRepository;
@@ -31,9 +31,9 @@ public class AuthorService {
     }
 
     @Transactional
-    public Author createAuthor(AuthorDto authorDto){
+    public Author createAuthor(CreateAuthorDTO createAuthorDto){
 
-        Author author =  authorMapper.toEntity(authorDto);
+        Author author =  authorMapper.toEntity(createAuthorDto);
 
         log.info("Creating author with id: {}", author.getId());
 
@@ -50,11 +50,11 @@ public class AuthorService {
     }
 
     @Transactional
-    public Author updateAuthor(AuthorDto authorDto, Long id){
+    public Author updateAuthor(CreateAuthorDTO createAuthorDto, Long id){
         Author existingAuthor = authorRepository.findById(id)
                 .orElseThrow(()-> new AuthorNotFoundException("Author","Id",id));
 
-        authorMapper.updateEntityFromDto(authorDto, existingAuthor);
+        authorMapper.updateEntityFromDto(createAuthorDto, existingAuthor);
 
         log.info("Updating author with id: {}", existingAuthor.getId());
 

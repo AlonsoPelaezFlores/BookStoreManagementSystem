@@ -1,6 +1,6 @@
 package com.bookstore.management.book.service;
 
-import com.bookstore.management.book.dto.AuthorDto;
+import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.mapper.AuthorMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.repository.AuthorRepository;
@@ -108,13 +108,13 @@ class AuthorServiceTest {
     }
     @Nested
     class createAuthor{
-        private AuthorDto authorDto;
+        private CreateAuthorDTO createAuthorDto;
         private Author savedAuthor;
 
         @BeforeEach
         void setUp(){
 
-            authorDto = AuthorDto.builder()
+            createAuthorDto = CreateAuthorDTO.builder()
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
                     .birthDate(LocalDate.of(1927, 3, 6))
@@ -136,7 +136,7 @@ class AuthorServiceTest {
 
             when(authorRepository.save(any(Author.class))).thenReturn(savedAuthor);
 
-            Author actualAuthor = authorService.createAuthor(authorDto);
+            Author actualAuthor = authorService.createAuthor(createAuthorDto);
 
             assertThat(actualAuthor).isNotNull();
             assertThat(actualAuthor.getId()).isEqualTo(1L);
@@ -153,7 +153,7 @@ class AuthorServiceTest {
 
             when(authorRepository.save(any(Author.class))).thenReturn(savedAuthor);
 
-            authorService.createAuthor(authorDto);
+            authorService.createAuthor(createAuthorDto);
 
             ArgumentCaptor<Author> authorCaptor = ArgumentCaptor.forClass(Author.class);
             verify(authorRepository).save(authorCaptor.capture());
@@ -171,13 +171,13 @@ class AuthorServiceTest {
     @Nested
     class updateAuthor{
 
-        private AuthorDto authorDto;
+        private CreateAuthorDTO createAuthorDto;
         private Author author;
         private Author expectAuthor;
 
         @BeforeEach
         void setUp(){
-            authorDto = AuthorDto.builder()
+            createAuthorDto = CreateAuthorDTO.builder()
                     .name("Gabriel")
                     .nationality("Colombian")
                     .birthDate(LocalDate.of(1927, 3, 6))
@@ -212,13 +212,13 @@ class AuthorServiceTest {
             when(authorRepository.findById(authorId)).thenReturn(Optional.of(author));
             when(authorRepository.save(any(Author.class))).thenReturn(expectAuthor);
 
-            Author actualAuthor = authorService.updateAuthor(authorDto, authorId);
+            Author actualAuthor = authorService.updateAuthor(createAuthorDto, authorId);
 
             assertThat(actualAuthor).isNotNull();
 
             verify(authorRepository).save(any(Author.class));
             verify(authorRepository).findById(authorId);
-            verify(authorMapper).updateEntityFromDto(authorDto, author);
+            verify(authorMapper).updateEntityFromDto(createAuthorDto, author);
 
         }
         @Test
@@ -228,7 +228,7 @@ class AuthorServiceTest {
 
             when(authorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(()-> authorService.updateAuthor(authorDto, nonExistentId))
+            assertThatThrownBy(()-> authorService.updateAuthor(createAuthorDto, nonExistentId))
                     .isInstanceOf(AuthorNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
@@ -243,7 +243,7 @@ class AuthorServiceTest {
             when(authorRepository.findById(authorId)).thenReturn(Optional.of(author));
             when(authorRepository.save(any(Author.class))).thenReturn(expectAuthor);
 
-            Author actualAuthor = authorService.updateAuthor(authorDto, authorId);
+            Author actualAuthor = authorService.updateAuthor(createAuthorDto, authorId);
 
             assertThat(actualAuthor.getName()).isEqualTo(expectAuthor.getName());
             assertThat(actualAuthor.getNationality()).isEqualTo(expectAuthor.getNationality());
@@ -259,7 +259,7 @@ class AuthorServiceTest {
             when(authorRepository.findById(authorId)).thenReturn(Optional.ofNullable(author));
             when(authorRepository.save(any(Author.class))).thenReturn(expectAuthor);
 
-            authorService.updateAuthor(authorDto, authorId);
+            authorService.updateAuthor(createAuthorDto, authorId);
 
             ArgumentCaptor<Author> authorCaptor = ArgumentCaptor.forClass(Author.class);
             verify(authorRepository).save(authorCaptor.capture());

@@ -1,7 +1,7 @@
 package com.bookstore.management.book.controller;
 
-import com.bookstore.management.book.dto.BookDto;
-import com.bookstore.management.book.dto.BookResponse;
+import com.bookstore.management.book.dto.CreateBookDTO;
+import com.bookstore.management.book.dto.BookResponseDTO;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.service.BookService;
 import jakarta.validation.Valid;
@@ -45,21 +45,21 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Valid BookDto bookDto){
-        Book book  = bookService.createBook(bookDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponse(book.getId()));
+    public ResponseEntity<?> create(@RequestBody @Valid CreateBookDTO createBookDto){
+        Book book  = bookService.createBook(createBookDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BookResponseDTO(book.getId()));
 
     }
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable @Positive Long id, @RequestBody @Valid BookDto bookDto){
-        Book book = bookService.updateBook(bookDto, id);
-        return ResponseEntity.ok(new BookResponse(book.getId()));
+    public ResponseEntity<?> update(@PathVariable @Positive Long id, @RequestBody @Valid CreateBookDTO createBookDto){
+        Book book = bookService.updateBook(createBookDto, id);
+        return ResponseEntity.ok(new BookResponseDTO(book.getId()));
     }
 
     @PatchMapping(value = "/{id}/author/{newAuthorId}")
     public ResponseEntity<?> updateAuthor(@PathVariable @Positive Long id, @PathVariable @Positive Long newAuthorId){
         Book book = bookService.updateAuthor(id,newAuthorId);
-        return ResponseEntity.ok(new BookResponse(book.getId()));
+        return ResponseEntity.ok(new BookResponseDTO(book.getId()));
     }
 
 }

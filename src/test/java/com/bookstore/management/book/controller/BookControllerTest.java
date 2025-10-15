@@ -1,6 +1,6 @@
 package com.bookstore.management.book.controller;
 
-import com.bookstore.management.book.dto.BookDto;
+import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.service.BookService;
@@ -332,7 +332,7 @@ public class BookControllerTest {
     @Nested
     @DisplayName("POST /api/books - Create Book")
     class CreateBook {
-        private BookDto bookDto;
+        private CreateBookDTO createBookDto;
         private Author author;
         private Book book;
         @BeforeEach
@@ -346,7 +346,7 @@ public class BookControllerTest {
                     .biography("famous novelist")
                     .build();
 
-            bookDto = BookDto.builder()
+            createBookDto = CreateBookDTO.builder()
                     .isbn("9780141439518")
                     .title("Cien años de soledad")
                     .publishDate(LocalDate.of(1967, 6, 5))
@@ -372,11 +372,11 @@ public class BookControllerTest {
         @DisplayName("Should create book when valid data is provided")
         void shouldCreateBookWhenValidDataIsProvided() throws Exception {
 
-            when(bookService.createBook(any(BookDto.class))).thenReturn(book);
+            when(bookService.createBook(any(CreateBookDTO.class))).thenReturn(book);
 
             mockMvc.perform(post("/api/books")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(bookDto)))
+                    .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(1L));
@@ -385,11 +385,11 @@ public class BookControllerTest {
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception {
 
-            bookDto = BookDto.builder().build();
+            createBookDto = CreateBookDTO.builder().build();
 
             mockMvc.perform(post("/api/books")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(bookDto)))
+                    .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -397,73 +397,73 @@ public class BookControllerTest {
         @DisplayName("Should return 400 when title is missing")
         void shouldReturn400WhenTitleIsMissing() throws Exception {
 
-            bookDto.setTitle(null);
+            createBookDto.setTitle(null);
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when ISBN is missing")
         void shouldReturn400WhenIsbnIsMissing() throws Exception {
 
-            bookDto.setIsbn(null);
+            createBookDto.setIsbn(null);
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when author is missing")
         void shouldReturn400WhenAuthorIsMissing() throws Exception {
 
-            bookDto.setAuthor(null);
+            createBookDto.setAuthor(null);
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when pages exceeds maximum")
         void shouldReturn400WhenPagesExceedsMaximum() throws Exception {
 
-            bookDto.setPages(15000);
+            createBookDto.setPages(15000);
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when publish date is in future")
         void shouldReturn400WhenPublishDateIsInFuture() throws Exception {
 
-            bookDto.setPublishDate(LocalDate.now().plusDays(1));
+            createBookDto.setPublishDate(LocalDate.now().plusDays(1));
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when description exceeds maximum length")
         void shouldReturn400WhenDescriptionExceedsMaximumLength() throws Exception {
 
-            bookDto.setDescription("x".repeat(1025));
+            createBookDto.setDescription("x".repeat(1025));
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
     }
     @Nested
     @DisplayName("PUT /api/books/{id} - Update Book")
     class UpdateBook {
-        private BookDto bookDto;
+        private CreateBookDTO createBookDto;
         private Book updatedBook;
         private Author author;
         private static final Long bookId = 1L;
@@ -478,7 +478,7 @@ public class BookControllerTest {
                     .biography("famous novelist")
                     .build();
 
-            bookDto = BookDto.builder()
+            createBookDto = CreateBookDTO.builder()
                     .isbn("9780141439518")
                     .title("Cien años de soledad")
                     .publishDate(LocalDate.of(1967, 6, 5))
@@ -503,11 +503,11 @@ public class BookControllerTest {
         @DisplayName("Should update book when valid data is provided")
         void shouldUpdateBookWhenValidDataIsProvided() throws Exception {
 
-            when(bookService.updateBook(any(BookDto.class), eq(bookId))).thenReturn(updatedBook);
+            when(bookService.updateBook(any(CreateBookDTO.class), eq(bookId))).thenReturn(updatedBook);
 
             mockMvc.perform(put("/api/books/{id}", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(bookId));
@@ -516,11 +516,11 @@ public class BookControllerTest {
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception{
 
-            bookDto = BookDto.builder().build();
+            createBookDto = CreateBookDTO.builder().build();
 
             mockMvc.perform(put("/api/books/{id}", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
         @Test
@@ -529,12 +529,12 @@ public class BookControllerTest {
 
             mockMvc.perform(put("/api/books/{id}", 0)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
 
             mockMvc.perform(put("/api/books/{id}", -1)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(bookDto)))
+                            .content(objectMapper.writeValueAsString(createBookDto)))
                     .andExpect(status().isBadRequest());
         }
     }

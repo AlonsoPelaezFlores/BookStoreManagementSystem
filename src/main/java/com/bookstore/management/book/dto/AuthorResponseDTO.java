@@ -1,6 +1,6 @@
 package com.bookstore.management.book.dto;
 
-public record AuthorResponse(
+public record AuthorResponseDTO(
     Long id
 )
 {}

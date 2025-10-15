@@ -1,10 +1,10 @@
 package com.bookstore.management.inventory.dto;
 
-import com.bookstore.management.book.dto.BookSummaryDto;
+import com.bookstore.management.book.dto.BookSummaryDTO;
 
 public record InventorySummaryDTO(
         Long id,
-        BookSummaryDto book,
+        BookSummaryDTO book,
         Integer quantityAvailable,
         Boolean activeState
 ){}

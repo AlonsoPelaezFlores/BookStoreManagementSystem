@@ -1,13 +1,13 @@
 package com.bookstore.management.inventory.dto;
 
-import com.bookstore.management.book.dto.BookSummaryDto;
+import com.bookstore.management.book.dto.BookSummaryDTO;
 
 
 import java.time.LocalDateTime;
 
 public record InventoryResponseDTO(
     Long id,
-    BookSummaryDto book,
+    BookSummaryDTO book,
     Integer quantityAvailable,
     Integer quantityReserved,
     Integer stockMin,

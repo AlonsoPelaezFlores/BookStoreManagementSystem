@@ -1,6 +1,6 @@
 package com.bookstore.management.book.service;
 
-import com.bookstore.management.book.dto.BookDto;
+import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
@@ -44,25 +44,25 @@ public class BookService {
         return bookRepository.findBooksByAuthorId(authorId);
     }
     @Transactional
-    public Book createBook(BookDto bookDto) {
+    public Book createBook(CreateBookDTO createBookDto) {
 
-        if(bookRepository.existsBookByIsbn(bookDto.getIsbn())){
+        if(bookRepository.existsBookByIsbn(createBookDto.getIsbn())){
             throw new IllegalArgumentException("Book already exists");
         }
 
-        Book book = bookMapper.toEntity(bookDto);
+        Book book = bookMapper.toEntity(createBookDto);
 
         log.info("Created new book with id: {}", book.getId());
 
         return bookRepository.save(book);
     }
     @Transactional
-    public Book updateBook(BookDto bookDto, Long id){
+    public Book updateBook(CreateBookDTO createBookDto, Long id){
         Book existingBook = bookRepository
                 .findById(id)
                 .orElseThrow(()-> new BookNotFoundException("Book", "Id", id));
 
-        bookMapper.updateEntityFromDto(bookDto, existingBook);
+        bookMapper.updateEntityFromDto(createBookDto, existingBook);
 
         log.info("Book updated with id: {}", existingBook.getId());
 

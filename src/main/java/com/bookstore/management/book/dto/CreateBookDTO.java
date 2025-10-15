@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Builder
-public class BookDto {
+public class CreateBookDTO {
 
         @NotBlank(message = "ISBN cannot be blank")
         @ValidIsbn(message = "Isbn must be valid (ISBN-10 or ISBN-13)")

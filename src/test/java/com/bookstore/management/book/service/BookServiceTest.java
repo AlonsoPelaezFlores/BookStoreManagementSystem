@@ -1,6 +1,6 @@
 package com.bookstore.management.book.service;
 
-import com.bookstore.management.book.dto.BookDto;
+import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
@@ -228,7 +228,7 @@ class BookServiceTest {
     class createBook{
         private Book expectBook;
         public Author author;
-        private BookDto bookDto;
+        private CreateBookDTO createBookDto;
         @BeforeEach
         void setUp() {
             author = Author.builder()
@@ -249,7 +249,7 @@ class BookServiceTest {
                     .author(author)
                     .build();
 
-            bookDto = BookDto.builder()
+            createBookDto = CreateBookDTO.builder()
                     .isbn("9780007356348")
                     .title("Half of a Yellow Sun")
                     .publishDate(LocalDate.of(2006, 8, 10))
@@ -266,7 +266,7 @@ class BookServiceTest {
         void shouldReturnSavedBookWithValidData(){
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            Book actualBook = bookService.createBook(bookDto);
+            Book actualBook = bookService.createBook(createBookDto);
 
             assertThat(actualBook).isNotNull();
             assertThat(actualBook.getId()).isEqualTo(expectBook.getId());
@@ -286,7 +286,7 @@ class BookServiceTest {
 
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            bookService.createBook(bookDto);
+            bookService.createBook(createBookDto);
 
             ArgumentCaptor<Book> bookCaptor = ArgumentCaptor.forClass(Book.class);
 
@@ -309,7 +309,7 @@ class BookServiceTest {
     class updateBook{
         private Book expectBook;
         public Author author;
-        private BookDto bookDto;
+        private CreateBookDTO createBookDto;
         @BeforeEach
         void setUp() {
             author = Author.builder()
@@ -317,7 +317,7 @@ class BookServiceTest {
                     .nationality("Japanese")
                     .gender(Author.Gender.MALE)
                     .build();
-            bookDto =  BookDto.builder()
+            createBookDto =  CreateBookDTO.builder()
                     .isbn("9780099448822")
                     .title("Kafka on the Shore")
                     .publishDate(LocalDate.of(2002, 9, 12))
@@ -345,13 +345,13 @@ class BookServiceTest {
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            Book actualBook = bookService.updateBook(bookDto, bookId);
+            Book actualBook = bookService.updateBook(createBookDto, bookId);
 
             assertThat(actualBook).isNotNull();
 
             verify(bookRepository).findById(bookId);
             verify(bookRepository).save(any(Book.class));
-            verify(bookMapper).updateEntityFromDto(bookDto,expectBook);
+            verify(bookMapper).updateEntityFromDto(createBookDto,expectBook);
         }
         @Test
         @DisplayName("Should throw BookNotFoundException book is not found on update")
@@ -360,7 +360,7 @@ class BookServiceTest {
 
             when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> bookService.updateBook(bookDto, nonExistingBookId))
+            assertThatThrownBy(() -> bookService.updateBook(createBookDto, nonExistingBookId))
                     .isInstanceOf(BookNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("Id")
@@ -374,7 +374,7 @@ class BookServiceTest {
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            Book actualBook = bookService.updateBook(bookDto, bookId);
+            Book actualBook = bookService.updateBook(createBookDto, bookId);
 
             assertThat(actualBook.getIsbn()).isEqualTo(expectBook.getIsbn());
             assertThat(actualBook.getTitle()).isEqualTo(expectBook.getTitle());
@@ -393,7 +393,7 @@ class BookServiceTest {
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            bookService.updateBook(bookDto, bookId);
+            bookService.updateBook(createBookDto, bookId);
 
             ArgumentCaptor<Book> bookCaptor = ArgumentCaptor.forClass(Book.class);
 

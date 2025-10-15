@@ -1,6 +1,6 @@
 package com.bookstore.management.book.controller;
 
-import com.bookstore.management.book.dto.AuthorDto;
+import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.service.AuthorService;
 import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
@@ -148,7 +148,7 @@ class AuthorControllerTest {
         @Test
         @DisplayName("Should create author when valid data is provided")
         void shouldCreateAuthorWhenValidDataIsProvided() throws Exception{
-            AuthorDto authorDto = AuthorDto.builder()
+            CreateAuthorDTO createAuthorDto = CreateAuthorDTO.builder()
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
@@ -164,16 +164,16 @@ class AuthorControllerTest {
                     .biography("famous novelist")
                     .build();
 
-            when(authorService.createAuthor(any(AuthorDto.class))).thenReturn(createdAuthor);
+            when(authorService.createAuthor(any(CreateAuthorDTO.class))).thenReturn(createdAuthor);
 
             mockMvc.perform(post("/api/authors")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(authorDto)))
+                            .content(objectMapper.writeValueAsString(createAuthorDto)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(1L));
 
-            verify(authorService).createAuthor(any(AuthorDto.class));
+            verify(authorService).createAuthor(any(CreateAuthorDTO.class));
 
         }
 
@@ -181,18 +181,18 @@ class AuthorControllerTest {
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception {
 
-            AuthorDto invalidAuthorDto = new AuthorDto();
+            CreateAuthorDTO invalidCreateAuthorDTO = new CreateAuthorDTO();
 
             mockMvc.perform(post("/api/authors")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(invalidAuthorDto)))
+                            .content(objectMapper.writeValueAsString(invalidCreateAuthorDTO)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 400 when name is missing")
         void shouldReturn400WhenNameIsMissing() throws Exception {
 
-            AuthorDto invalidAuthorDto = AuthorDto.builder()
+            CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder()
                     .nationality("American")
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
@@ -200,7 +200,7 @@ class AuthorControllerTest {
 
             mockMvc.perform(post("/api/authors")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidAuthorDto)))
+                    .content(objectMapper.writeValueAsString(invalidCreateAuthorDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -208,14 +208,14 @@ class AuthorControllerTest {
         @DisplayName("Should return 400 when nationality is missing")
         void shouldReturn400WhenNationalityIsMissing() throws Exception {
 
-            AuthorDto invalidAuthorDto = AuthorDto.builder()
+            CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder()
                     .name("John Doe")
                     .gender(Author.Gender.MALE)
                     .biography("famous novelist")
                     .build();
             mockMvc.perform(post("/api/authors")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidAuthorDto)))
+                    .content(objectMapper.writeValueAsString(invalidCreateAuthorDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -227,7 +227,7 @@ class AuthorControllerTest {
         @DisplayName("Should update author when valid data is provided")
         void shouldUpdateAuthorWhenValidDataIsProvided() throws Exception {
             Long authorId = 1L;
-            AuthorDto authorDto = AuthorDto.builder()
+            CreateAuthorDTO createAuthorDto = CreateAuthorDTO.builder()
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
@@ -243,33 +243,33 @@ class AuthorControllerTest {
                     .biography("Updated biography")
                     .build();
 
-            when(authorService.updateAuthor(any(AuthorDto.class),eq(authorId))).thenReturn(updatedAuthor);
+            when(authorService.updateAuthor(any(CreateAuthorDTO.class),eq(authorId))).thenReturn(updatedAuthor);
 
             mockMvc.perform(put("/api/authors/{id}", authorId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(authorDto)))
+                    .content(objectMapper.writeValueAsString(createAuthorDto)))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(authorId));
 
-            verify(authorService).updateAuthor(any(AuthorDto.class),eq(authorId));
+            verify(authorService).updateAuthor(any(CreateAuthorDTO.class),eq(authorId));
         }
         @Test
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception{
             Long authorId = 1L;
-            AuthorDto invalidAuthorDto = new AuthorDto();
+            CreateAuthorDTO invalidCreateAuthorDTO = new CreateAuthorDTO();
 
             mockMvc.perform(put("/api/authors/{id}", authorId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidAuthorDto)))
+                    .content(objectMapper.writeValueAsString(invalidCreateAuthorDTO)))
                     .andExpect(status().isBadRequest());
         }
         @Test
         @DisplayName("Should return 404 when trying to update non-existent author")
         void shouldReturn404WhenTryingToUpdateNonExistentAuthor() throws Exception {
             Long nonExistingAuthorId = 999L;
-            AuthorDto authorDto = AuthorDto.builder()
+            CreateAuthorDTO createAuthorDto = CreateAuthorDTO.builder()
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
@@ -277,18 +277,18 @@ class AuthorControllerTest {
                     .biography("Updated biography")
                     .build();
 
-            when(authorService.updateAuthor(any(AuthorDto.class),eq(nonExistingAuthorId))).thenThrow(AuthorNotFoundException.class);
+            when(authorService.updateAuthor(any(CreateAuthorDTO.class),eq(nonExistingAuthorId))).thenThrow(AuthorNotFoundException.class);
 
             mockMvc.perform(put("/api/authors/{id}", nonExistingAuthorId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(authorDto)))
+                    .content(objectMapper.writeValueAsString(createAuthorDto)))
                     .andExpect(status().isNotFound());
         }
         @Test
         @DisplayName("Should return 400 when invalid ID format is provided")
         void shouldReturn400WhenInvalidIdFormatIsProvided() throws Exception {
             String invalidId = "invalid";
-            AuthorDto authorDto = AuthorDto.builder()
+            CreateAuthorDTO createAuthorDto = CreateAuthorDTO.builder()
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
@@ -298,7 +298,7 @@ class AuthorControllerTest {
 
             mockMvc.perform(put("/api/authors/{id}", invalidId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(authorDto)))
+                    .content(objectMapper.writeValueAsString(createAuthorDto)))
                     .andExpect(status().isBadRequest());
         }
     }
