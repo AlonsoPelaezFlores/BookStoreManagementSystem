@@ -276,9 +276,9 @@ This is a personal learning project but suggestions and feedback are welcome!
 If you have ideas for improvements:
 
 - Fork the repository
-- Create a feature branch (git checkout -b feature/AmazingFeature)
+- Create a feature branch (git checkout -b )
 - Commit your changes (git commit -m )
-- Push to the branch (git push origin)
+- Push to the branch (git push origin )
 - Open a Pull Request
 
 <!--## 📝 License
@@ -291,3 +291,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **LinkedIn:** [Alonso Pelaez](https://www.linkedin.com/in/calonsopf/)  
 **Email:** alonso18pf@gmail.com
  
+
