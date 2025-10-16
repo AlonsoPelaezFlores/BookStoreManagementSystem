@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
@@ -76,6 +77,28 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ValidationErrorResponse> handleMethodValidationErrors(
+            HandlerMethodValidationException ex, HttpServletRequest request){
+
+        log.error("Method Validation error: {}", ex.getMessage());
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getAllErrors().forEach(error ->
+                errors.put(error.getDefaultMessage(), error.getDefaultMessage()));
+
+        ValidationErrorResponse response = ValidationErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Validation Failed")
+                .message("Invalid input data")
+                .path(request.getRequestURI())
+                .validationErrors(errors)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
