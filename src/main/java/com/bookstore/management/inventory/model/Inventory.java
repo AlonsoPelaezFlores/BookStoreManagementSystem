@@ -47,6 +47,10 @@ public class Inventory {
     @Builder.Default
     private Boolean activeState = true ;
 
+    @Column(name = "alert_low_stock", nullable = false)
+    @Builder.Default
+    private Boolean alertLowStock = false;
+
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
     private List<InventoryMovement> movements;
 }
