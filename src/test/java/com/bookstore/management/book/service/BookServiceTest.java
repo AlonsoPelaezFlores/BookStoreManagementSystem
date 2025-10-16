@@ -6,8 +6,7 @@ import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.repository.AuthorRepository;
 import com.bookstore.management.book.repository.BookRepository;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
-import com.bookstore.management.shared.exception.custom.BookNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -152,7 +151,7 @@ class BookServiceTest {
             when(bookRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.findById(nonExistentId))
-                    .isInstanceOf(BookNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("888");
@@ -203,7 +202,7 @@ class BookServiceTest {
             when(bookRepository.findBookByIsbn(nonExistentISBN)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.findByISBN(nonExistentISBN))
-                    .isInstanceOf(BookNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("ISBN")
                     .hasMessageContaining("1234678990");
@@ -216,7 +215,7 @@ class BookServiceTest {
             when(bookRepository.findBookByIsbn(nonExistentISBN)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.findByISBN(nonExistentISBN))
-            .isInstanceOf(BookNotFoundException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("ISBN")
                     .hasMessageContaining("null");
@@ -361,7 +360,7 @@ class BookServiceTest {
             when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> bookService.updateBook(createBookDto, nonExistingBookId))
-                    .isInstanceOf(BookNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -433,7 +432,7 @@ class BookServiceTest {
             when(bookRepository.existsById(nonExistingBookId)).thenReturn(false);
 
             assertThatThrownBy(() -> bookService.deleteById(nonExistingBookId))
-                    .isInstanceOf(BookNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -545,7 +544,7 @@ class BookServiceTest {
             when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> bookService.updateAuthor(nonExistingBookId,2L))
-                    .isInstanceOf(BookNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Book")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -563,7 +562,7 @@ class BookServiceTest {
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
             assertThatThrownBy(()-> bookService.updateAuthor(bookId,nonExistingAuthorId))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -663,7 +662,7 @@ class BookServiceTest {
             when(authorRepository.existsById(authorIdNotExist)).thenReturn(false);
 
             assertThatThrownBy(()-> bookService.booksByAuthorId(authorIdNotExist))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -681,7 +680,7 @@ class BookServiceTest {
             when(authorRepository.existsById(nullAuthorId)).thenReturn(false);
 
             assertThatThrownBy(()-> bookService.booksByAuthorId(nullAuthorId))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("null");

@@ -3,7 +3,7 @@ package com.bookstore.management.book.controller;
 import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.service.AuthorService;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AuthorController.class)
@@ -126,7 +127,7 @@ class AuthorControllerTest {
         void shouldReturn404WhenAuthorWithIdDoesNotExist() throws Exception{
             Long nonExistingAuthorId = 999L;
 
-            when(authorService.findById(nonExistingAuthorId)).thenThrow(AuthorNotFoundException.class);
+            when(authorService.findById(nonExistingAuthorId)).thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(get("/api/authors/{id}", nonExistingAuthorId))
                     .andExpect(status().isNotFound());
@@ -181,7 +182,7 @@ class AuthorControllerTest {
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception {
 
-            CreateAuthorDTO invalidCreateAuthorDTO = new CreateAuthorDTO();
+            CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder().build();
 
             mockMvc.perform(post("/api/authors")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -258,7 +259,7 @@ class AuthorControllerTest {
         @DisplayName("Should return 400 when invalid data is provided")
         void shouldReturn400WhenInvalidDataIsProvided() throws Exception{
             Long authorId = 1L;
-            CreateAuthorDTO invalidCreateAuthorDTO = new CreateAuthorDTO();
+            CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder().build();
 
             mockMvc.perform(put("/api/authors/{id}", authorId)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -277,7 +278,7 @@ class AuthorControllerTest {
                     .biography("Updated biography")
                     .build();
 
-            when(authorService.updateAuthor(any(CreateAuthorDTO.class),eq(nonExistingAuthorId))).thenThrow(AuthorNotFoundException.class);
+            when(authorService.updateAuthor(any(CreateAuthorDTO.class),eq(nonExistingAuthorId))).thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(put("/api/authors/{id}", nonExistingAuthorId)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -323,7 +324,7 @@ class AuthorControllerTest {
         void shouldReturn404WhenTryingToDeleteNonExistentAuthor() throws Exception {
             Long nonExistingAuthorId = 999L;
 
-            doThrow(AuthorNotFoundException.class).when(authorService).deleteAuthorById(nonExistingAuthorId);
+            doThrow(ResourceNotFoundException.class).when(authorService).deleteAuthorById(nonExistingAuthorId);
 
 
             mockMvc.perform(delete("/api/authors/{id}", nonExistingAuthorId))

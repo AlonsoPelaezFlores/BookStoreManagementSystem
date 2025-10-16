@@ -34,7 +34,7 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody @Valid CreateAuthorDTO createAuthorDto) {
+    public ResponseEntity<?> save(@Valid @RequestBody CreateAuthorDTO createAuthorDto) {
         Author author = authorService.createAuthor(createAuthorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthorResponseDTO(author.getId()));
     }
@@ -44,7 +44,7 @@ public class AuthorController {
         return ResponseEntity.ok("Author Deleted Successfully");
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody @Valid CreateAuthorDTO createAuthorDto, @PathVariable @Positive Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody CreateAuthorDTO createAuthorDto, @PathVariable @Positive Long id) {
         Author author = authorService.updateAuthor(createAuthorDto, id);
         return ResponseEntity.ok(new AuthorResponseDTO(author.getId()));
 
