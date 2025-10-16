@@ -4,8 +4,7 @@ import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.service.BookService;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
-import com.bookstore.management.shared.exception.custom.BookNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -167,7 +166,7 @@ public class BookControllerTest {
             Long nonExistentId = 1L;
 
             when(bookService.findById(nonExistentId))
-                    .thenThrow(BookNotFoundException.class);
+                    .thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(get("/api/books/{id}", nonExistentId))
                     .andExpect(status().isNotFound());
@@ -231,7 +230,7 @@ public class BookControllerTest {
         void shouldReturn404WhenBookWithIsbnDoesNotExist() throws Exception {
             String nonExistingIsbn = "978-84-322-1755-4";
 
-            when(bookService.findByISBN(nonExistingIsbn)).thenThrow(BookNotFoundException.class);
+            when(bookService.findByISBN(nonExistingIsbn)).thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(get("/api/books/isbn/{isbn}", nonExistingIsbn))
                     .andExpect(status().isNotFound());
@@ -596,7 +595,7 @@ public class BookControllerTest {
             updatedBook.setId(nonExistingBookId);
 
             when(bookService.updateAuthor(nonExistingBookId,newAuthorId))
-                    .thenThrow(BookNotFoundException.class);
+                    .thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(patch("/api/books/{id}/author/{newAuthorId}", nonExistingBookId, newAuthorId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -615,7 +614,7 @@ public class BookControllerTest {
             updatedBook.setId(bookId);
 
             when(bookService.updateAuthor(bookId,nonExistingAuthorId))
-                    .thenThrow(AuthorNotFoundException.class);
+                    .thenThrow(ResourceNotFoundException.class);
 
             mockMvc.perform(patch("/api/books/{id}/author/{newAuthorId}", bookId, nonExistingAuthorId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -660,7 +659,7 @@ public class BookControllerTest {
         @DisplayName("Should return 404 when trying to delete non-existent book")
         void shouldReturn404WhenTryingToDeleteNonExistentBook() throws Exception {
             Long nonExistentId = 999L;
-            doThrow(new BookNotFoundException("Book","Id","999L"))
+            doThrow(new ResourceNotFoundException("Book","Id","999L"))
                     .when(bookService).deleteById(nonExistentId);
 
             mockMvc.perform(delete("/api/books/{id}", nonExistentId))

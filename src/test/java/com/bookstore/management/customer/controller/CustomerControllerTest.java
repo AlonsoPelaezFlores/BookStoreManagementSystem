@@ -3,7 +3,7 @@ package com.bookstore.management.customer.controller;
 import com.bookstore.management.customer.dto.CustomerDto;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
-import com.bookstore.management.shared.exception.custom.CustomerNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -131,7 +131,7 @@ class CustomerControllerTest {
 
             Long customerId = 999L;
             when(customerService.findById(customerId))
-                    .thenThrow(new CustomerNotFoundException("Customer", "Id", customerId));
+                    .thenThrow(new ResourceNotFoundException("Customer", "Id", customerId));
 
             mockMvc.perform(get("/api/customers/{id}", customerId))
                     .andExpect(status().isNotFound());
@@ -227,7 +227,7 @@ class CustomerControllerTest {
 
             Long customerId = 999L;
             when(customerService.update(any(CustomerDto.class), eq(customerId)))
-                    .thenThrow(new CustomerNotFoundException("Customer", "Id", customerId));
+                    .thenThrow(new ResourceNotFoundException("Customer", "Id", customerId));
 
             mockMvc.perform(put("/api/customers/{id}", customerId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -277,7 +277,7 @@ class CustomerControllerTest {
         void shouldReturnNotFoundWhenCustomerToDeleteDoesNotExist() throws Exception {
 
             Long customerId = 999L;
-            doThrow(new CustomerNotFoundException("Customer", "Id", customerId))
+            doThrow(new ResourceNotFoundException("Customer", "Id", customerId))
                     .when(customerService).deleteById(customerId);
 
             mockMvc.perform(delete("/api/customers/{id}", customerId))

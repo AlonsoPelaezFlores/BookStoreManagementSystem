@@ -4,7 +4,7 @@ import com.bookstore.management.customer.dto.CustomerDto;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
-import com.bookstore.management.shared.exception.custom.CustomerNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -109,7 +109,7 @@ class CustomerServiceTest {
             when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> customerService.findById(customerId))
-                    .isInstanceOf(CustomerNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Customer")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -184,7 +184,7 @@ class CustomerServiceTest {
             when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> customerService.update(customerDto, customerId))
-                    .isInstanceOf(CustomerNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Customer")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -219,7 +219,7 @@ class CustomerServiceTest {
             when(customerRepository.existsById(customerId)).thenReturn(false);
 
             assertThatThrownBy(() -> customerService.deleteById(customerId))
-                    .isInstanceOf(CustomerNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Customer")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");

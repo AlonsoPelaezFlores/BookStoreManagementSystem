@@ -6,8 +6,8 @@ import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.repository.AuthorRepository;
 import com.bookstore.management.book.repository.BookRepository;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
-import com.bookstore.management.shared.exception.custom.BookNotFoundException;
+import com.bookstore.management.shared.exception.custom.DuplicateEntityException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,15 +31,15 @@ public class BookService {
         return bookRepository.findAll();
     }
     public Book findById(Long id) {
-        return bookRepository.findById(id).orElseThrow(()-> new BookNotFoundException("Book","Id",id));
+        return bookRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Book","Id",id));
     }
     public Book findByISBN(String isbn) {
         return bookRepository.findBookByIsbn(isbn).
-                orElseThrow(()-> new BookNotFoundException("Book", "ISBN", isbn));
+                orElseThrow(()-> new ResourceNotFoundException("Book", "ISBN", isbn));
     }
     public List<Book> booksByAuthorId(Long authorId) {
         if (!authorRepository.existsById(authorId)) {
-            throw new AuthorNotFoundException("Author","Id",authorId);
+            throw new ResourceNotFoundException("Author","Id",authorId);
         }
         return bookRepository.findBooksByAuthorId(authorId);
     }
@@ -47,7 +47,7 @@ public class BookService {
     public Book createBook(CreateBookDTO createBookDto) {
 
         if(bookRepository.existsBookByIsbn(createBookDto.getIsbn())){
-            throw new IllegalArgumentException("Book already exists");
+            throw new DuplicateEntityException("Book","Isbn",createBookDto.getIsbn());
         }
 
         Book book = bookMapper.toEntity(createBookDto);
@@ -60,7 +60,7 @@ public class BookService {
     public Book updateBook(CreateBookDTO createBookDto, Long id){
         Book existingBook = bookRepository
                 .findById(id)
-                .orElseThrow(()-> new BookNotFoundException("Book", "Id", id));
+                .orElseThrow(()-> new ResourceNotFoundException("Book", "Id", id));
 
         bookMapper.updateEntityFromDto(createBookDto, existingBook);
 
@@ -71,7 +71,7 @@ public class BookService {
     @Transactional
     public void deleteById(Long id){
         if(!bookRepository.existsById(id)){
-            throw new BookNotFoundException("Book", "Id", id);
+            throw new ResourceNotFoundException("Book", "Id", id);
         }
         log.info("Book deleted with id: {}", id);
         bookRepository.deleteById(id);
@@ -80,7 +80,7 @@ public class BookService {
     public Book updateAuthor(Long bookId, Long newAuthorId){
         Book existingBook = bookRepository
                 .findById(bookId)
-                .orElseThrow(()-> new BookNotFoundException("Book", "Id", bookId));
+                .orElseThrow(()-> new ResourceNotFoundException("Book", "Id", bookId));
 
         if (existingBook.getAuthor()!= null && newAuthorId.equals(existingBook.getAuthor().getId())) {
             log.info("Book already has the same author with id: {}", newAuthorId);
@@ -88,7 +88,7 @@ public class BookService {
         }
         Author newAuthor = authorRepository
                 .findById(newAuthorId)
-                        .orElseThrow(()-> new AuthorNotFoundException("Author", "Id", newAuthorId));
+                        .orElseThrow(()-> new ResourceNotFoundException("Author", "Id", newAuthorId));
 
         existingBook.setAuthor(newAuthor);
 

@@ -4,7 +4,7 @@ import com.bookstore.management.customer.dto.CustomerDto;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
-import com.bookstore.management.shared.exception.custom.CustomerNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class CustomerService {
     }
     public Customer findById(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer","Id",id));
+                .orElseThrow(()-> new ResourceNotFoundException("Customer","Id",id));
     }
     @Transactional
     public Customer create(CustomerDto customerDto) {
@@ -40,7 +40,7 @@ public class CustomerService {
     @Transactional
     public Customer update(CustomerDto customerDto, Long id) {
         Customer existingCustomer = customerRepository.findById(id)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer","Id",id));
+                .orElseThrow(()-> new ResourceNotFoundException("Customer","Id",id));
 
         customerMapper.updateEntityFromDto(customerDto, existingCustomer);
 
@@ -51,7 +51,7 @@ public class CustomerService {
     @Transactional
     public void deleteById(Long id) {
         if(!customerRepository.existsById(id)) {
-           throw new CustomerNotFoundException("Customer","Id",id);
+           throw new ResourceNotFoundException("Customer","Id",id);
         }
         log.info("Deleting customer with id: {}", id);
         customerRepository.deleteById(id);

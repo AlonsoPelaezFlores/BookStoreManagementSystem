@@ -4,7 +4,7 @@ import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.mapper.AuthorMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.repository.AuthorRepository;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -99,7 +99,7 @@ class AuthorServiceTest {
             when(authorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> authorService.findById(nonExistentId))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("888");
@@ -229,7 +229,7 @@ class AuthorServiceTest {
             when(authorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(()-> authorService.updateAuthor(createAuthorDto, nonExistentId))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
@@ -296,7 +296,7 @@ class AuthorServiceTest {
             when(authorRepository.existsById(nonExistentId)).thenReturn(false);
 
             assertThatThrownBy(()-> authorService.deleteAuthorById(nonExistentId))
-                    .isInstanceOf(AuthorNotFoundException.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");

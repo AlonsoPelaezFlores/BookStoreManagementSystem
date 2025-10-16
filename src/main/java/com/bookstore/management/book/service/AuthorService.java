@@ -4,7 +4,7 @@ import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.mapper.AuthorMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.repository.AuthorRepository;
-import com.bookstore.management.shared.exception.custom.AuthorNotFoundException;
+import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class AuthorService {
 
     public Author findById(long id){
         return authorRepository.findById(id)
-                .orElseThrow(()-> new AuthorNotFoundException("Author","Id",id));
+                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",id));
     }
 
     @Transactional
@@ -43,7 +43,7 @@ public class AuthorService {
     public void deleteAuthorById(Long id){
 
         if (!authorRepository.existsById(id)){
-            throw new AuthorNotFoundException("Author", "Id", id);
+            throw new ResourceNotFoundException("Author", "Id", id);
         }
         log.info("Deleting author with id: {}", id);
         authorRepository.deleteById(id);
@@ -52,7 +52,7 @@ public class AuthorService {
     @Transactional
     public Author updateAuthor(CreateAuthorDTO createAuthorDto, Long id){
         Author existingAuthor = authorRepository.findById(id)
-                .orElseThrow(()-> new AuthorNotFoundException("Author","Id",id));
+                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",id));
 
         authorMapper.updateEntityFromDto(createAuthorDto, existingAuthor);
 
