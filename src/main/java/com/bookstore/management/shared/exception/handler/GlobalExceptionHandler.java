@@ -1,9 +1,7 @@
 package com.bookstore.management.shared.exception.handler;
 
-import com.bookstore.management.shared.exception.custom.BusinessException;
-import com.bookstore.management.shared.exception.custom.DuplicateEntityException;
+import com.bookstore.management.shared.exception.custom.*;
 import com.bookstore.management.shared.exception.response.ErrorResponse;
-import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.bookstore.management.shared.exception.response.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -158,13 +156,13 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .code("Business Rule Violation")
+                .status(ex.getStatus().value())
+                .code(ex.getStatus().getReasonPhrase())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
