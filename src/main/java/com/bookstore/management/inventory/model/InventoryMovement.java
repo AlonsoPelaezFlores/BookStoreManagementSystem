@@ -38,7 +38,8 @@ public class InventoryMovement {
     private String description;
 
     @Column(name = "create_by", nullable = false, length = 100, updatable = false)
-    private String createBy;
+    @Builder.Default
+    private String createBy ="SYSTEM";
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

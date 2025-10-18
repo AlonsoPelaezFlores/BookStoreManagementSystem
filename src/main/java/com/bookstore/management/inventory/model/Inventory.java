@@ -3,8 +3,7 @@ package com.bookstore.management.inventory.model;
 import com.bookstore.management.book.model.Book;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class Inventory {
     @Builder.Default
     private Integer stockMax = 9999;
 
-    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
