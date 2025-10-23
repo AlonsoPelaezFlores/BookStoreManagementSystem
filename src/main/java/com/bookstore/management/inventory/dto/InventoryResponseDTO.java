@@ -13,6 +13,6 @@ public record InventoryResponseDTO(
     Integer stockMin,
     Integer stockMax,
     LocalDateTime lastUpdate,
-    Boolean activeState,
+    Boolean activeStatus,
     Integer realStockAvailable
 ){}

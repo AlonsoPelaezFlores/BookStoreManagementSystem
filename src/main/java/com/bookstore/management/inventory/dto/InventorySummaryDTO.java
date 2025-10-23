@@ -6,5 +6,5 @@ public record InventorySummaryDTO(
         Long id,
         BookSummaryDTO book,
         Integer quantityAvailable,
-        Boolean activeState
+        Boolean activeStatus
 ){}

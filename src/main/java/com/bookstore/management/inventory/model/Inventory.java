@@ -42,9 +42,9 @@ public class Inventory {
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
-    @Column(name = "active_state", nullable = false)
+    @Column(name = "active_status", nullable = false)
     @Builder.Default
-    private Boolean activeState = true ;
+    private Boolean activeStatus = true ;
 
     @Column(name = "alert_low_stock", nullable = false)
     @Builder.Default
