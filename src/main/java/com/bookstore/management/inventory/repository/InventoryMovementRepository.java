@@ -16,20 +16,17 @@ import java.time.LocalDateTime;
 public interface InventoryMovementRepository extends JpaRepository<InventoryMovement, Long> {
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
-    @Query("SELECT im FROM InventoryMovement as im WHERE im.inventory.id = :inventoryId ORDER BY im.createdAt DESC")
+    @Query("SELECT im FROM InventoryMovement as im WHERE im.inventory.id = :inventoryId")
     Page<InventoryMovement> findAllByInventoryId(@Param("inventoryId")Long inventoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
-    @Query("SELECT im FROM InventoryMovement as im WHERE im.createdAt BETWEEN :startDate AND :endDate ORDER BY im.createdAt DESC")
     Page<InventoryMovement> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate,
                                                    @Param("endDate") LocalDateTime endDate,
                                                    Pageable pageable);
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
-    @Query("SELECT im FROM InventoryMovement as im WHERE im.movementType = :movementType ORDER BY im.createdAt DESC")
     Page<InventoryMovement> findByMovementType(@Param("movementType") MovementType movementType, Pageable pageable);
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
-    @Query("SELECT im FROM InventoryMovement as im ORDER BY im.createdAt DESC" )
-    Page<InventoryMovement> findLastNMovements(Pageable pageable);
+    Page<InventoryMovement> findAllBy(Pageable pageable);
 }
