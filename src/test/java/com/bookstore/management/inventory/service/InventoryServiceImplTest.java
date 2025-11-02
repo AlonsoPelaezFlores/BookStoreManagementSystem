@@ -154,7 +154,7 @@ public class InventoryServiceImplTest {
         void shouldReturnInventoryResponseWhenBookExistsInInventory(){
 
             Long bookId = 1L;
-            when(inventoryRepository.findById(bookId)).thenReturn(Optional.of(inventory));
+            when(inventoryRepository.findByBookId(bookId)).thenReturn(Optional.of(inventory));
 
             InventoryResponseDTO result = inventoryService.findByBookId(bookId);
 
@@ -164,7 +164,7 @@ public class InventoryServiceImplTest {
             assertThat(result.stockMin()).isEqualTo(10);
             assertThat(result.stockMax()).isEqualTo(500);
             assertThat(result.activeStatus()).isTrue();
-            verify(inventoryRepository, times(1)).findById(bookId);
+            verify(inventoryRepository, times(1)).findByBookId(bookId);
 
         }
 
@@ -174,7 +174,7 @@ public class InventoryServiceImplTest {
 
             Long bookId = 999L;
 
-            when(inventoryRepository.findById(bookId)).thenReturn(Optional.empty());
+            when(inventoryRepository.findByBookId(bookId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> inventoryService.findByBookId(bookId))
                     .isInstanceOf(ResourceNotFoundException.class)
@@ -182,7 +182,7 @@ public class InventoryServiceImplTest {
                     .hasMessageContaining("Id")
                     .hasMessageContaining(bookId.toString());
 
-            verify(inventoryRepository, times(1)).findById(bookId);
+            verify(inventoryRepository, times(1)).findByBookId(bookId);
         }
     }
     @Nested
@@ -1318,7 +1318,6 @@ public class InventoryServiceImplTest {
             verify(inventoryMovementRepository, never()).save(any(InventoryMovement.class));
         }
     }
-
     @Nested
     @DisplayName("Disable By Id Tests")
     class disableById {

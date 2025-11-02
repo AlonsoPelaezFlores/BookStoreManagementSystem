@@ -36,8 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public InventoryResponseDTO findByBookId(Long bookId) {
-        return inventoryMapper.toInventoryResponseDTO(inventoryRepository
-                .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book","Id",bookId)));
+        return inventoryMapper.toInventoryResponseDTO(findByBookIdOrThrow(bookId));
     }
 
     private Inventory findByBookIdOrThrow(Long bookId) {
