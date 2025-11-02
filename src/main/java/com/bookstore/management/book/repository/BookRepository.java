@@ -1,7 +1,9 @@
 package com.bookstore.management.book.repository;
 
 import com.bookstore.management.book.model.Book;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +11,11 @@ import java.util.Optional;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    List<Book> findBooksByAuthorId(Long id);
+    @EntityGraph(attributePaths = {"author"})
+    List<Book> findBooksByAuthorId(@Param("authorId") Long authorId);
 
-    Optional<Book> findBookByIsbn(String isbn);
-    List<Book> findBookByTitleContainingIgnoreCase(String title);
-    boolean existsBookByIsbn(String isbn);
+    Optional<Book> findBookByIsbn(@Param("isbn") String isbn);
+    List<Book> findBookByTitleContainingIgnoreCase(@Param("title") String title);
+
+    boolean existsBookByIsbn(@Param("isbn") String isbn);
 }
