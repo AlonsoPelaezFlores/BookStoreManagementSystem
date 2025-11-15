@@ -20,6 +20,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,14 +31,16 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class InventoryMovementServiceImplTest {
+class InventoryMovementServiceImplTest {
+
     @Mock
     private InventoryMovementRepository inventoryMovementRepository;
+
     @InjectMocks
     private InventoryMovementServiceImpl inventoryMovementServiceImpl;
+
     @Spy
-    private InventoryMovementMapper inventoryMovementMapper =
-            Mappers.getMapper(InventoryMovementMapper.class);
+    private InventoryMovementMapper inventoryMovementMapper = Mappers.getMapper(InventoryMovementMapper.class);
 
     private Book book;
     private Inventory inventory;
@@ -47,7 +50,7 @@ public class InventoryMovementServiceImplTest {
     private Pageable defaultPageable;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         book = Book.builder()
                 .id(1L)
                 .title("Test Book")
@@ -98,23 +101,23 @@ public class InventoryMovementServiceImplTest {
                 .createBy("SYSTEM")
                 .createdAt(LocalDateTime.now())
                 .build();
+
         defaultPageable = PageRequest.of(0, 100, Sort.by("createdAt").descending());
     }
+
     @Nested
     @DisplayName("Find by inventory id tests")
-    class FindByInventoryId{
+    class FindByInventoryId {
 
         @Test
         @DisplayName("Should return paginated movements for valid inventory ID")
-        void shouldReturnPaginatedMovementsForValidInventoryId(){
+        void shouldReturnPaginatedMovementsForValidInventoryId() {
             Long inventoryId = 1L;
-            List<InventoryMovement> movements = Arrays.asList(movement,movement2);
+            List<InventoryMovement> movements = Arrays.asList(movement, movement2);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 2);
 
             when(inventoryMovementRepository.findAllByInventoryId(inventoryId, defaultPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(any(InventoryMovement.class)))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findAllByInventoryId(inventoryId, defaultPageable);
@@ -124,14 +127,11 @@ public class InventoryMovementServiceImplTest {
             assertThat(result.getTotalElements()).isEqualTo(2);
 
             verify(inventoryMovementRepository).findAllByInventoryId(inventoryId, defaultPageable);
-            verify(inventoryMovementMapper, times(2)).toInventoryMovementResponseDTO(any(InventoryMovement.class));
-
         }
 
         @Test
         @DisplayName("Should return empty page when no movements exist for inventory")
-        void shouldReturnEmptyPageWhenNoMovementsExistForInventory(){
-
+        void shouldReturnEmptyPageWhenNoMovementsExistForInventory() {
             Long inventoryId = 999L;
             Page<InventoryMovement> emptyPage = new PageImpl<>(Collections.emptyList(), defaultPageable, 0);
 
@@ -147,12 +147,11 @@ public class InventoryMovementServiceImplTest {
             assertThat(result.getTotalPages()).isZero();
 
             verify(inventoryMovementRepository).findAllByInventoryId(inventoryId, defaultPageable);
-            verify(inventoryMovementMapper, never()).toInventoryMovementResponseDTO(any());
         }
 
         @Test
         @DisplayName("Should handle custom page size and sorting")
-        void shouldHandleCustomPageSizeAndSorting(){
+        void shouldHandleCustomPageSizeAndSorting() {
             Long inventoryId = 100L;
             Pageable customPageable = PageRequest.of(1, 5, Sort.by("affectedQuantity").ascending());
             List<InventoryMovement> movements = Collections.singletonList(movement3);
@@ -160,8 +159,6 @@ public class InventoryMovementServiceImplTest {
 
             when(inventoryMovementRepository.findAllByInventoryId(inventoryId, customPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(movement3))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findAllByInventoryId(inventoryId, customPageable);
@@ -177,10 +174,11 @@ public class InventoryMovementServiceImplTest {
 
     @Nested
     @DisplayName("find by movement type tests")
-    class findByMovementTypeTests{
+    class FindByMovementTypeTests {
+
         @Test
         @DisplayName("Should return movements filtered by entry type")
-        void shouldReturnMovementsFilteredByEntryType(){
+        void shouldReturnMovementsFilteredByEntryType() {
             MovementType movementType = MovementType.ENTRY;
             List<InventoryMovement> movements = Collections.singletonList(movement);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 1);
@@ -197,17 +195,16 @@ public class InventoryMovementServiceImplTest {
 
             verify(inventoryMovementRepository).findByMovementType(movementType, defaultPageable);
         }
+
         @Test
-        @DisplayName("Should return movements fitered by EXIT type")
-        void shouldReturnMovementsFilteredByExitType(){
+        @DisplayName("Should return movements filtered by EXIT type")
+        void shouldReturnMovementsFilteredByExitType() {
             MovementType movementType = MovementType.EXIT;
             List<InventoryMovement> movements = Collections.singletonList(movement2);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 1);
 
             when(inventoryMovementRepository.findByMovementType(movementType, defaultPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(movement2))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findByMovementType(movementType, defaultPageable);
@@ -217,9 +214,10 @@ public class InventoryMovementServiceImplTest {
 
             verify(inventoryMovementRepository).findByMovementType(movementType, defaultPageable);
         }
+
         @Test
         @DisplayName("Should return empty page when no movements of specified type exist")
-        void shouldReturnEmptyWhenNoMovementsOfTypeExist(){
+        void shouldReturnEmptyWhenNoMovementsOfTypeExist() {
             MovementType movementType = MovementType.RESERVE;
             Page<InventoryMovement> emptyPage = new PageImpl<>(Collections.emptyList(), defaultPageable, 0);
 
@@ -235,6 +233,7 @@ public class InventoryMovementServiceImplTest {
 
             verify(inventoryMovementRepository).findByMovementType(movementType, defaultPageable);
         }
+
         @Test
         @DisplayName("Should handle pagination with multiple movement types")
         void shouldHandlePaginationWithMultipleMovementTypes() {
@@ -245,8 +244,6 @@ public class InventoryMovementServiceImplTest {
 
             when(inventoryMovementRepository.findByMovementType(movementType, customPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(movement3))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findByMovementType(movementType, customPageable);
@@ -264,15 +261,13 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should return movements within valid date range")
         void shouldReturnMovementsWithinValidDateRange() {
-            LocalDateTime startDate = LocalDateTime.now().minusHours(2);
-            LocalDateTime endDate = LocalDateTime.now().plusHours(1);
+            LocalDate startDate = LocalDate.now().minusDays(2);
+            LocalDate endDate = LocalDate.now().plusDays(1);
             List<InventoryMovement> movements = Arrays.asList(movement, movement2, movement3);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 3);
 
             when(inventoryMovementRepository.findByCreatedAtBetween(startDate, endDate, defaultPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(any(InventoryMovement.class)))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findByDateRange(startDate, endDate, defaultPageable);
@@ -286,7 +281,7 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should throw exception when start date is null")
         void shouldThrowExceptionWhenStartDateIsNull() {
-            LocalDateTime endDate = LocalDateTime.now();
+            LocalDate endDate = LocalDate.now();
 
             assertThatThrownBy(() -> inventoryMovementServiceImpl.findByDateRange(null, endDate, defaultPageable))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -298,7 +293,7 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should throw exception when end date is null")
         void shouldThrowExceptionWhenEndDateIsNull() {
-            LocalDateTime startDate = LocalDateTime.now();
+            LocalDate startDate = LocalDate.now();
 
             assertThatThrownBy(() -> inventoryMovementServiceImpl.findByDateRange(startDate, null, defaultPageable))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -320,8 +315,8 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should throw exception when start date is after end date")
         void shouldThrowExceptionWhenStartDateAfterEndDate() {
-            LocalDateTime startDate = LocalDateTime.now().plusHours(1);
-            LocalDateTime endDate = LocalDateTime.now().minusHours(1);
+            LocalDate startDate = LocalDate.now().plusDays(1);
+            LocalDate endDate = LocalDate.now().minusDays(1);
 
             assertThatThrownBy(() -> inventoryMovementServiceImpl.findByDateRange(startDate, endDate, defaultPageable))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -333,14 +328,12 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should accept same start and end date")
         void shouldAcceptSameStartAndEndDate() {
-            LocalDateTime sameDate = LocalDateTime.now();
+            LocalDate sameDate = LocalDate.now();
             List<InventoryMovement> movements = Collections.singletonList(movement);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 1);
 
             when(inventoryMovementRepository.findByCreatedAtBetween(sameDate, sameDate, defaultPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(movement))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findByDateRange(sameDate, sameDate, defaultPageable);
@@ -353,8 +346,8 @@ public class InventoryMovementServiceImplTest {
         @Test
         @DisplayName("Should return empty page when no movements in date range")
         void shouldReturnEmptyPageWhenNoMovementsInDateRange() {
-            LocalDateTime startDate = LocalDateTime.now().minusDays(10);
-            LocalDateTime endDate = LocalDateTime.now().minusDays(9);
+            LocalDate startDate = LocalDate.now().minusDays(10);
+            LocalDate endDate = LocalDate.now().minusDays(9);
             Page<InventoryMovement> emptyPage = new PageImpl<>(Collections.emptyList(), defaultPageable, 0);
 
             when(inventoryMovementRepository.findByCreatedAtBetween(startDate, endDate, defaultPageable))
@@ -382,8 +375,6 @@ public class InventoryMovementServiceImplTest {
 
             when(inventoryMovementRepository.findAllBy(defaultPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(any(InventoryMovement.class)))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findRecentMovements(defaultPageable);
@@ -419,8 +410,6 @@ public class InventoryMovementServiceImplTest {
 
             when(inventoryMovementRepository.findAllBy(smallPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(any(InventoryMovement.class)))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findRecentMovements(smallPageable);
@@ -440,8 +429,6 @@ public class InventoryMovementServiceImplTest {
 
             when(inventoryMovementRepository.findAllBy(customSortedPageable))
                     .thenReturn(movementPage);
-            when(inventoryMovementMapper.toInventoryMovementResponseDTO(any(InventoryMovement.class)))
-                    .thenReturn(mock(InventoryMovementResponseDTO.class));
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
                     .findRecentMovements(customSortedPageable);

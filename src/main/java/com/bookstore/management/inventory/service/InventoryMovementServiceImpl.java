@@ -10,7 +10,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
     }
 
     @Override
-    public Page<InventoryMovementResponseDTO> findByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+    public Page<InventoryMovementResponseDTO> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         if (startDate == null || endDate == null) {
             throw new IllegalArgumentException("Dates cannot be null");
         }

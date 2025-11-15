@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Repository
 public interface InventoryMovementRepository extends JpaRepository<InventoryMovement, Long> {
@@ -20,8 +20,8 @@ public interface InventoryMovementRepository extends JpaRepository<InventoryMove
     Page<InventoryMovement> findAllByInventoryId(@Param("inventoryId")Long inventoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
-    Page<InventoryMovement> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate,
-                                                   @Param("endDate") LocalDateTime endDate,
+    Page<InventoryMovement> findByCreatedAtBetween(@Param("startDate") LocalDate startDate,
+                                                   @Param("endDate") LocalDate endDate,
                                                    Pageable pageable);
 
     @EntityGraph(attributePaths = {"inventory", "inventory.book"})
