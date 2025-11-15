@@ -5,12 +5,11 @@ import com.bookstore.management.inventory.model.MovementType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 public interface InventoryMovementService {
     Page<InventoryMovementResponseDTO> findAllByInventoryId(Long inventoryId, Pageable pageable);
     Page<InventoryMovementResponseDTO> findByMovementType(MovementType movementType, Pageable pageable);
-    Page<InventoryMovementResponseDTO> findByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Page<InventoryMovementResponseDTO> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
     Page<InventoryMovementResponseDTO> findRecentMovements(Pageable pageable);
 }
