@@ -3,7 +3,7 @@ package com.bookstore.management.inventory.controller;
 import com.bookstore.management.inventory.dto.InventoryMovementResponseDTO;
 import com.bookstore.management.inventory.dto.InventorySummaryDTO;
 import com.bookstore.management.inventory.model.MovementType;
-import com.bookstore.management.inventory.service.InventoryMovementService;
+import com.bookstore.management.inventory.service.InventoryMovementServiceImpl;
 import com.bookstore.management.shared.exception.handler.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(InventoryMovementController.class)
+@WebMvcTest(controllers = InventoryMovementController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandler.class)
 class InventoryMovementControllerTest {
@@ -43,7 +43,7 @@ class InventoryMovementControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private InventoryMovementService inventoryMovementService;
+    private InventoryMovementServiceImpl inventoryMovementServiceImpl;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -71,7 +71,7 @@ class InventoryMovementControllerTest {
             List<InventoryMovementResponseDTO> movements = Arrays.asList(movement1, movement2);
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(movements, PageRequest.of(0, 10), 2);
 
-            when(inventoryMovementService.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
@@ -87,7 +87,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.totalElements", is(2)))
                     .andExpect(jsonPath("$.size", is(10)));
 
-            verify(inventoryMovementService, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
         }
 
         @Test
@@ -96,7 +96,7 @@ class InventoryMovementControllerTest {
             Long inventoryId = 1L;
             Page<InventoryMovementResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
             mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
@@ -105,7 +105,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content", hasSize(0)))
                     .andExpect(jsonPath("$.totalElements", is(0)));
 
-            verify(inventoryMovementService, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
         }
 
         @Test
@@ -114,13 +114,13 @@ class InventoryMovementControllerTest {
             Long inventoryId = 1L;
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findAllByInventoryId(
+            verify(inventoryMovementServiceImpl).findAllByInventoryId(
                     eq(inventoryId),
                     argThat(pageable ->
                             pageable.getPageSize() == 10 &&
@@ -136,7 +136,7 @@ class InventoryMovementControllerTest {
             Long inventoryId = 1L;
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
@@ -144,7 +144,7 @@ class InventoryMovementControllerTest {
                             .param("size", "20"))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findAllByInventoryId(
+            verify(inventoryMovementServiceImpl).findAllByInventoryId(
                     eq(inventoryId),
                     argThat(pageable ->
                             pageable.getPageSize() == 20 &&
@@ -160,7 +160,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findAllByInventoryId(any(), any());
+            verify(inventoryMovementServiceImpl, never()).findAllByInventoryId(any(), any());
         }
 
         @Test
@@ -170,7 +170,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findAllByInventoryId(any(), any());
+            verify(inventoryMovementServiceImpl, never()).findAllByInventoryId(any(), any());
         }
     }
 
@@ -191,7 +191,7 @@ class InventoryMovementControllerTest {
 
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.singletonList(movement));
 
-            when(inventoryMovementService.findByMovementType(eq(movementType), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-type")
@@ -202,7 +202,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content[0].movementType", is("ENTRY")))
                     .andExpect(jsonPath("$.content[0].affectedQuantity", is(10)));
 
-            verify(inventoryMovementService, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
         }
 
         @Test
@@ -211,7 +211,7 @@ class InventoryMovementControllerTest {
             MovementType movementType = MovementType.RESERVE;
             Page<InventoryMovementResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByMovementType(eq(movementType), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
             mockMvc.perform(get("/api/v1/movements/by-type")
@@ -220,7 +220,7 @@ class InventoryMovementControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)));
 
-            verify(inventoryMovementService, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
         }
 
         @Test
@@ -229,7 +229,7 @@ class InventoryMovementControllerTest {
             MovementType movementType = MovementType.POSITIVE_ADJUSTMENT;
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByMovementType(eq(movementType), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-type")
@@ -237,7 +237,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByMovementType(eq(movementType), any(Pageable.class));
         }
 
         @Test
@@ -246,14 +246,14 @@ class InventoryMovementControllerTest {
             MovementType movementType = MovementType.EXIT;
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByMovementType(eq(movementType), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-type")
                             .param("type", "EXIT"))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findByMovementType(
+            verify(inventoryMovementServiceImpl).findByMovementType(
                     eq(movementType),
                     argThat(pageable ->
                             pageable.getPageSize() == 10 &&
@@ -270,7 +270,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findByMovementType(any(), any());
+            verify(inventoryMovementServiceImpl, never()).findByMovementType(any(), any());
         }
 
         @Test
@@ -280,7 +280,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findByMovementType(any(), any());
+            verify(inventoryMovementServiceImpl, never()).findByMovementType(any(), any());
         }
     }
 
@@ -302,7 +302,7 @@ class InventoryMovementControllerTest {
 
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.singletonList(movement));
 
-            when(inventoryMovementService.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-date-range")
@@ -313,7 +313,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content", hasSize(1)))
                     .andExpect(jsonPath("$.content[0].id", is(1)));
 
-            verify(inventoryMovementService, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
         }
 
         @Test
@@ -323,7 +323,7 @@ class InventoryMovementControllerTest {
             LocalDate endDate = LocalDate.of(2020, 12, 31);
             Page<InventoryMovementResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
             mockMvc.perform(get("/api/v1/movements/by-date-range")
@@ -333,7 +333,7 @@ class InventoryMovementControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)));
 
-            verify(inventoryMovementService, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
         }
 
         @Test
@@ -342,7 +342,7 @@ class InventoryMovementControllerTest {
             LocalDate sameDate = LocalDate.of(2024, 6, 15);
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByDateRange(eq(sameDate), eq(sameDate), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByDateRange(eq(sameDate), eq(sameDate), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-date-range")
@@ -351,7 +351,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService, times(1)).findByDateRange(eq(sameDate), eq(sameDate), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByDateRange(eq(sameDate), eq(sameDate), any(Pageable.class));
         }
 
         @Test
@@ -360,7 +360,7 @@ class InventoryMovementControllerTest {
             LocalDate startDate = LocalDate.of(2024, 12, 31);
             LocalDate endDate = LocalDate.of(2024, 1, 1);
 
-            when(inventoryMovementService.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenThrow(new IllegalArgumentException("Start date must be before or equal to end date"));
 
             mockMvc.perform(get("/api/v1/movements/by-date-range")
@@ -370,7 +370,7 @@ class InventoryMovementControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message", containsString("Start date must be before or equal to end date")));
 
-            verify(inventoryMovementService, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findByDateRange(eq(startDate), eq(endDate), any(Pageable.class));
         }
 
         @Test
@@ -381,7 +381,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findByDateRange(any(), any(), any());
+            verify(inventoryMovementServiceImpl, never()).findByDateRange(any(), any(), any());
         }
 
         @Test
@@ -392,7 +392,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findByDateRange(any(), any(), any());
+            verify(inventoryMovementServiceImpl, never()).findByDateRange(any(), any(), any());
         }
 
         @Test
@@ -404,7 +404,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryMovementService, never()).findByDateRange(any(), any(), any());
+            verify(inventoryMovementServiceImpl, never()).findByDateRange(any(), any(), any());
         }
 
         @Test
@@ -414,7 +414,7 @@ class InventoryMovementControllerTest {
             LocalDate endDate = LocalDate.of(2024, 12, 31);
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/by-date-range")
@@ -422,7 +422,7 @@ class InventoryMovementControllerTest {
                             .param("endDate", "2024-12-31"))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findByDateRange(
+            verify(inventoryMovementServiceImpl).findByDateRange(
                     eq(startDate),
                     eq(endDate),
                     argThat(pageable ->
@@ -455,7 +455,7 @@ class InventoryMovementControllerTest {
             List<InventoryMovementResponseDTO> movements = Arrays.asList(movement1, movement2);
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(movements);
 
-            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/recent")
@@ -465,7 +465,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content[0].id", is(1)))
                     .andExpect(jsonPath("$.content[1].id", is(2)));
 
-            verify(inventoryMovementService, times(1)).findRecentMovements(any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findRecentMovements(any(Pageable.class));
         }
 
         @Test
@@ -473,7 +473,7 @@ class InventoryMovementControllerTest {
         void shouldReturnEmptyPageWhenNoRecentMovementsExist() throws Exception {
             Page<InventoryMovementResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(emptyPage);
 
             mockMvc.perform(get("/api/v1/movements/recent")
@@ -482,7 +482,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content", hasSize(0)))
                     .andExpect(jsonPath("$.totalElements", is(0)));
 
-            verify(inventoryMovementService, times(1)).findRecentMovements(any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findRecentMovements(any(Pageable.class));
         }
 
         @Test
@@ -490,13 +490,13 @@ class InventoryMovementControllerTest {
         void shouldUseDefaultPaginationParametersForRecentMovements() throws Exception {
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/recent"))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findRecentMovements(
+            verify(inventoryMovementServiceImpl).findRecentMovements(
                     argThat(pageable ->
                             pageable.getPageSize() == 10 &&
                                     pageable.getPageNumber() == 0 &&
@@ -510,7 +510,7 @@ class InventoryMovementControllerTest {
         void shouldAcceptCustomPaginationForRecentMovements() throws Exception {
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(Collections.emptyList());
 
-            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/recent")
@@ -518,7 +518,7 @@ class InventoryMovementControllerTest {
                             .param("size", "25"))
                     .andExpect(status().isOk());
 
-            verify(inventoryMovementService).findRecentMovements(
+            verify(inventoryMovementServiceImpl).findRecentMovements(
                     argThat(pageable ->
                             pageable.getPageSize() == 25 &&
                                     pageable.getPageNumber() == 1
@@ -544,7 +544,7 @@ class InventoryMovementControllerTest {
             List<InventoryMovementResponseDTO> movements = Arrays.asList(newerMovement, olderMovement);
             Page<InventoryMovementResponseDTO> page = new PageImpl<>(movements);
 
-            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+            when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
             mockMvc.perform(get("/api/v1/movements/recent"))
@@ -552,7 +552,7 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content[0].id", is(2)))
                     .andExpect(jsonPath("$.content[1].id", is(1)));
 
-            verify(inventoryMovementService, times(1)).findRecentMovements(any(Pageable.class));
+            verify(inventoryMovementServiceImpl, times(1)).findRecentMovements(any(Pageable.class));
         }
     }
 }

@@ -2,7 +2,7 @@ package com.bookstore.management.inventory.controller;
 
 import com.bookstore.management.inventory.dto.InventoryMovementResponseDTO;
 import com.bookstore.management.inventory.model.MovementType;
-import com.bookstore.management.inventory.service.InventoryMovementService;
+import com.bookstore.management.inventory.service.InventoryMovementServiceImpl;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,21 +22,21 @@ public class InventoryMovementController {
 
     private final static int DEFAULT_SIZE = 10;
     private final static String DEFAULT_SORT = "createdAT";
-    private final InventoryMovementService inventoryMovementService;
+    private final InventoryMovementServiceImpl inventoryMovementServiceImpl;
 
     @GetMapping(value = "/by-inventory/{inventoryId}")
     public ResponseEntity<Page<InventoryMovementResponseDTO>> getInventoryMovements(
             @Positive @PathVariable Long inventoryId,
             @PageableDefault(size = DEFAULT_SIZE,sort = DEFAULT_SORT, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseEntity.ok(inventoryMovementService.findAllByInventoryId(inventoryId, pageable));
+        return ResponseEntity.ok(inventoryMovementServiceImpl.findAllByInventoryId(inventoryId, pageable));
     }
     @GetMapping(value = "/by-type")
     public ResponseEntity<Page<InventoryMovementResponseDTO>> getMovementsByType(
             @RequestParam MovementType type,
             @PageableDefault(size = DEFAULT_SIZE,sort = DEFAULT_SORT, direction = Sort.Direction.DESC) Pageable pageable
             ) {
-        return ResponseEntity.ok(inventoryMovementService.findByMovementType(type,pageable));
+        return ResponseEntity.ok(inventoryMovementServiceImpl.findByMovementType(type,pageable));
     }
     @GetMapping(value = "/by-date-range")
     public ResponseEntity<Page<InventoryMovementResponseDTO>> getMovementsBetweenDates(
@@ -44,13 +44,13 @@ public class InventoryMovementController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(size = DEFAULT_SIZE,sort =DEFAULT_SORT, direction = Sort.Direction.DESC) Pageable pageable){
 
-        return ResponseEntity.ok(inventoryMovementService.findByDateRange(startDate,endDate,pageable));
+        return ResponseEntity.ok(inventoryMovementServiceImpl.findByDateRange(startDate,endDate,pageable));
     }
 
 
     @GetMapping(value = "/recent")
     public ResponseEntity<Page<InventoryMovementResponseDTO>> getRecentsMovements(
             @PageableDefault(size = DEFAULT_SIZE,sort =DEFAULT_SORT, direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(inventoryMovementService.findRecentMovements(pageable));
+        return ResponseEntity.ok(inventoryMovementServiceImpl.findRecentMovements(pageable));
     }
 }
