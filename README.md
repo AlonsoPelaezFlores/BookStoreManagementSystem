@@ -13,7 +13,7 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Complete CRUD operations for books, authors and customers
 - Advanced search system with multiple filters (ISBN, author, title, genre)
 - Stock management with real-time availability tracking
-- Layered architecture (Controller-Service-Repository-Entity)
+- MVC architecture pattern
 - Data validation with Bean Validation
 - Centralized exception handling
 - API documentation with Swagger/OpenAPI
@@ -24,7 +24,7 @@ The system handles book inventory control with ISBN tracking, user and role mana
 ### Backend
 
 - Java 17
-- Spring Boot 3.x
+- Spring Boot 3.5.5
 - Spring Data JPA
 - Hibernate ORM
 
@@ -51,71 +51,50 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Postman
 - Git/GitHub
 
-
-## 🏗️ Project Architecture
-<pre>
-┌─────────────────────────────────────────┐
-│           Controller Layer              │
-│         (REST Endpoints, DTOs)          │
-└─────────────────┬───────────────────────┘
-                  │
-┌─────────────────▼───────────────────────┐
-│            Service Layer                │
-│          (Business Logic)               │
-└─────────────────┬───────────────────────┘
-                  │
-┌─────────────────▼───────────────────────┐
-│          Repository Layer               │
-│        (Database Operations)            │
-└─────────────────┬───────────────────────┘
-                  │
-┌─────────────────▼───────────────────────┐
-│         PostgreSQL Database             │
-└─────────────────────────────────────────┘
-</pre>
 **Design Principles:**
 
 - Separation of concerns with DTOs
 - SOLID principles
 - Clean code practices
+- Dependency Injection
 - Test-driven development approach
 
+## 🎯 Roadmap
 
-## 📦 Modules
-### ✅ Completed & Tested
-**📖 Book and Author Management**
+### Phase 1: Book and Customer ✅
+- Book and author management
+- Customer management
+- Basic API structure
+- Database design and implementation
 
-- Full CRUD operations for books
-- ISBN tracking and validation
-- Author relationships and management
-- Advanced search capabilities:
-  - Search by ISBN
-  - Search by author
-  - Search by title
-  - Search by category
-  - Combined filters
+### Phase 2: Inventory System ✅
+- Inventory module design
+- Stock management complete testing
+- Integration with book module
+- Inventory tracking implementation
 
-**👥 Customer Management**
+### Phase 3: Sales Module 🚧
+- Direct sales registration
+- Sale details management
+- Transaction history
+- Integration with inventory and customer modules
 
-- Full CRUD operations
-- Customer data validation
+### Phase 4: Security & Authentication 📋
+- JWT authentication implementation
+- User registration and login
+- Role-based access control (Admin, Employee)
+- Password encryption with BCrypt
 
-## 🚧 In Active Development
-### 📊 Inventory Control
+### Phase 5: Refactoring & Enhancements 📋
+- Book and author module improvements
+- Apply auditing across all modules
+- Code optimization and best practices
 
-- Stock management system
-- Real-time availability tracking
-- Low stock alerts (planned)
-- Inventory auditing (in testing phase)
-
-## 📋 Planned Features
-
-- 🔐 Authentication System: JWT-based security
-- 👤 User & Role Management: Role-based access control (RBAC)
-- 📝 Audit System: Spring Data Auditing for tracking changes
-- 💰 Sales Module: Complete sales system with transaction history
-- 📊 Reporting System: Automated weekly reports
-
+### Future Enhancements 💡
+- Invoice generation
+- Automated reports and analytics
+- Low stock alerts and notifications
+- Customer loyalty programs
 ## 🚀 Getting Started
 ### Prerequisites
 Before running this project, make sure you have:
@@ -230,57 +209,6 @@ http://localhost:8080/swagger-ui.html-->
                 └── service/
 </pre>
 
-## 🎯 Roadmap
-### Phase 1: Core Functionality ✅
-
- - Book and Author Management
- - Customer Management
- - Basic API structure
- - Database design and implementation
-
-### Phase 2: Inventory System 🚧
-
- - Inventory entity design
- - Stock management complete testing
- - Integration with book module
-
-### Phase 3: Security & Users 📋
-
- - JWT authentication implementation
- - User registration and login
- - Role-based access control (Admin, Employee, Customer)
- - Password encryption
-
-### Phase 4: Audit & Tracking 📋
-
- - Spring Data Auditing implementation
- - Track who created/modified records
- - Change history logging
-
-### Phase 5: Sales Module 📋
-
- - Shopping cart functionality
- - Order processing
- - Transaction history
- - Invoice generation
-
-### Phase 6: Reporting & Notifications 📋
-
- - Automated weekly reports
- - Email notifications
- - Low stock alerts
- - Sales analytics
-
-## 🤝 Contributing
-This is a personal learning project but suggestions and feedback are welcome!
-If you have ideas for improvements:
-
-- Fork the repository
-- Create a feature branch (git checkout -b )
-- Commit your changes (git commit -m )
-- Push to the branch (git push origin )
-- Open a Pull Request
-
 <!--## 📝 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.-->
 
@@ -291,4 +219,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **LinkedIn:** [Alonso Pelaez](https://www.linkedin.com/in/calonsopf/)  
 **Email:** alonso18pf@gmail.com
  
+
 
