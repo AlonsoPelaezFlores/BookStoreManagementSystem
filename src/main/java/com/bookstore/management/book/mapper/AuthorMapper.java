@@ -10,5 +10,6 @@ public interface AuthorMapper {
     @Mapping(target = "id", ignore = true)
     Author toEntity(CreateAuthorDTO createAuthorDto);
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(CreateAuthorDTO createAuthorDto, @MappingTarget Author author);
 }

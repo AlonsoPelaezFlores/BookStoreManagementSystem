@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.controller;
 
-import com.bookstore.management.customer.dto.CustomerDto;
+import com.bookstore.management.customer.dto.CustomerCreateDTO;
 import com.bookstore.management.customer.dto.CustomerResponse;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
@@ -29,12 +29,12 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.findById(id));
     }
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Valid CustomerDto customerDto) {
+    public ResponseEntity<?> create(@RequestBody @Valid CustomerCreateDTO customerDto) {
         Customer customer = customerService.create(customerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CustomerResponse(customer.getId()));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody @Valid CustomerDto customerDto, @PathVariable @Positive Long id) {
+    public ResponseEntity<?> update(@RequestBody @Valid CustomerCreateDTO customerDto, @PathVariable @Positive Long id) {
         Customer customer = customerService.update(customerDto, id);
         return ResponseEntity.ok(new CustomerResponse(customer.getId()));
     }

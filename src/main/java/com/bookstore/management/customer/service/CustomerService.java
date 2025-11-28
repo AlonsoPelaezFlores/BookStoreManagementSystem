@@ -1,6 +1,7 @@
 package com.bookstore.management.customer.service;
 
-import com.bookstore.management.customer.dto.CustomerDto;
+import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
@@ -29,7 +30,7 @@ public class CustomerService {
                 .orElseThrow(()-> new ResourceNotFoundException("Customer","Id",id));
     }
     @Transactional
-    public Customer create(CustomerDto customerDto) {
+    public Customer create(CustomerCreateDTO customerDto) {
 
         Customer customer = customerMapper.toEntity(customerDto);
 
@@ -38,7 +39,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
     @Transactional
-    public Customer update(CustomerDto customerDto, Long id) {
+    public Customer update(CustomerCreateDTO customerDto, Long id) {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Customer","Id",id));
 

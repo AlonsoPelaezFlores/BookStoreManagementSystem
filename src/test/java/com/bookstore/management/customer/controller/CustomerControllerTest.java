@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.controller;
 
-import com.bookstore.management.customer.dto.CustomerDto;
+import com.bookstore.management.customer.dto.CustomerCreateDTO;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
@@ -38,7 +38,7 @@ class CustomerControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private CustomerDto customerDto;
+    private CustomerCreateDTO customerCreateDTO;
     private Customer customer;
     private Customer anotherCustomer;
 
@@ -60,7 +60,7 @@ class CustomerControllerTest {
                 .birthDate(LocalDate.of(1985, 5, 15))
                 .build();
 
-        customerDto = CustomerDto.builder()
+        customerCreateDTO = CustomerCreateDTO.builder()
                 .name("John")
                 .surname("Doe")
                 .email("john.doe@email.com")
@@ -153,11 +153,11 @@ class CustomerControllerTest {
         @DisplayName("Should create customer when valid data provided")
         void shouldCreateCustomerWhenValidDataProvided() throws Exception {
 
-            when(customerService.create(any(CustomerDto.class))).thenReturn(customer);
+            when(customerService.create(any(CustomerCreateDTO.class))).thenReturn(customer);
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(1));
@@ -167,11 +167,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when name is missing")
         void shouldReturnBadRequestWhenNameIsMissing() throws Exception {
 
-            customerDto.setName(null);
+            customerCreateDTO.setName(null);
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -179,11 +179,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when email is invalid")
         void shouldReturnBadRequestWhenEmailIsInvalid() throws Exception {
 
-            customerDto.setEmail("invalid-email");
+            customerCreateDTO.setEmail("invalid-email");
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isBadRequest());
         }
     }
@@ -196,7 +196,7 @@ class CustomerControllerTest {
         void shouldUpdateCustomerWhenValidDataProvided() throws Exception {
 
             Long customerId = 1L;
-            CustomerDto updateDto = CustomerDto.builder()
+            CustomerCreateDTO updateDto = CustomerCreateDTO.builder()
                     .name("Updated John")
                     .surname("Updated Doe")
                     .email("updated.john@email.com")
@@ -211,7 +211,7 @@ class CustomerControllerTest {
                     .birthDate(updateDto.getBirthDate())
                     .build();
 
-            when(customerService.update(any(CustomerDto.class), eq(customerId))).thenReturn(updatedCustomer);
+            when(customerService.update(any(CustomerCreateDTO.class), eq(customerId))).thenReturn(updatedCustomer);
 
             mockMvc.perform(put("/api/customers/{id}", customerId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -226,12 +226,12 @@ class CustomerControllerTest {
         void shouldReturnNotFoundWhenCustomerToUpdateDoesNotExist() throws Exception {
 
             Long customerId = 999L;
-            when(customerService.update(any(CustomerDto.class), eq(customerId)))
+            when(customerService.update(any(CustomerCreateDTO.class), eq(customerId)))
                     .thenThrow(new ResourceNotFoundException("Customer", "Id", customerId));
 
             mockMvc.perform(put("/api/customers/{id}", customerId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isNotFound());
         }
 
@@ -241,7 +241,7 @@ class CustomerControllerTest {
 
             mockMvc.perform(put("/api/customers/{id}", -1L)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -249,11 +249,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when request body is invalid")
         void shouldReturnBadRequestWhenRequestBodyIsInvalid() throws Exception {
 
-            customerDto.setEmail("invalid-email");
+            customerCreateDTO.setEmail("invalid-email");
 
             mockMvc.perform(put("/api/customers/{id}", 1L)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerDto)))
+                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
                     .andExpect(status().isBadRequest());
         }
     }
