@@ -2,6 +2,7 @@ package com.bookstore.management.inventory.service;
 
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.repository.BookRepository;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.mapper.InventoryMapper;
 import com.bookstore.management.inventory.model.AvailabilityStatus;
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.*;
 public class InventoryServiceImplTest {
     @Mock
     private InventoryRepository inventoryRepository;
+    @Mock
+    private BookRepository bookRepository;
     @Mock
     private InventoryMovementRepository inventoryMovementRepository;
     @InjectMocks
@@ -832,6 +835,7 @@ public class InventoryServiceImplTest {
             Long bookId = 1L;
 
             when(inventoryRepository.findByBookId(bookId)).thenReturn(Optional.empty());
+            when(bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(book));
             when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventory);
             when(inventoryMovementRepository.save(any(InventoryMovement.class))).thenReturn(InventoryMovement.builder().build());
 
@@ -840,6 +844,7 @@ public class InventoryServiceImplTest {
             assertThat(result).isNotNull();
 
             verify(inventoryRepository, times(1)).findByBookId(bookId);
+            verify(bookRepository, times(1)).findById(bookId);
             verify(inventoryRepository, times(1)).save(any(Inventory.class));
 
             ArgumentCaptor<InventoryMovement> movementCaptor = ArgumentCaptor.forClass(InventoryMovement.class);
@@ -861,6 +866,7 @@ public class InventoryServiceImplTest {
             inventory.setQuantityAvailable(30);
 
             when(inventoryRepository.findByBookId(bookId)).thenReturn(Optional.empty());
+            when(bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(book));
             when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventory);
             when(inventoryMovementRepository.save(any(InventoryMovement.class))).thenReturn(InventoryMovement.builder().build());
 

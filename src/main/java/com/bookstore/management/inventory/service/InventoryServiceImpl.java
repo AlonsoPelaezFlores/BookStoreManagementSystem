@@ -1,5 +1,7 @@
 package com.bookstore.management.inventory.service;
 
+import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.repository.BookRepository;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.mapper.InventoryMapper;
 import com.bookstore.management.inventory.model.AvailabilityStatus;
@@ -25,6 +27,7 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final BookRepository bookRepository;
     private final InventoryMapper inventoryMapper;
     private final InventoryMovementRepository inventoryMovementRepository;
 
@@ -206,10 +209,21 @@ public class InventoryServiceImpl implements InventoryService {
     @Transactional
     @Override
     public InventorySummaryDTO create(CreateInventoryDTO createInventoryDTO) {
+
         if (inventoryRepository.findByBookId(createInventoryDTO.bookId()).isPresent()) {
             throw new DuplicateEntityException("Inventory","BookId",createInventoryDTO.bookId());
         }
-        Inventory inventory = inventoryMapper.toEntity(createInventoryDTO);
+        Book book = bookRepository.findById(createInventoryDTO.bookId())
+                .orElseThrow(()-> new ResourceNotFoundException("Book","Id",createInventoryDTO.bookId()));
+
+        Inventory inventory = Inventory.builder()
+                .quantityAvailable(createInventoryDTO.quantityAvailable())
+                .book(book)
+                .stockMin(createInventoryDTO.stockMin())
+                .stockMax(createInventoryDTO.stockMax())
+                .build();
+
+                inventoryMapper.toEntity(createInventoryDTO);
 
         inventoryRepository.save(inventory);
 

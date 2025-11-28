@@ -1,7 +1,6 @@
 package com.bookstore.management.sales.model;
 
 import com.bookstore.management.book.model.Book;
-import com.bookstore.management.customer.model.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,10 +31,10 @@ public class SalesDetail {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal lineTotal = BigDecimal.ZERO;
 
-    private void calculateLineTotal() {
-        this.lineTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-    }
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal lineTotal;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal discountPercent;
 }

@@ -1,18 +1,15 @@
 package com.bookstore.management.customer.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerDto{
+public class CustomerCreateDTO {
 
     @NotBlank(message = "The name is obligatory")
     @Size(min=2, max = 100, message = "The name must be between 2 and 100 characters")
