@@ -1,0 +1,9 @@
+package com.bookstore.management.shared.exception.custom;
+
+import org.springframework.http.HttpStatus;
+
+public class SaleAlreadyCancelledException extends BusinessException {
+    public SaleAlreadyCancelledException(String message) {
+        super(message, HttpStatus.CONFLICT);
+    }
+}
