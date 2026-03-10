@@ -86,22 +86,18 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     @Override
-    public InventorySummaryDTO registerSale(UpdateStockDTO updateStockDTO, Long bookId) {
+    public InventorySummaryDTO registerEntry(UpdateStockDTO updateStockDTO, Long bookId) {
 
         Inventory inventory = findByBookIdOrThrow(bookId);
 
-        if (inventory.getQuantityAvailable() < updateStockDTO.quantityAdjustment()){
-            throw new InsufficientStockException("Insufficient Stock");
-        }
         int quantityBefore = inventory.getQuantityAvailable();
-        int quantityAfter = inventory.getQuantityAvailable() - updateStockDTO.quantityAdjustment();
+        int quantityAfter = inventory.getQuantityAvailable() + updateStockDTO.quantityAdjustment();
         int affectedQuantity = quantityAfter - quantityBefore;
 
         inventory.setQuantityAvailable(quantityAfter);
         inventory.setAlertLowStock(quantityAfter <= inventory.getStockMin());
-
         inventoryRepository.save(inventory);
 
         InventoryMovement inventoryMovement = InventoryMovement.builder()
@@ -118,18 +114,22 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryMapper.toInventorySummaryDTO(inventory);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public InventorySummaryDTO registerEntry(UpdateStockDTO updateStockDTO, Long bookId) {
+    public InventorySummaryDTO registerSale(UpdateStockDTO updateStockDTO, Long bookId) {
 
         Inventory inventory = findByBookIdOrThrow(bookId);
 
+        if (inventory.getQuantityAvailable() < updateStockDTO.quantityAdjustment()){
+            throw new InsufficientStockException("Insufficient Stock");
+        }
         int quantityBefore = inventory.getQuantityAvailable();
-        int quantityAfter = inventory.getQuantityAvailable() + updateStockDTO.quantityAdjustment();
+        int quantityAfter = inventory.getQuantityAvailable() - updateStockDTO.quantityAdjustment();
         int affectedQuantity = quantityAfter - quantityBefore;
 
         inventory.setQuantityAvailable(quantityAfter);
         inventory.setAlertLowStock(quantityAfter <= inventory.getStockMin());
+
         inventoryRepository.save(inventory);
 
         InventoryMovement inventoryMovement = InventoryMovement.builder()

@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,12 +35,6 @@ public class Sale {
     private PaymentMethod paymentMethod =  PaymentMethod.CASH;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal subtotal;
-
-    @Column(nullable = false, precision = 5, scale = 2)
-    private BigDecimal discountPercentCustomer;
-
-    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
     @OneToMany( mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,6 +51,9 @@ public class Sale {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(name = "expired_at")
+    private LocalDateTime expiredAt;
 
     private void addDetail(SalesDetail detail) {
         details.add(detail);

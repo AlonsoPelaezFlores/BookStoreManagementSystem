@@ -2,11 +2,13 @@ package com.bookstore.management.book.dto;
 
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.validation.ValidIsbn;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -33,6 +35,16 @@ public class CreateBookDTO {
         @Positive(message = "Pages must be positive")
         @Max(value = 10000, message = "The number of page must not exceed 10,000")
         private Integer pages;
+
+        @PositiveOrZero(message = "Price cannot be negative")
+        @DecimalMin(value = "0.0")
+        @DecimalMax(value = "999999.99")
+        private BigDecimal price;
+
+        @PositiveOrZero(message = "DiscountPercent cannot be negative")
+        @DecimalMin(value = "0.0")
+        @DecimalMax(value = "100.0", message = "DiscountPercent must be between 0 and 100")
+        private BigDecimal discountPercent;
 
         @NotBlank(message = "Genre cannot be blank")
         @Size(max = 50, message = "The genre cannot exceed 50 characters")

@@ -4,7 +4,7 @@ import com.bookstore.management.book.dto.BookSummaryDTO;
 
 public record InventorySummaryDTO(
         Long id,
-        BookSummaryDTO book,
+        BookSummaryDTO bookSummaryDTO,
         Integer quantityAvailable,
         Boolean activeStatus
 ){}

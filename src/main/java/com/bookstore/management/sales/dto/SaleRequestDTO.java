@@ -1,8 +1,6 @@
 package com.bookstore.management.sales.dto;
 
 import com.bookstore.management.sales.model.PaymentMethod;
-import com.bookstore.management.sales.model.SalesDetail;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -11,9 +9,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
-public record SalesRequestDTO(
+public record SaleRequestDTO(
 
-        @NotNull(message = "The customer ID is required")
         @Positive(message = "the customer ID must be negative")
         Long customerId,
 

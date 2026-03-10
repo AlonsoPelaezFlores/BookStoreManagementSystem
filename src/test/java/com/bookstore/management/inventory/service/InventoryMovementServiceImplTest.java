@@ -18,7 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,17 +33,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class InventoryMovementServiceImplTest {
 
-    @Mock
+    @MockitoBean
     private InventoryMovementRepository inventoryMovementRepository;
 
-    @InjectMocks
+    @Autowired
     private InventoryMovementServiceImpl inventoryMovementServiceImpl;
 
-    @Spy
-    private InventoryMovementMapper inventoryMovementMapper = Mappers.getMapper(InventoryMovementMapper.class);
+    @Autowired
+    private InventoryMovementMapper inventoryMovementMapper;
 
     private Book book;
     private Inventory inventory;

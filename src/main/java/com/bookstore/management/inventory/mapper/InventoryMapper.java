@@ -7,9 +7,7 @@ import com.bookstore.management.inventory.dto.CreateInventoryDTO;
 import com.bookstore.management.inventory.dto.InventoryResponseDTO;
 import com.bookstore.management.inventory.dto.InventorySummaryDTO;
 import com.bookstore.management.inventory.model.Inventory;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -20,19 +18,12 @@ public interface InventoryMapper {
     Inventory toEntity(CreateInventoryDTO createInventoryDto);
 
     @Mapping(target = "realStockAvailable", expression = "java(inventory.getQuantityAvailable() - inventory.getQuantityReserved())")
-    @Mapping(target = "book",expression = "java(debugMapBook(inventory))")
+    @Mapping(target = "bookSummaryDTO",source = "book")
     InventoryResponseDTO toInventoryResponseDTO(Inventory inventory);
 
-    @Mapping(target = "book", expression = "java(debugMapBook(inventory))")
+    @Mapping(target = "bookSummaryDTO",source = "book")
     InventorySummaryDTO toInventorySummaryDTO(Inventory inventory);
 
     List<InventorySummaryDTO> toInventorySummaryDTOList(List<Inventory> inventories);
 
-    default BookSummaryDTO debugMapBook(Inventory inventory) {
-        if (inventory == null || inventory.getBook() == null){
-            return null;
-        }
-        Book book = inventory.getBook();
-        return new BookSummaryDTO(book.getId(), book.getTitle(), book.getIsbn(), book.getAuthor().getName());
-    }
 }

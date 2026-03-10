@@ -7,13 +7,12 @@ import com.bookstore.management.sales.model.SalesStatus;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record SalesResponseDTO(
+public record SaleResponseDTO(
         Long id,
         CustomerSummaryDTO customer,
-        SalesStatus salesStatus,
+        SalesStatus status,
         PaymentMethod paymentMethod,
         List<SalesDetailResponseDTO> details,
-        BigDecimal discountPercentCustomer,
         BigDecimal total,
         String observation
 ) {

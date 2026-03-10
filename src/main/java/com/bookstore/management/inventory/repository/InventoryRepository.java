@@ -1,7 +1,9 @@
 package com.bookstore.management.inventory.repository;
 
 import com.bookstore.management.inventory.model.Inventory;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select i from Inventory i JOIN FETCH i.book WHERE i.book.id = :bookId")
     Optional<Inventory> findByBookId(@Param("bookId") Long bookId);
 

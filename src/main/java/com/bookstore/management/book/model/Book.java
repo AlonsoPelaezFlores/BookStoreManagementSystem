@@ -3,6 +3,7 @@ package com.bookstore.management.book.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -36,10 +37,15 @@ public class Book {
     @Column(name = "genre", length = 100)
     private String genre;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal discountPercent;
+    
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
-
 
     public Book(String isbn, String title, LocalDate publishDate, String description, Integer pages, Author author) {
         this.isbn = isbn;
