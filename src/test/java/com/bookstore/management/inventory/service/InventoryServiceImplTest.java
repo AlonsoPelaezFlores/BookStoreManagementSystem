@@ -1,5 +1,6 @@
 package com.bookstore.management.inventory.service;
 
+import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.repository.BookRepository;
@@ -16,13 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,18 +33,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class InventoryServiceImplTest {
-    @Mock
+    @MockitoBean
     private InventoryRepository inventoryRepository;
-    @Mock
+    @MockitoBean
     private BookRepository bookRepository;
-    @Mock
+    @MockitoBean
     private InventoryMovementRepository inventoryMovementRepository;
-    @InjectMocks
+    @Autowired
     private InventoryServiceImpl inventoryService;
-    @Spy
-    private InventoryMapper inventoryMapper = Mappers.getMapper(InventoryMapper.class);
+    @Autowired
+    private InventoryMapper inventoryMapper;
+    @Autowired
+    private BookMapper bookMapper ;
 
     private Author author;
     private Book book;
@@ -125,10 +125,10 @@ public class InventoryServiceImplTest {
             assertEquals(2, result.size());
             assertEquals(1L, result.get(0).id());
             assertEquals(100, result.get(0).quantityAvailable());
-            assertEquals(1L, result.get(0).book().id());
+            assertEquals(1L, result.get(0).bookSummaryDTO().id());
             assertEquals(2L, result.get(1).id());
             assertEquals(200, result.get(1).quantityAvailable());
-            assertEquals(2L, result.get(1).book().id());
+            assertEquals(2L, result.get(1).bookSummaryDTO().id());
             verify(inventoryRepository, times(1)).findAll();
         }
 

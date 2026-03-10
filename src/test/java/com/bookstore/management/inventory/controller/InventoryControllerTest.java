@@ -1,6 +1,7 @@
 package com.bookstore.management.inventory.controller;
 
 import com.bookstore.management.book.dto.BookSummaryDTO;
+import com.bookstore.management.book.model.Book;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.model.AvailabilityStatus;
 import com.bookstore.management.inventory.model.MovementType;
@@ -8,6 +9,7 @@ import com.bookstore.management.inventory.service.InventoryServiceImpl;
 import com.bookstore.management.shared.exception.custom.*;
 import com.bookstore.management.shared.exception.handler.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +48,24 @@ public class InventoryControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private BookSummaryDTO bookSummary;
+    private BookSummaryDTO bookSummary2;
+    @BeforeEach
+    void setUp(){
+        bookSummary = new BookSummaryDTO(
+                1L,
+                "Book 1",
+                "ISBN1",
+                BigDecimal.valueOf(10),
+                "Author 1");
+
+        bookSummary2 = new BookSummaryDTO(
+                1L,
+                "Book 1",
+                "ISBN1",
+                BigDecimal.valueOf(10),
+                "Author 1");
+    }
     @Nested
     @DisplayName("Get All Tests")
     class GetAll {
@@ -52,10 +73,8 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return list of inventory summaries when inventories exist")
         void shouldReturnListOfInventorySummariesWhenInventoriesExist() throws Exception {
-            BookSummaryDTO bookSummary1 = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
-            BookSummaryDTO bookSummary2 = new BookSummaryDTO(2L, "Book 2", "ISBN2", "Author 2");
 
-            InventorySummaryDTO inventory1 = new InventorySummaryDTO(1L, bookSummary1, 50, true);
+            InventorySummaryDTO inventory1 = new InventorySummaryDTO(1L, bookSummary, 50, true);
             InventorySummaryDTO inventory2 = new InventorySummaryDTO(2L, bookSummary2, 30, true);
 
             List<InventorySummaryDTO> inventories = Arrays.asList(inventory1, inventory2);
@@ -96,9 +115,16 @@ public class InventoryControllerTest {
         @DisplayName("Should return inventory when book id is valid")
         void shouldReturnInventoryWhenBookIdIsValid() throws Exception {
             Long bookId = 1L;
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventoryResponseDTO inventory = new InventoryResponseDTO(
-                    1L, bookSummary, 50, 5, 10, 100, LocalDateTime.now(), true, 45
+                    1L,
+                    bookSummary,
+                    50,
+                    5,
+                    10,
+                    100,
+                    LocalDateTime.now(),
+                    true,
+                    45
             );
 
             when(inventoryServiceImpl.findByBookId(bookId)).thenReturn(inventory);
@@ -157,8 +183,10 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return active inventories when status is true")
         void shouldReturnActiveInventoriesWhenStatusIsTrue() throws Exception {
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
-            InventorySummaryDTO inventory = new InventorySummaryDTO(1L, bookSummary, 50, true);
+            InventorySummaryDTO inventory = new InventorySummaryDTO(1L,
+                    bookSummary,
+                    50,
+                    true);
 
             when(inventoryServiceImpl.findByActiveStatusList(true))
                     .thenReturn(Collections.singletonList(inventory));
@@ -176,8 +204,11 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return inactive inventories when status is false")
         void shouldReturnInactiveInventoriesWhenStatusIsFalse() throws Exception {
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
-            InventorySummaryDTO inventory = new InventorySummaryDTO(1L, bookSummary, 50, false);
+            InventorySummaryDTO inventory = new InventorySummaryDTO(
+                    1L,
+                    bookSummary,
+                    50,
+                    false);
 
             when(inventoryServiceImpl.findByActiveStatusList(false))
                     .thenReturn(Collections.singletonList(inventory));
@@ -213,7 +244,7 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return inventories with low stock alert")
         void shouldReturnInventoriesWithLowStockAlert() throws Exception {
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
+
             InventorySummaryDTO inventory = new InventorySummaryDTO(1L, bookSummary, 5, true);
 
             when(inventoryServiceImpl.findByAlertLowStockList())
@@ -306,7 +337,6 @@ public class InventoryControllerTest {
         void shouldRegisterSaleWhenRequestIsValid() throws Exception {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(10, MovementType.EXIT);
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 40, true);
 
             when(inventoryServiceImpl.registerSale(any(UpdateStockDTO.class), eq(bookId)))
@@ -390,7 +420,6 @@ public class InventoryControllerTest {
         void shouldRegisterEntryWhenRequestIsValid() throws Exception {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(20, MovementType.ENTRY);
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 70, true);
 
             when(inventoryServiceImpl.registerEntry(any(UpdateStockDTO.class), eq(bookId)))
@@ -443,7 +472,6 @@ public class InventoryControllerTest {
         void shouldApplyPositiveAdjustmentWhenRequestIsValid() throws Exception {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(5, MovementType.POSITIVE_ADJUSTMENT);
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 55, true);
 
             when(inventoryServiceImpl.positiveAdjustment(any(UpdateStockDTO.class), eq(bookId)))
@@ -482,7 +510,6 @@ public class InventoryControllerTest {
         void shouldApplyNegativeAdjustmentWhenRequestIsValid() throws Exception {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(5, MovementType.NEGATIVE_ADJUSTMENT);
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 45, true);
 
             when(inventoryServiceImpl.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
@@ -524,7 +551,6 @@ public class InventoryControllerTest {
         @DisplayName("Should create inventory when request is valid")
         void shouldCreateInventoryWhenRequestIsValid() throws Exception {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, 50, 10, 100);
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 50, true);
 
             when(inventoryServiceImpl.create(any(CreateInventoryDTO.class)))
@@ -692,7 +718,6 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             Integer stockMin = 15;
             Integer stockMax = 120;
-            BookSummaryDTO bookSummary = new BookSummaryDTO(1L, "Book 1", "ISBN1", "Author 1");
             InventoryResponseDTO response = new InventoryResponseDTO(
                     1L, bookSummary, 50, 5, stockMin, stockMax, LocalDateTime.now(), true, 45
             );

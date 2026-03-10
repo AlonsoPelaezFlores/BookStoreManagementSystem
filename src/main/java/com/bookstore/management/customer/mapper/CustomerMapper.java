@@ -3,7 +3,6 @@ package com.bookstore.management.customer.mapper;
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
-import jdk.jfr.Name;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

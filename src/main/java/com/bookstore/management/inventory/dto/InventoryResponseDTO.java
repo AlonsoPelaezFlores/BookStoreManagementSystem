@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record InventoryResponseDTO(
     Long id,
-    BookSummaryDTO book,
+    BookSummaryDTO bookSummaryDTO,
     Integer quantityAvailable,
     Integer quantityReserved,
     Integer stockMin,
