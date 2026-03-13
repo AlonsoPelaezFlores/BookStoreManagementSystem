@@ -30,15 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/books/**").permitAll()
-                                .requestMatchers("/api/authors/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
 
-
-                                .requestMatchers("/h2-console/**").permitAll()
-
-                        .anyRequest().authenticated()
-                )
                 .httpBasic(Customizer.withDefaults())
                 .logout(AbstractHttpConfigurer::disable);
 
