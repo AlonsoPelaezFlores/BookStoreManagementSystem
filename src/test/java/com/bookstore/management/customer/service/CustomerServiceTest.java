@@ -1,7 +1,6 @@
 package com.bookstore.management.customer.service;
 
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
-import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;

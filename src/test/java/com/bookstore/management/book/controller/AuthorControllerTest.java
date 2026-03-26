@@ -1,7 +1,9 @@
 package com.bookstore.management.book.controller;
 
+import com.bookstore.management.book.dto.AuthorResponseDTO;
+import com.bookstore.management.book.dto.AuthorSummaryDTO;
 import com.bookstore.management.book.dto.CreateAuthorDTO;
-import com.bookstore.management.book.model.Author;
+import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.service.AuthorService;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +25,6 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = AuthorController.class)
@@ -45,25 +46,20 @@ class AuthorControllerTest {
         @DisplayName("Should return all author when authors exist")
         void shouldReturnAllAuthorsWhenAuthorsExist() throws Exception {
 
+            AuthorSummaryDTO authorSummaryDTO = new AuthorSummaryDTO(
+                    1L,
+                    "John Doe",
+                    "American",
+                    Gender.MALE);
 
-            Author author1 = Author.builder()
-                    .id(1L)
-                    .name("John Doe")
-                    .nationality("American")
-                    .birthDate(LocalDate.of(1980,5,15))
-                    .gender(Author.Gender.MALE)
-                    .biography("famous novelist")
-                    .build();
-            Author author2 = Author.builder()
-                    .id(2L)
-                    .name("Jane Smith")
-                    .nationality("British")
-                    .birthDate(LocalDate.of(1975, 3, 22))
-                    .gender(Author.Gender.FEMALE)
-                    .biography("Bestselling author")
-                    .build();
+            AuthorSummaryDTO authorSummaryDTO2 = new AuthorSummaryDTO(
+                    2L,
+                    "Jane Smith",
+                    "British",
+                    Gender.FEMALE);
 
-            List<Author> authors = Arrays.asList(author1, author2);
+
+            List<AuthorSummaryDTO> authors = Arrays.asList(authorSummaryDTO, authorSummaryDTO2);
 
             when(authorService.findAll()).thenReturn(authors);
 
@@ -100,14 +96,12 @@ class AuthorControllerTest {
         @DisplayName("Should return author when valid ID is provided")
         void shouldReturnAuthorWhenValidIdIsProvided() throws Exception{
             Long authorId = 1L;
-            Author author = Author.builder()
-                    .id(authorId)
-                    .name("John Doe")
-                    .nationality("American")
-                    .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
-                    .biography("famous novelist")
-                    .build();
+            AuthorResponseDTO author = new AuthorResponseDTO(
+                    1L,
+                    "John Doe",
+                    "American",
+                    LocalDate.of(1980, 5, 15),
+                    Gender.MALE);
 
             when(authorService.findById(authorId)).thenReturn(author);
 
@@ -117,9 +111,7 @@ class AuthorControllerTest {
                     .andExpect(jsonPath("$.id").value(authorId))
                     .andExpect(jsonPath("$.name").value("John Doe"))
                     .andExpect(jsonPath("$.nationality").value("American"))
-                    .andExpect(jsonPath("$.gender").value("MALE"))
-                    .andExpect(jsonPath("$.biography").value("famous novelist"));
-
+                    .andExpect(jsonPath("$.gender").value("MALE"));
         }
 
         @Test
@@ -153,17 +145,15 @@ class AuthorControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
-            Author createdAuthor = Author.builder()
-                    .id(1L)
-                    .name("John Doe")
-                    .nationality("American")
-                    .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
-                    .biography("famous novelist")
-                    .build();
+            AuthorResponseDTO createdAuthor = new AuthorResponseDTO(
+                    1L,
+                    "John Doe",
+                    "American",
+                    LocalDate.of(1980, 5, 15),
+                    Gender.MALE);
 
             when(authorService.createAuthor(any(CreateAuthorDTO.class))).thenReturn(createdAuthor);
 
@@ -195,7 +185,7 @@ class AuthorControllerTest {
 
             CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder()
                     .nationality("American")
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
 
@@ -211,7 +201,7 @@ class AuthorControllerTest {
 
             CreateAuthorDTO invalidCreateAuthorDTO = CreateAuthorDTO.builder()
                     .name("John Doe")
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
             mockMvc.perform(post("/api/authors")
@@ -232,17 +222,15 @@ class AuthorControllerTest {
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Updated biography")
                     .build();
-            Author updatedAuthor = Author.builder()
-                    .id(authorId)
-                    .name("John Updated")
-                    .nationality("Canadian")
-                    .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
-                    .biography("Updated biography")
-                    .build();
+            AuthorResponseDTO updatedAuthor = new AuthorResponseDTO(
+                    authorId,
+                    "John Updated",
+                    "Canadian",
+                    LocalDate.of(1980, 5, 15),
+                    Gender.MALE);
 
             when(authorService.updateAuthor(any(CreateAuthorDTO.class),eq(authorId))).thenReturn(updatedAuthor);
 
@@ -274,7 +262,7 @@ class AuthorControllerTest {
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Updated biography")
                     .build();
 
@@ -293,7 +281,7 @@ class AuthorControllerTest {
                     .name("John Updated")
                     .nationality("Canadian")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Updated biography")
                     .build();
 
@@ -315,9 +303,7 @@ class AuthorControllerTest {
             doNothing().when(authorService).deleteAuthorById(authorId);
 
             mockMvc.perform(delete("/api/authors/{id}", authorId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"))
-                    .andExpect(content().string("Author Deleted Successfully"));
+                    .andExpect(status().isNoContent());
         }
         @Test
         @DisplayName("Should return 404 when trying to delete non-existent author")

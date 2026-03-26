@@ -1,6 +1,7 @@
 package com.bookstore.management.sale.mapper;
 
 
+import com.bookstore.management.book.mapper.AuthorMapperImpl;
 import com.bookstore.management.book.mapper.BookMapperImpl;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
@@ -33,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = {
         SaleMapperImpl.class,
         CustomerMapperImpl.class,
-        BookMapperImpl.class
+        BookMapperImpl.class,
+        AuthorMapperImpl.class,
 })
 @DisplayName("Sale Mapper Tests")
 class SaleMapperTest {

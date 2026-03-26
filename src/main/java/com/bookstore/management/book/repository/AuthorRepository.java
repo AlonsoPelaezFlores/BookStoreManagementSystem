@@ -1,6 +1,7 @@
 package com.bookstore.management.book.repository;
 
 import com.bookstore.management.book.model.Author;
+import com.bookstore.management.book.model.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,5 +15,5 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 
     List<Author> findByNationality(@Param("nationality") String nationality);
 
-    List<Author> findByGender(@Param("gender") Author.Gender gender);
+    List<Author> findByGender(@Param("gender") Gender gender);
 }

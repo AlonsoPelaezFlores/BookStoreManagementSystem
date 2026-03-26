@@ -74,7 +74,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(2)))
@@ -99,7 +99,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)))
@@ -117,7 +117,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId))
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", inventoryId))
                     .andExpect(status().isOk());
 
             verify(inventoryMovementServiceImpl).findAllByInventoryId(
@@ -139,7 +139,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findAllByInventoryId(eq(inventoryId), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", inventoryId)
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", inventoryId)
                             .param("page", "2")
                             .param("size", "20"))
                     .andExpect(status().isOk());
@@ -156,7 +156,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when inventory id is zero")
         void shouldReturnBadRequestWhenInventoryIdIsZero() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", 0)
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", 0)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -166,7 +166,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when inventory id is negative")
         void shouldReturnBadRequestWhenInventoryIdIsNegative() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-inventory/{inventoryId}", -1)
+            mockMvc.perform(get("/api/movements/by-inventory/{inventoryId}", -1)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -194,7 +194,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .param("type", "ENTRY")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -214,7 +214,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .param("type", "RESERVE")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -232,7 +232,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .param("type", "POSITIVE_ADJUSTMENT")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
@@ -249,7 +249,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByMovementType(eq(movementType), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .param("type", "EXIT"))
                     .andExpect(status().isOk());
 
@@ -265,7 +265,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when movement type is invalid")
         void shouldReturnBadRequestWhenMovementTypeIsInvalid() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .param("type", "INVALID_TYPE")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
@@ -276,7 +276,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when type parameter is missing")
         void shouldReturnBadRequestWhenTypeParameterIsMissing() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-type")
+            mockMvc.perform(get("/api/movements/by-type")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -305,7 +305,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2024-01-01")
                             .param("endDate", "2024-12-31")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -326,7 +326,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2020-01-01")
                             .param("endDate", "2020-12-31")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -345,7 +345,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByDateRange(eq(sameDate), eq(sameDate), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2024-06-15")
                             .param("endDate", "2024-06-15")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -363,7 +363,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenThrow(new IllegalArgumentException("Start date must be before or equal to end date"));
 
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2024-12-31")
                             .param("endDate", "2024-01-01")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -376,7 +376,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when start date is missing")
         void shouldReturnBadRequestWhenStartDateIsMissing() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("endDate", "2024-12-31")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
@@ -387,7 +387,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when end date is missing")
         void shouldReturnBadRequestWhenEndDateIsMissing() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2024-01-01")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
@@ -398,7 +398,7 @@ class InventoryMovementControllerTest {
         @Test
         @DisplayName("Should return bad request when date format is invalid")
         void shouldReturnBadRequestWhenDateFormatIsInvalid() throws Exception {
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "invalid-date")
                             .param("endDate", "2024-12-31")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -417,7 +417,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findByDateRange(eq(startDate), eq(endDate), any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/by-date-range")
+            mockMvc.perform(get("/api/movements/by-date-range")
                             .param("startDate", "2024-01-01")
                             .param("endDate", "2024-12-31"))
                     .andExpect(status().isOk());
@@ -458,7 +458,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/recent")
+            mockMvc.perform(get("/api/movements/recent")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(2)))
@@ -476,7 +476,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(emptyPage);
 
-            mockMvc.perform(get("/api/v1/movements/recent")
+            mockMvc.perform(get("/api/movements/recent")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)))
@@ -493,7 +493,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/recent"))
+            mockMvc.perform(get("/api/movements/recent"))
                     .andExpect(status().isOk());
 
             verify(inventoryMovementServiceImpl).findRecentMovements(
@@ -513,7 +513,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/recent")
+            mockMvc.perform(get("/api/movements/recent")
                             .param("page", "1")
                             .param("size", "25"))
                     .andExpect(status().isOk());
@@ -547,7 +547,7 @@ class InventoryMovementControllerTest {
             when(inventoryMovementServiceImpl.findRecentMovements(any(Pageable.class)))
                     .thenReturn(page);
 
-            mockMvc.perform(get("/api/v1/movements/recent"))
+            mockMvc.perform(get("/api/movements/recent"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content[0].id", is(2)))
                     .andExpect(jsonPath("$.content[1].id", is(1)));

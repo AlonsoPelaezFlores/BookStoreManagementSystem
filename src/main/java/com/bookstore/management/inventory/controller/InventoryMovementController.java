@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping(value = "/api/v1/movements")
+@RequestMapping(value = "/api/movements")
 @RequiredArgsConstructor
 public class InventoryMovementController {
 

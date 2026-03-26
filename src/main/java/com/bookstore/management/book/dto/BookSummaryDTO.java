@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 public record BookSummaryDTO(
     Long id,
-    String title,
     String isbn,
+    String title,
     BigDecimal price,
     String author
 ){}

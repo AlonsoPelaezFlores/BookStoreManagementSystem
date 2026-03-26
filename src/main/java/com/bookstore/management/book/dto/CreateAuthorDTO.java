@@ -1,6 +1,7 @@
 package com.bookstore.management.book.dto;
 
 import com.bookstore.management.book.model.Author;
+import com.bookstore.management.book.model.Gender;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -26,7 +27,7 @@ public class CreateAuthorDTO {
     private LocalDate birthDate;
 
     @NotNull(message = "The gender is obligatory")
-    private Author.Gender gender;
+    private Gender gender;
 
     @Size(max = 2000, message = "The biography cannot exceed 2000 characters")
     private String biography;

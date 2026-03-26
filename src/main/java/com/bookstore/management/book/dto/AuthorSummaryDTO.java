@@ -2,13 +2,10 @@ package com.bookstore.management.book.dto;
 
 import com.bookstore.management.book.model.Gender;
 
-import java.time.LocalDate;
-
-public record AuthorResponseDTO(
+public record AuthorSummaryDTO(
         Long id,
         String name,
         String nationality,
-        LocalDate birthDate,
         Gender gender
-)
-{}
+) {
+}

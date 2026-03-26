@@ -41,7 +41,8 @@ public class Book {
     private BigDecimal price;
 
     @Column(precision = 10, scale = 2)
-    private BigDecimal discountPercent;
+    @Builder.Default
+    private BigDecimal discountPercent =  BigDecimal.ZERO;
     
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)

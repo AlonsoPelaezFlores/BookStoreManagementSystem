@@ -1,5 +1,7 @@
 package com.bookstore.management.book.service;
 
+import com.bookstore.management.book.dto.AuthorResponseDTO;
+import com.bookstore.management.book.dto.AuthorSummaryDTO;
 import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.mapper.AuthorMapper;
 import com.bookstore.management.book.model.Author;
@@ -21,44 +23,40 @@ public class AuthorService {
 
     private final AuthorMapper authorMapper;
 
-    public List<Author> findAll(){
-        return authorRepository.findAll();
+    public List<AuthorSummaryDTO> findAll(){
+
+        return authorMapper.toSummaryDTOList(authorRepository.findAll());
     }
 
-    public Author findById(long id){
-        return authorRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",id));
+    public AuthorResponseDTO findById(long id){
+        return authorMapper.toResponseDTO(authorRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",id)));
     }
 
     @Transactional
-    public Author createAuthor(CreateAuthorDTO createAuthorDto){
+    public AuthorResponseDTO createAuthor(CreateAuthorDTO createAuthorDto){
 
         Author author =  authorMapper.toEntity(createAuthorDto);
 
-        log.info("Creating author with id: {}", author.getId());
-
-        return authorRepository.save(author);
+        return authorMapper.toResponseDTO(authorRepository.save(author));
     }
     @Transactional
     public void deleteAuthorById(Long id){
 
-        if (!authorRepository.existsById(id)){
+        if (findById(id)==null){
             throw new ResourceNotFoundException("Author", "Id", id);
         }
-        log.info("Deleting author with id: {}", id);
         authorRepository.deleteById(id);
     }
 
     @Transactional
-    public Author updateAuthor(CreateAuthorDTO createAuthorDto, Long id){
+    public AuthorResponseDTO updateAuthor(CreateAuthorDTO createAuthorDto, Long id){
         Author existingAuthor = authorRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Author","Id",id));
 
         authorMapper.updateEntityFromDto(createAuthorDto, existingAuthor);
 
-        log.info("Updating author with id: {}", existingAuthor.getId());
-
-        return authorRepository.save(existingAuthor);
+        return authorMapper.toResponseDTO(authorRepository.save(existingAuthor));
     }
 
 }
