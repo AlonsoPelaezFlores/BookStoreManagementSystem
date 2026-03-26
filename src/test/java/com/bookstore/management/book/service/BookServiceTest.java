@@ -1,23 +1,28 @@
 package com.bookstore.management.book.service;
 
+import com.bookstore.management.book.dto.AuthorSummaryDTO;
+import com.bookstore.management.book.dto.BookResponseDTO;
+import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.repository.AuthorRepository;
 import com.bookstore.management.book.repository.BookRepository;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
+import org.apache.coyote.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,13 +34,15 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
+
     @Mock
     private BookRepository bookRepository;
+
     @Mock
     private AuthorRepository authorRepository;
 
-    @Spy
-    private BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
+    @Mock
+    private BookMapper bookMapper;
 
     @InjectMocks
     private BookService bookService;
@@ -51,7 +58,7 @@ class BookServiceTest {
                     .id(1L)
                     .name("Chimamanda Ngozi Adichie")
                     .nationality("Nigerian")
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .build();
 
             book = Book.builder()
@@ -81,14 +88,31 @@ class BookServiceTest {
         @DisplayName("Should return all books when books exist in repository")
         void shouldReturnAllBooksWhenBooksExist(){
             List<Book> expectedBooks = Arrays.asList(book, book2);
-            when(bookRepository.findAll()).thenReturn(expectedBooks);
+            BookSummaryDTO bookSummaryDTO = new BookSummaryDTO(
+                    book.getId(),
+                    book.getIsbn(),
+                    book.getTitle(),
+                    new BigDecimal("10.0"),
+                    book.getAuthor().getName());
+            BookSummaryDTO bookSummaryDTO2 = new BookSummaryDTO(
+                    book2.getId(),
+                    book2.getIsbn(),
+                    book2.getTitle(),
+                    new BigDecimal("10.0"),
+                    book2.getAuthor().getName());
+            List<BookSummaryDTO> expectedDTOs = Arrays.asList(bookSummaryDTO, bookSummaryDTO2);
 
-            List<Book> actualBooks = bookService.findAll();
+            when(bookRepository.findAll()).thenReturn(expectedBooks);
+            when(bookMapper.toBookSummaryDTOList(expectedBooks)).thenReturn(expectedDTOs);
+
+            List<BookSummaryDTO> actualBooks = bookService.findAll();
 
             assertThat(actualBooks).isNotNull();
             assertThat(actualBooks).hasSize(2);
-            assertThat(actualBooks).isEqualTo(expectedBooks);
+            assertThat(actualBooks.get(0).title()).isEqualTo(book.getTitle());
 
+            verify(bookRepository).findAll();
+            verify(bookMapper).toBookSummaryDTOList(expectedBooks);
 
         }
         @Test
@@ -97,7 +121,7 @@ class BookServiceTest {
             List<Book> expectBooks = Collections.emptyList();
             when(bookRepository.findAll()).thenReturn(expectBooks);
 
-            List<Book> actualBooks = bookService.findAll();
+            List<BookSummaryDTO> actualBooks = bookService.findAll();
 
             assertThat(actualBooks).hasSize(0);
         }
@@ -107,6 +131,7 @@ class BookServiceTest {
     class findById{
         private Book book;
         public Author author;
+        private BookResponseDTO expectedDTO;
         @BeforeEach
         void setUp() {
             author= Author.builder()
@@ -114,7 +139,7 @@ class BookServiceTest {
                     .name("Gabriel García Márquez")
                     .nationality("Colombian")
                     .birthDate(LocalDate.of(1927, 3, 6))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Colombian novelist, short-story writer, screenwriter, and journalist, known affectionately as Gabo or Gabito throughout Latin America.")
                     .build();
             book = Book.builder()
@@ -127,6 +152,15 @@ class BookServiceTest {
                     .genre("Historical Fiction")
                     .author(author)
                     .build();
+            expectedDTO = new BookResponseDTO(
+                    1L,
+                    book.getIsbn(),
+                    book.getTitle(),
+                    book.getDescription(),
+                    book.getPages(),
+                    book.getPrice(),
+                    new AuthorSummaryDTO(author.getId(), author.getName(), author.getNationality(), author.getGender())
+            );
         }
         @Test
         @DisplayName("Should return book when book exist")
@@ -134,14 +168,15 @@ class BookServiceTest {
             Long bookId = 1L;
 
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+            when(bookMapper.toBookResponseDTO(book)).thenReturn(expectedDTO);
 
-            Book actualBook = bookService.findById(bookId);
+            BookResponseDTO actualBook = bookService.findById(bookId);
 
             assertThat(actualBook).isNotNull();
-            assertThat(actualBook.getId()).isEqualTo(bookId);
-            assertThat(actualBook).isEqualTo(book);
+            assertThat(actualBook.id()).isEqualTo(bookId);
 
             verify(bookRepository).findById(bookId);
+            verify(bookMapper).toBookResponseDTO(book);
         }
         @Test
         @DisplayName("Should throw BookNotFoundException when book is missing")
@@ -164,13 +199,14 @@ class BookServiceTest {
     class findByISBN{
         private Book book;
         public Author author;
+        private BookResponseDTO expectedDTO;
         @BeforeEach
         void setUp() {
             author = Author.builder()
                     .id(1L)
                     .name("Chimamanda Ngozi Adichie")
                     .nationality("Nigerian")
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .build();
 
             book = Book.builder()
@@ -183,16 +219,34 @@ class BookServiceTest {
                     .genre("Historical Fiction")
                     .author(author)
                     .build();
-
+            expectedDTO = new BookResponseDTO(
+                    1L,
+                    book.getIsbn(),
+                    book.getTitle(),
+                    book.getDescription(),
+                    book.getPages(),
+                    book.getPrice(),
+                    new AuthorSummaryDTO(author.getId(), author.getName(), author.getNationality(), author.getGender())
+            );
         }
         @Test
         @DisplayName("Should return the book when the book is found by isbn")
         void shouldReturnBookWhenBookIsFoundByIsbn(){
             String bookISBN = "9780007356348";
-            when(bookRepository.findBookByIsbn(bookISBN)).thenReturn(Optional.ofNullable(book));
 
-            Book actualBook = bookService.findByISBN(bookISBN);
-            assertThat(actualBook).isEqualTo(book);
+            when(bookRepository.findBookByIsbn(bookISBN)).thenReturn(Optional.of(book));
+            when(bookMapper.toBookResponseDTO(book)).thenReturn(expectedDTO);
+
+            BookResponseDTO actualBook = bookService.findByISBN(bookISBN);
+
+            assertThat(actualBook).isNotNull();
+            assertThat(actualBook.id()).isEqualTo(book.getId());
+            assertThat(actualBook.title()).isEqualTo(book.getTitle());
+            assertThat(actualBook.isbn()).isEqualTo(book.getIsbn());
+            assertThat(actualBook.author().id()).isEqualTo(book.getAuthor().getId());
+
+            verify(bookRepository).findBookByIsbn(bookISBN);
+            verify(bookMapper).toBookResponseDTO(book);
         }
 
         @Test
@@ -228,13 +282,14 @@ class BookServiceTest {
         private Book expectBook;
         public Author author;
         private CreateBookDTO createBookDto;
+        private BookResponseDTO expectedDTO;
         @BeforeEach
         void setUp() {
             author = Author.builder()
                     .id(1L)
                     .name("Chimamanda Ngozi Adichie")
                     .nationality("Nigerian")
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .build();
 
             expectBook = Book.builder()
@@ -255,53 +310,65 @@ class BookServiceTest {
                     .description("A story set during the Nigerian Civil War.")
                     .pages(433)
                     .genre("Historical Fiction")
-                    .author(author)
+                    .authorId(author.getId())
                     .build();
-
+            expectedDTO = new BookResponseDTO(
+                    1L,
+                    expectBook.getIsbn(),
+                    expectBook.getTitle(),
+                    expectBook.getDescription(),
+                    expectBook.getPages(),
+                    expectBook.getPrice(),
+                    new AuthorSummaryDTO(author.getId(), author.getName(), author.getNationality(), author.getGender())
+            );
         }
 
         @Test
         @DisplayName("Should return book saved when creating book with valid data")
         void shouldReturnSavedBookWithValidData(){
-            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
-            Book actualBook = bookService.createBook(createBookDto);
+            when(bookMapper.toEntity(createBookDto)).thenReturn(expectBook);
+            when(bookRepository.findBookByIsbn(anyString())).thenReturn(Optional.empty());
+            when(authorRepository.findById(anyLong())).thenReturn(Optional.of(author));
+            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            when(bookMapper.toBookResponseDTO(expectBook)).thenReturn(expectedDTO);
+
+            BookResponseDTO actualBook = bookService.createBook(createBookDto);
 
             assertThat(actualBook).isNotNull();
-            assertThat(actualBook.getId()).isEqualTo(expectBook.getId());
-            assertThat(actualBook.getIsbn()).isEqualTo(expectBook.getIsbn());
-            assertThat(actualBook.getTitle()).isEqualTo(expectBook.getTitle());
-            assertThat(actualBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
-            assertThat(actualBook.getDescription()).isEqualTo(expectBook.getDescription());
-            assertThat(actualBook.getPages()).isEqualTo(expectBook.getPages());
-            assertThat(actualBook.getGenre()).isEqualTo(expectBook.getGenre());
-            assertThat(actualBook.getAuthor()).isEqualTo(expectBook.getAuthor());
+            assertThat(actualBook.id()).isEqualTo(expectBook.getId());
+            assertThat(actualBook.isbn()).isEqualTo(expectBook.getIsbn());
+            assertThat(actualBook.title()).isEqualTo(expectBook.getTitle());
 
+            verify(bookRepository).findBookByIsbn(createBookDto.getIsbn());
+            verify(authorRepository).findById(createBookDto.getAuthorId());
+            verify(bookRepository).save(any(Book.class));
+            verify(bookMapper).toEntity(any());
+            verify(bookMapper).toBookResponseDTO(any());
 
         }
         @Test
         @DisplayName("Should call repository save when creating book with valid data")
         void shouldCallRepositorySaveWithValidData(){
 
-            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            when(bookRepository.findBookByIsbn(anyString())).thenReturn(Optional.empty());
+            when(authorRepository.findById(createBookDto.getAuthorId())).thenReturn(Optional.of(author));
 
-            bookService.createBook(createBookDto);
+            when(bookMapper.toEntity(createBookDto)).thenReturn(expectBook);
 
-            ArgumentCaptor<Book> bookCaptor = ArgumentCaptor.forClass(Book.class);
+            when(bookRepository.save(expectBook)).thenReturn(expectBook);
 
-            verify(bookRepository).save(bookCaptor.capture());
+            when(bookMapper.toBookResponseDTO(expectBook)).thenReturn(expectedDTO);
 
-            Book capturedBook = bookCaptor.getValue();
+            BookResponseDTO actualBook = bookService.createBook(createBookDto);
 
-            assertThat(capturedBook.getIsbn()).isEqualTo(expectBook.getIsbn());
-            assertThat(capturedBook.getTitle()).isEqualTo(expectBook.getTitle());
-            assertThat(capturedBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
-            assertThat(capturedBook.getDescription()).isEqualTo(expectBook.getDescription());
-            assertThat(capturedBook.getPages()).isEqualTo(expectBook.getPages());
-            assertThat(capturedBook.getGenre()).isEqualTo(expectBook.getGenre());
-            assertThat(capturedBook.getAuthor()).isEqualTo(expectBook.getAuthor());
+            assertThat(actualBook).isNotNull();
+            assertThat(actualBook.isbn()).isEqualTo(createBookDto.getIsbn());
 
-            assertThat(capturedBook.getId()).isNull();
+            verify(bookRepository).save(expectBook);
+
+            verify(bookRepository).findBookByIsbn(createBookDto.getIsbn());
+            verify(authorRepository).findById(createBookDto.getAuthorId());
         }
     }
     @Nested
@@ -309,12 +376,14 @@ class BookServiceTest {
         private Book expectBook;
         public Author author;
         private CreateBookDTO createBookDto;
+        private BookResponseDTO expectedDTO;
         @BeforeEach
         void setUp() {
             author = Author.builder()
+                    .id(1L)
                     .name("Haruki Murakami")
                     .nationality("Japanese")
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .build();
             createBookDto =  CreateBookDTO.builder()
                     .isbn("9780099448822")
@@ -322,8 +391,9 @@ class BookServiceTest {
                     .publishDate(LocalDate.of(2002, 9, 12))
                     .description("A surreal journey of a teenage boy and a man who talks to cats.")
                     .pages(505)
+                    .price(new BigDecimal("10.0"))
                     .genre("Magical Realism")
-                    .author(author)
+                    .authorId(author.getId())
                     .build();
             expectBook = Book.builder()
                     .id(1L)
@@ -332,25 +402,42 @@ class BookServiceTest {
                     .publishDate(LocalDate.of(2002, 9, 12))
                     .description("A surreal journey of a teenage boy and a man who talks to cats.")
                     .pages(505)
+                    .price(new BigDecimal("10.0"))
+                    .discountPercent(BigDecimal.ZERO)
                     .genre("Magical Realism")
                     .author(author)
                     .build();
+            expectedDTO = new BookResponseDTO(
+                    1L,
+                    expectBook.getIsbn(),
+                    expectBook.getTitle(),
+                    expectBook.getDescription(),
+                    expectBook.getPages(),
+                    expectBook.getPrice(),
+                    new AuthorSummaryDTO(author.getId(), author.getName(), author.getNationality(), author.getGender())
+            );
 
         }
         @Test
         @DisplayName("Should return update book when book exists")
         void shouldReturnUpdatedBookWhenBookExists(){
             Long bookId = 1L;
-            when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
-            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            Long authorId = createBookDto.getAuthorId();
 
-            Book actualBook = bookService.updateBook(createBookDto, bookId);
+            when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
+            when(authorRepository.findById(authorId)).thenReturn(Optional.of(author));
+            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            when(bookMapper.toBookResponseDTO(expectBook)).thenReturn(expectedDTO);
+
+            BookResponseDTO actualBook = bookService.updateBook(createBookDto, bookId);
 
             assertThat(actualBook).isNotNull();
+            assertThat(actualBook.author().id()).isEqualTo(authorId);
+            assertThat(actualBook.id()).isEqualTo(expectBook.getId());
+            assertThat(actualBook.isbn()).isEqualTo(expectBook.getIsbn());
 
             verify(bookRepository).findById(bookId);
             verify(bookRepository).save(any(Book.class));
-            verify(bookMapper).updateEntityFromDto(createBookDto,expectBook);
         }
         @Test
         @DisplayName("Should throw BookNotFoundException book is not found on update")
@@ -369,28 +456,30 @@ class BookServiceTest {
         @Test
         @DisplayName("Should update all fields with valid data")
         void shouldUpdateAllFieldsWithValidData(){
+
             Long bookId = 1L;
+            Long authorId = createBookDto.getAuthorId();
+
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
+            when(authorRepository.findById(authorId)).thenReturn(Optional.of(author));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            when(bookMapper.toBookResponseDTO(expectBook)).thenReturn(expectedDTO);
 
-            Book actualBook = bookService.updateBook(createBookDto, bookId);
+            BookResponseDTO actualBook = bookService.updateBook(createBookDto, bookId);
 
-            assertThat(actualBook.getIsbn()).isEqualTo(expectBook.getIsbn());
-            assertThat(actualBook.getTitle()).isEqualTo(expectBook.getTitle());
-            assertThat(actualBook.getPublishDate()).isEqualTo(expectBook.getPublishDate());
-            assertThat(actualBook.getDescription()).isEqualTo(expectBook.getDescription());
-            assertThat(actualBook.getPages()).isEqualTo(expectBook.getPages());
-            assertThat(actualBook.getGenre()).isEqualTo(expectBook.getGenre());
-            assertThat(actualBook.getAuthor()).isEqualTo(expectBook.getAuthor());
-
+            assertThat(actualBook.isbn()).isEqualTo(expectBook.getIsbn());
+            assertThat(actualBook.title()).isEqualTo(expectBook.getTitle());
+            assertThat(actualBook.description()).isEqualTo(expectBook.getDescription());
+            assertThat(actualBook.pages()).isEqualTo(expectBook.getPages());
+            assertThat(actualBook.author().name()).isEqualTo(expectBook.getAuthor().getName());
         }
         @Test
         @DisplayName("Should call repository save")
         void shouldCallRepositorySave(){
             Long bookId = 1L;
 
+            when(authorRepository.findById(createBookDto.getAuthorId())).thenReturn(Optional.of(author));
             when(bookRepository.findById(bookId)).thenReturn(Optional.of(expectBook));
-            when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
 
             bookService.updateBook(createBookDto, bookId);
 
@@ -417,11 +506,11 @@ class BookServiceTest {
         void shouldDeleteSuccessfullyWhenBookExists(){
             Long bookId = 1L;
 
-            when(bookRepository.existsById(bookId)).thenReturn(true);
+            when(bookRepository.findById(bookId)).thenReturn(Optional.of(new Book()));
 
             bookService.deleteById(bookId);
 
-            verify(bookRepository).existsById(bookId);
+            verify(bookRepository).findById(bookId);
             verify(bookRepository).deleteById(bookId);
         }
         @Test
@@ -429,7 +518,7 @@ class BookServiceTest {
         void shouldThrowBookNotFoundExceptionWhenBookNotFound(){
             Long nonExistingBookId = 999L;
 
-            when(bookRepository.existsById(nonExistingBookId)).thenReturn(false);
+            when(bookRepository.findById(nonExistingBookId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> bookService.deleteById(nonExistingBookId))
                     .isInstanceOf(ResourceNotFoundException.class)
@@ -437,7 +526,7 @@ class BookServiceTest {
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
 
-            verify(bookRepository).existsById(nonExistingBookId);
+            verify(bookRepository).findById(nonExistingBookId);
             verify(bookRepository, never()).deleteById(any(Long.class));
         }
         @Test
@@ -445,7 +534,7 @@ class BookServiceTest {
         void shouldCallRepositoryDeleteById(){
             Long bookId = 1L;
 
-            when(bookRepository.existsById(bookId)).thenReturn(true);
+            when(bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(new Book()));
 
             bookService.deleteById(bookId);
 
@@ -459,6 +548,7 @@ class BookServiceTest {
         private Author newAuthor;
         private Book book;
         private Book expectBook;
+        private BookResponseDTO expectedDTO;
 
         @BeforeEach
         void setUp(){
@@ -466,14 +556,14 @@ class BookServiceTest {
                     .id(1L)
                     .name("Alex Jordan")
                     .nationality("Canadian")
-                    .gender(Author.Gender.PREFER_NOT_TO_SAY)
+                    .gender(Gender.PREFER_NOT_TO_SAY)
                     .build();
 
             newAuthor = Author.builder()
                     .id(2L)
-                    .name("Haruki Murakami")
+                    .name("Alex Jordan")
                     .nationality("Japanese")
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .build();
 
             book = Book.builder()
@@ -496,7 +586,15 @@ class BookServiceTest {
                     .genre("Literary Fiction")
                     .author(newAuthor)
                     .build();
-
+            expectedDTO = new BookResponseDTO(
+                    1L,
+                    "9780007356348",
+                    "Clean Code",
+                    "A book about clean code",
+                    431,
+                    BigDecimal.valueOf(29.99),
+                    new AuthorSummaryDTO(2L,author.getName(),author.getNationality(),author.getGender())
+            );
         }
         @Test
         @DisplayName("Should return update book author when author and book exist")
@@ -505,14 +603,14 @@ class BookServiceTest {
             when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
             when(authorRepository.findById(2L)).thenReturn(Optional.of(newAuthor));
             when(bookRepository.save(any(Book.class))).thenReturn(expectBook);
+            when(bookMapper.toBookResponseDTO(expectBook)).thenReturn(expectedDTO);
 
-            Book bookUpdated = bookService.updateAuthor(1L, 2L);
+            BookResponseDTO actualBook = bookService.updateAuthor(1L, 2L);
 
-            assertThat(bookUpdated).isNotNull();
-            assertThat(bookUpdated.getAuthor()).isEqualTo(newAuthor);
-            assertThat(bookUpdated.getAuthor().getId()).isEqualTo(2L);
-            assertThat(bookUpdated.getAuthor().getName()).isEqualTo("Haruki Murakami");
-            assertThat(bookUpdated.getId()).isEqualTo(1L);
+            assertThat(actualBook).isNotNull();
+            assertThat(actualBook.author().name()).isEqualTo(newAuthor.getName());
+            assertThat(actualBook.author().id()).isEqualTo(2L);
+            assertThat(actualBook.id()).isEqualTo(1L);
 
             verify(bookRepository).findById(1L);
             verify(authorRepository).findById(2L);
@@ -523,16 +621,21 @@ class BookServiceTest {
         @DisplayName("Should not call repository and return unchanged when book already has same author id")
         void shouldNotCallRepositoryAndReturnUnchangedWhenBookAlreadyHasSameAuthorId(){
 
-            when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+            Long bookId = 1L;
+            Long authorId = 1L;
 
-            Book bookUpdated = bookService.updateAuthor(1L, 1L);
 
-            assertThat(bookUpdated).isNotNull();
-            assertThat(bookUpdated.getAuthor()).isEqualTo(author);
-            assertThat(bookUpdated.getAuthor().getId()).isEqualTo(1L);
-            assertThat(bookUpdated).isSameAs(book);
 
-            verify(bookRepository).findById(1L);
+            when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+            when(bookMapper.toBookResponseDTO(book)).thenReturn(expectedDTO);
+
+            BookResponseDTO actualBook = bookService.updateAuthor(bookId, authorId);
+
+            assertThat(actualBook).isNotNull();
+            assertThat(actualBook.author().name()).isEqualTo(author.getName());
+            assertThat(actualBook.author().id()).isEqualTo(2L);
+
+            verify(bookRepository).findById(bookId);
             verify(authorRepository, never()).findById(any(Long.class));
             verify(bookRepository, never()).save(any(Book.class));
         }
@@ -585,13 +688,13 @@ class BookServiceTest {
                     .id(1L)
                     .name("Haruki Murakami")
                     .nationality("Japanese")
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .build();
             author2 = Author.builder()
                     .id(2L)
                     .name("Alex Jordan")
                     .nationality("Canadian")
-                    .gender(Author.Gender.PREFER_NOT_TO_SAY)
+                    .gender(Gender.PREFER_NOT_TO_SAY)
                     .build();
             book1 = Book.builder()
                     .id(1L)
@@ -619,19 +722,30 @@ class BookServiceTest {
         @DisplayName("Should return books when author exist")
         void shouldReturnBooksWhenAuthorExist() {
             Long authorId = 1L;
-
+            BookSummaryDTO bookSummaryDTO = new BookSummaryDTO(
+                    book1.getId(),
+                    book1.getIsbn(),
+                    book1.getTitle(),
+                    new BigDecimal("10.0"),
+                    book1.getAuthor().getName());
+            BookSummaryDTO bookSummaryDTO2 = new BookSummaryDTO(
+                    book2.getId(),
+                    book2.getIsbn(),
+                    book2.getTitle(),
+                    new BigDecimal("10.0"),
+                    book2.getAuthor().getName());
             List<Book> expectedBooks = Arrays.asList(book1, book2);
+            List<BookSummaryDTO> expectedDTOs = Arrays.asList(bookSummaryDTO, bookSummaryDTO2);
 
             when(authorRepository.existsById(authorId)).thenReturn(true);
             when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
+            when(bookMapper.toBookSummaryDTOList(expectedBooks)).thenReturn(expectedDTOs);
 
-            List<Book> actualBooks = bookService.booksByAuthorId(authorId);
+            List<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId);
 
             assertThat(actualBooks).isNotEmpty();
             assertThat(actualBooks).hasSize(2);
-            assertThat(actualBooks).isEqualTo(expectedBooks);
-
-
+            assertThat(actualBooks).isEqualTo(expectedDTOs);
         }
 
         @Test
@@ -644,7 +758,7 @@ class BookServiceTest {
             when(authorRepository.existsById(authorId)).thenReturn(true);
             when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
 
-            List<Book> actualBooks = bookService.booksByAuthorId(authorId);
+            List<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId);
 
             assertThat(actualBooks).isEmpty();
             assertThat(actualBooks).hasSize(0);

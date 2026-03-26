@@ -2,6 +2,7 @@ package com.bookstore.management.book.repository;
 
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.model.Gender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ public class BookRepositoryTest {
                     .name("John Doe")
                     .nationality("Americano")
                     .birthDate(LocalDate.of(1980,5,15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -83,7 +84,7 @@ public class BookRepositoryTest {
                     .name("Mario Vargas Llosa")
                     .nationality("Peruano")
                     .birthDate(LocalDate.of(1936, 3, 28))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -128,7 +129,7 @@ public class BookRepositoryTest {
                     .name("Mario Vargas Llosa")
                     .nationality("Peruano")
                     .birthDate(LocalDate.of(1936, 3, 28))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -149,7 +150,7 @@ public class BookRepositoryTest {
                     .name("Isabel Allende")
                     .nationality("Chilena")
                     .birthDate(LocalDate.of(1942, 8, 2))
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .biography("Famosa Novelista")
                     .build();
 
@@ -183,7 +184,7 @@ public class BookRepositoryTest {
                     .name("Isabel Allende")
                     .nationality("Chilena")
                     .birthDate(LocalDate.of(1942, 8, 2))
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .biography("Famosa Novelista")
                     .build();
 
@@ -212,7 +213,7 @@ public class BookRepositoryTest {
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
                     .birthDate(LocalDate.of(1927,3,6))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -270,7 +271,7 @@ public class BookRepositoryTest {
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
                     .birthDate(LocalDate.of(1927,3,6))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -305,7 +306,7 @@ public class BookRepositoryTest {
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
                     .birthDate(LocalDate.of(1927,3,6))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
 
@@ -359,7 +360,7 @@ public class BookRepositoryTest {
                     .name("Gabriel Garcia Marquezx")
                     .nationality("Colombiano")
                     .birthDate(LocalDate.of(1927,3,6))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("Famoso Novelista")
                     .build();
             entityManager.persistAndFlush(author);

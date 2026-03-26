@@ -81,7 +81,7 @@ public class InventoryControllerTest {
 
             when(inventoryServiceImpl.findAll()).thenReturn(inventories);
 
-            mockMvc.perform(get("/api/v1/inventory")
+            mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(2)))
@@ -98,7 +98,7 @@ public class InventoryControllerTest {
         void shouldReturnEmptyListWhenNoInventoriesExist() throws Exception {
             when(inventoryServiceImpl.findAll()).thenReturn(Collections.emptyList());
 
-            mockMvc.perform(get("/api/v1/inventory")
+            mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
@@ -129,7 +129,7 @@ public class InventoryControllerTest {
 
             when(inventoryServiceImpl.findByBookId(bookId)).thenReturn(inventory);
 
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}", bookId)
+            mockMvc.perform(get("/api/inventory/book/{bookId}", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id", is(1)))
@@ -147,7 +147,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByBookId(bookId))
                     .thenThrow(new ResourceNotFoundException("Book", "Id", bookId));
 
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}", bookId)
+            mockMvc.perform(get("/api/inventory/book/{bookId}", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message", containsString("Book")));
@@ -158,7 +158,7 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return bad request when book id is negative")
         void shouldReturnBadRequestWhenBookIdIsNegative() throws Exception {
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}", -1)
+            mockMvc.perform(get("/api/inventory/book/{bookId}", -1)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -168,7 +168,7 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return bad request when book id is zero")
         void shouldReturnBadRequestWhenBookIdIsZero() throws Exception {
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}", 0)
+            mockMvc.perform(get("/api/inventory/book/{bookId}", 0)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -191,7 +191,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByActiveStatusList(true))
                     .thenReturn(Collections.singletonList(inventory));
 
-            mockMvc.perform(get("/api/v1/inventory/status")
+            mockMvc.perform(get("/api/inventory/status")
                             .param("active", "true")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -213,7 +213,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByActiveStatusList(false))
                     .thenReturn(Collections.singletonList(inventory));
 
-            mockMvc.perform(get("/api/v1/inventory/status")
+            mockMvc.perform(get("/api/inventory/status")
                             .param("active", "false")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -229,7 +229,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByActiveStatusList(true))
                     .thenReturn(Collections.emptyList());
 
-            mockMvc.perform(get("/api/v1/inventory/status")
+            mockMvc.perform(get("/api/inventory/status")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
@@ -250,7 +250,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByAlertLowStockList())
                     .thenReturn(Collections.singletonList(inventory));
 
-            mockMvc.perform(get("/api/v1/inventory/low-stock")
+            mockMvc.perform(get("/api/inventory/low-stock")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(1)))
@@ -265,7 +265,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.findByAlertLowStockList())
                     .thenReturn(Collections.emptyList());
 
-            mockMvc.perform(get("/api/v1/inventory/low-stock")
+            mockMvc.perform(get("/api/inventory/low-stock")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
@@ -292,7 +292,7 @@ public class InventoryControllerTest {
 
             when(inventoryServiceImpl.checkBookAvailability(bookId)).thenReturn(availability);
 
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}/available", bookId)
+            mockMvc.perform(get("/api/inventory/book/{bookId}/available", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.bookId", is(1)))
@@ -310,7 +310,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.checkBookAvailability(bookId))
                     .thenThrow(new ResourceNotFoundException("Book", "Id", bookId));
 
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}/available", bookId)
+            mockMvc.perform(get("/api/inventory/book/{bookId}/available", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
 
@@ -320,7 +320,7 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return bad request when book id is negative")
         void shouldReturnBadRequestWhenBookIdIsNegative() throws Exception {
-            mockMvc.perform(get("/api/v1/inventory/book/{bookId}/available", -1)
+            mockMvc.perform(get("/api/inventory/book/{bookId}/available", -1)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
@@ -342,7 +342,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.registerSale(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/sales", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isOk())
@@ -357,7 +357,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(-10, MovementType.EXIT);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/sales", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
@@ -371,7 +371,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             String invalidJson = "{\"quantityAdjustment\": 10, \"movementType\": null}";
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/sales", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
@@ -384,7 +384,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenBookIdIsNegative() throws Exception {
             UpdateStockDTO updateStock = new UpdateStockDTO(10, MovementType.EXIT);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/sales", -1)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/sales", -1)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
@@ -401,7 +401,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.registerSale(any(UpdateStockDTO.class), eq(bookId)))
                     .thenThrow(new InsufficientStockException("Insufficient Stock"));
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/sales", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isConflict())
@@ -425,7 +425,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.registerEntry(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/entries", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/entries", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isOk())
@@ -440,7 +440,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(-10, MovementType.ENTRY);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/entries", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/entries", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
@@ -454,7 +454,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             String invalidJson = "{\"quantityAdjustment\": 20, \"movementType\": null}";
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/entries", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/entries", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
@@ -477,7 +477,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.positiveAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/adjustment/positive", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/positive", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isOk())
@@ -492,7 +492,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(-5, MovementType.POSITIVE_ADJUSTMENT);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/adjustment/positive", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/positive", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
@@ -515,7 +515,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/adjustment/negative", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/negative", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isOk())
@@ -533,7 +533,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenThrow(new InvalidAdjustmentException("The adjustment would leave negative stock."));
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/adjustment/negative", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/negative", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest())
@@ -556,7 +556,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.create(any(CreateInventoryDTO.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isOk())
@@ -573,7 +573,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.create(any(CreateInventoryDTO.class)))
                     .thenThrow(new DuplicateEntityException("Inventory", "BookId", 1L));
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isConflict())
@@ -587,7 +587,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenBookIdIsNull() throws Exception {
             String invalidJson = "{\"bookId\": null, \"quantityAvailable\": 50, \"stockMin\": 10, \"stockMax\": 100}";
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
@@ -600,7 +600,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenQuantityAvailableIsNegative() throws Exception {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, -10, 10, 100);
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
@@ -613,7 +613,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenStockMinIsNegative() throws Exception {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, 50, -10, 100);
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
@@ -626,7 +626,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenStockMaxIsZero() throws Exception {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, 50, 10, 0);
 
-            mockMvc.perform(post("/api/v1/inventory")
+            mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
@@ -647,7 +647,7 @@ public class InventoryControllerTest {
 
             doNothing().when(inventoryServiceImpl).releaseReservation(bookId, quantity);
 
-            mockMvc.perform(delete("/api/v1/inventory/book/{bookId}/reservations", bookId)
+            mockMvc.perform(delete("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
@@ -668,7 +668,7 @@ public class InventoryControllerTest {
 
             doNothing().when(inventoryServiceImpl).reserveStock(bookId, quantity);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/reservations", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
@@ -681,7 +681,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenQuantityIsNegative() throws Exception {
             Long bookId = 1L;
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/reservations", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", "-10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
@@ -698,7 +698,7 @@ public class InventoryControllerTest {
             doThrow(new InsufficientStockException("Insufficient stock"))
                     .when(inventoryServiceImpl).reserveStock(bookId, quantity);
 
-            mockMvc.perform(post("/api/v1/inventory/book/{bookId}/reservations", bookId)
+            mockMvc.perform(post("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isConflict())
@@ -725,7 +725,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.updateThresholds(bookId, stockMin, stockMax))
                     .thenReturn(response);
 
-            mockMvc.perform(patch("/api/v1/inventory/book/{bookId}/thresholds", bookId)
+            mockMvc.perform(patch("/api/inventory/book/{bookId}/thresholds", bookId)
                             .param("stockMin", stockMin.toString())
                             .param("stockMax", stockMax.toString())
                             .contentType(MediaType.APPLICATION_JSON))
@@ -746,7 +746,7 @@ public class InventoryControllerTest {
             when(inventoryServiceImpl.updateThresholds(bookId, stockMin, stockMax))
                     .thenThrow(new InvalidStockThresholdException("Minimum stock cannot be greater than or equal to the maximum stock"));
 
-            mockMvc.perform(patch("/api/v1/inventory/book/{bookId}/thresholds", bookId)
+            mockMvc.perform(patch("/api/inventory/book/{bookId}/thresholds", bookId)
                             .param("stockMin", stockMin.toString())
                             .param("stockMax", stockMax.toString())
                             .contentType(MediaType.APPLICATION_JSON))
@@ -761,7 +761,7 @@ public class InventoryControllerTest {
         void shouldReturnBadRequestWhenStockMinIsNegative() throws Exception {
             Long bookId = 1L;
 
-            mockMvc.perform(patch("/api/v1/inventory/book/{bookId}/thresholds", bookId)
+            mockMvc.perform(patch("/api/inventory/book/{bookId}/thresholds", bookId)
                             .param("stockMin", "-10")
                             .param("stockMax", "100")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -782,7 +782,7 @@ public class InventoryControllerTest {
 
             doNothing().when(inventoryServiceImpl).disableById(inventoryId);
 
-            mockMvc.perform(patch("/api/v1/inventory/{inventoryId}/disable", inventoryId)
+            mockMvc.perform(patch("/api/inventory/{inventoryId}/disable", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
 
@@ -797,7 +797,7 @@ public class InventoryControllerTest {
             doThrow(new ResourceNotFoundException("Inventory", "Id", inventoryId))
                     .when(inventoryServiceImpl).disableById(inventoryId);
 
-            mockMvc.perform(patch("/api/v1/inventory/{inventoryId}/disable", inventoryId)
+            mockMvc.perform(patch("/api/inventory/{inventoryId}/disable", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message", containsString("Inventory")));
@@ -808,7 +808,7 @@ public class InventoryControllerTest {
         @Test
         @DisplayName("Should return bad request when id is negative")
         void shouldReturnBadRequestWhenIdIsNegative() throws Exception {
-            mockMvc.perform(patch("/api/v1/inventory/{inventoryId}/disable", -1)
+            mockMvc.perform(patch("/api/inventory/{inventoryId}/disable", -1)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 

@@ -51,5 +51,5 @@ public class CreateBookDTO {
         private String genre;
 
         @NotNull(message = "author cannot be null")
-        private Author author;
+        private Long authorId;
     }

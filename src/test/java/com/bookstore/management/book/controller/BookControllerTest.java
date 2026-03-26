@@ -1,8 +1,12 @@
 package com.bookstore.management.book.controller;
 
+import com.bookstore.management.book.dto.AuthorSummaryDTO;
+import com.bookstore.management.book.dto.BookResponseDTO;
+import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.service.BookService;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +48,8 @@ public class BookControllerTest {
     @DisplayName("GET /api/books - Find All Books")
     class FindAllBooks {
         private Author author;
-        private Book book;
-        private Book book2;
+        private BookSummaryDTO book;
+        private BookSummaryDTO book2;
 
         @BeforeEach
         void setUp() {
@@ -53,35 +58,30 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
-            book = Book.builder()
-                    .id(1L)
-                    .isbn("978-84-376-0494-7")
-                    .title("Cien años de soledad")
-                    .publishDate(LocalDate.of(1967, 6, 5))
-                    .description("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.")
-                    .pages(417)
-                    .genre("Realismo mágico")
-                    .author(author)
-                    .build();
-            book2 = Book.builder()
-                    .id(2L)
-                    .isbn("978-84-663-1599-6")
-                    .title("El nombre del viento")
-                    .publishDate(LocalDate.of(2007, 3, 27))
-                    .description("Primera entrega de la saga Crónica del Asesino de Reyes, que narra las aventuras de Kvothe, un legendario héroe convertido en posadero.")
-                    .pages(662)
-                    .genre("Fantasía épica")
-                    .author(author)
-                    .build();
+
+            book = new BookSummaryDTO(
+                    1L,
+                    "978-84-376-0494-7",
+                    "Cien años de soledad",
+                    new BigDecimal("10.0"),
+                    author.getName()
+            );
+            book2 = new BookSummaryDTO(
+                    2L,
+                    "978-84-663-1599-6",
+                    "El nombre del viento",
+                    new BigDecimal("10.0"),
+                    author.getName()
+            );
         }
 
         @Test
         @DisplayName("Should return all books when books exist")
         void shouldReturnAllBooksWhenBooksExist() throws Exception {
-            List<Book> books = Arrays.asList(book, book2);
+            List<BookSummaryDTO> books = Arrays.asList(book, book2);
 
             when(bookService.findAll()).thenReturn(books);
 
@@ -93,17 +93,11 @@ public class BookControllerTest {
                     .andExpect(jsonPath("$[0].id").value(1L))
                     .andExpect(jsonPath("$[0].isbn").value("978-84-376-0494-7"))
                     .andExpect(jsonPath("$[0].title").value("Cien años de soledad"))
-                    .andExpect(jsonPath("$[0].publishDate").value("1967-06-05"))
-                    .andExpect(jsonPath("$[0].pages").value(417))
-                    .andExpect(jsonPath("$[0].genre").value("Realismo mágico"))
-                    .andExpect(jsonPath("$[0].author.name").value("John Doe"))
+                    .andExpect(jsonPath("$[0].author").value("John Doe"))
                     .andExpect(jsonPath("$[1].id").value(2L))
                     .andExpect(jsonPath("$[1].isbn").value("978-84-663-1599-6"))
                     .andExpect(jsonPath("$[1].title").value("El nombre del viento"))
-                    .andExpect(jsonPath("$[1].publishDate").value("2007-03-27"))
-                    .andExpect(jsonPath("$[1].pages").value(662))
-                    .andExpect(jsonPath("$[1].genre").value("Fantasía épica"))
-                    .andExpect(jsonPath("$[1].author.name").value("John Doe"));
+                    .andExpect(jsonPath("$[1].author").value("John Doe"));
 
         }
 
@@ -132,20 +126,19 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
 
-            Book book = Book.builder()
-                    .id(bookId)
-                    .isbn("978-84-322-1755-4")
-                    .title("El hobbit")
-                    .publishDate(LocalDate.of(1937, 9, 21))
-                    .description("Las aventuras de Bilbo Bolsón, un hobbit que se ve arrastrado a una búsqueda épica para recuperar el reino enano de Erebor.")
-                    .pages(310)
-                    .genre("Fantasía")
-                    .author(author)
-                    .build();
+            BookResponseDTO book = new BookResponseDTO(
+                    bookId,
+                    "978-84-322-1755-4",
+                    "El hobbit",
+                    "Las aventuras de Bilbo Bolsón, un hobbit que se ve arrastrado a una búsqueda épica para recuperar el reino enano de Erebor.",
+                    310,
+                    new BigDecimal("19.0"),
+                    new AuthorSummaryDTO(author.getId(),author.getName(),author.getNationality(),author.getGender())
+            );
             when(bookService.findById(bookId)).thenReturn(book);
 
             mockMvc.perform(get("/api/books/{id}", bookId))
@@ -154,10 +147,8 @@ public class BookControllerTest {
                     .andExpect(jsonPath("$.id").value(bookId))
                     .andExpect(jsonPath("$.isbn").value("978-84-322-1755-4"))
                     .andExpect(jsonPath("$.title").value("El hobbit"))
-                    .andExpect(jsonPath("$.publishDate").value("1937-09-21"))
                     .andExpect(jsonPath("$.description").value("Las aventuras de Bilbo Bolsón, un hobbit que se ve arrastrado a una búsqueda épica para recuperar el reino enano de Erebor."))
                     .andExpect(jsonPath("$.pages").value(310))
-                    .andExpect(jsonPath("$.genre").value("Fantasía"))
                     .andExpect(jsonPath("$.author.id").value(1L));
         }
         @Test
@@ -195,21 +186,21 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
 
             String isbn = "978-84-322-1755-4";
-            Book book = Book.builder()
-                    .isbn(isbn)
-                    .title("Cien años de soledad")
-                    .publishDate(LocalDate.of(1967, 6, 5))
-                    .description("Una obra maestra del realismo mágico que narra la historia " +
-                            "de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.")
-                    .pages(417)
-                    .genre("Realismo mágico")
-                    .author(author)
-                    .build();
+            BookResponseDTO book = new BookResponseDTO(
+                    1L,
+                    isbn,
+                    "Cien años de soledad",
+                    "Una obra maestra del realismo mágico que narra la historia " +
+                            "de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.",
+                    417,
+                    new BigDecimal("19.0"),
+                    new AuthorSummaryDTO(author.getId(),author.getName(),author.getNationality(),author.getGender())
+            );
 
             when(bookService.findByISBN(isbn)).thenReturn(book);
 
@@ -218,10 +209,8 @@ public class BookControllerTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.isbn").value("978-84-322-1755-4"))
                     .andExpect(jsonPath("$.title").value("Cien años de soledad"))
-                    .andExpect(jsonPath("$.publishDate").value("1967-06-05"))
                     .andExpect(jsonPath("$.description").value("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo."))
                     .andExpect(jsonPath("$.pages").value(417))
-                    .andExpect(jsonPath("$.genre").value("Realismo mágico"))
                     .andExpect(jsonPath("$.author.id").value(1L))
                     .andExpect(jsonPath("$.author.name").value("John Doe"));
         }
@@ -250,33 +239,24 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
+            BookSummaryDTO book = new BookSummaryDTO(
+                    1L,
+                    "9780141439518",
+                    "Cien años de soledad",
+                    new BigDecimal("10.0"),
+                    author.getName()
+                    );
+            BookSummaryDTO book2 = new BookSummaryDTO(
+                    2L,
+                    "0756404746",
+                    "El nombre del viento",
+                    new BigDecimal("10.0"),
+                    author.getName());
 
-            Book book = Book.builder()
-                    .id(1L)
-                    .isbn("9780141439518")
-                    .title("Cien años de soledad")
-                    .publishDate(LocalDate.of(1967, 6, 5))
-                    .description("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.")
-                    .pages(417)
-                    .genre("Realismo mágico")
-                    .author(author)
-                    .build();
-
-            Book book2 = Book.builder()
-                    .id(2L)
-                    .isbn("0756404746")
-                    .title("El nombre del viento")
-                    .publishDate(LocalDate.of(2007, 3, 27))
-                    .description("Primera entrega de la saga Crónica del Asesino de Reyes, que narra las aventuras de Kvothe, un legendario héroe convertido en posadero.")
-                    .pages(662)
-                    .genre("Fantasía épica")
-                    .author(author)
-                    .build();
-
-            List<Book> books = Arrays.asList(book, book2);
+            List<BookSummaryDTO> books = Arrays.asList(book, book2);
 
             when(bookService.booksByAuthorId(authorId)).thenReturn(books);
 
@@ -287,20 +267,12 @@ public class BookControllerTest {
                     .andExpect(jsonPath("$[0].id").value(1L))
                     .andExpect(jsonPath("$[0].isbn").value("9780141439518"))
                     .andExpect(jsonPath("$[0].title").value("Cien años de soledad"))
-                    .andExpect(jsonPath("$[0].publishDate").value("1967-06-05"))
-                    .andExpect(jsonPath("$[0].description").value("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo."))
-                    .andExpect(jsonPath("$[0].pages").value(417))
-                    .andExpect(jsonPath("$[0].genre").value("Realismo mágico"))
-                    .andExpect(jsonPath("$[0].author.id").value(1L))
+                    .andExpect(jsonPath("$[0].author").value("John Doe"))
 
                     .andExpect(jsonPath("$[1].id").value(2L))
                     .andExpect(jsonPath("$[1].isbn").value("0756404746"))
                     .andExpect(jsonPath("$[1].title").value("El nombre del viento"))
-                    .andExpect(jsonPath("$[1].publishDate").value("2007-03-27"))
-                    .andExpect(jsonPath("$[1].description").value("Primera entrega de la saga Crónica del Asesino de Reyes, que narra las aventuras de Kvothe, un legendario héroe convertido en posadero."))
-                    .andExpect(jsonPath("$[1].pages").value(662))
-                    .andExpect(jsonPath("$[1].genre").value("Fantasía épica"))
-                    .andExpect(jsonPath("$[1].author.id").value(1L));
+                    .andExpect(jsonPath("$[1].author").value("John Doe"));
 
         }
         @Test
@@ -334,6 +306,7 @@ public class BookControllerTest {
         private CreateBookDTO createBookDto;
         private Author author;
         private Book book;
+        private BookResponseDTO bookResponseDTO;
         @BeforeEach
         void setUp(){
             author = Author.builder()
@@ -341,7 +314,7 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
 
@@ -352,7 +325,7 @@ public class BookControllerTest {
                     .description("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.")
                     .pages(417)
                     .genre("Realismo mágico")
-                    .author(author)
+                    .authorId(author.getId())
                     .build();
             book = Book.builder()
                     .id(1L)
@@ -364,14 +337,22 @@ public class BookControllerTest {
                     .genre("Realismo mágico")
                     .author(author)
                     .build();
-
+            bookResponseDTO = new BookResponseDTO(
+                    1L,
+                    "9780141439518",
+                    "Cien años de soledad",
+                    "Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.",
+                    417,
+                    new BigDecimal("10.0"),
+                    new AuthorSummaryDTO(author.getId(),author.getName(),author.getNationality(),author.getGender())
+            );
         }
 
         @Test
         @DisplayName("Should create book when valid data is provided")
         void shouldCreateBookWhenValidDataIsProvided() throws Exception {
 
-            when(bookService.createBook(any(CreateBookDTO.class))).thenReturn(book);
+            when(bookService.createBook(any(CreateBookDTO.class))).thenReturn(bookResponseDTO);
 
             mockMvc.perform(post("/api/books")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -418,7 +399,7 @@ public class BookControllerTest {
         @DisplayName("Should return 400 when author is missing")
         void shouldReturn400WhenAuthorIsMissing() throws Exception {
 
-            createBookDto.setAuthor(null);
+            createBookDto.setAuthorId(null);
 
             mockMvc.perform(post("/api/books")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -464,6 +445,7 @@ public class BookControllerTest {
     class UpdateBook {
         private CreateBookDTO createBookDto;
         private Book updatedBook;
+        private BookResponseDTO bookResponseDTO;
         private Author author;
         private static final Long bookId = 1L;
         @BeforeEach
@@ -473,7 +455,7 @@ public class BookControllerTest {
                     .name("John Doe")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.MALE)
+                    .gender(Gender.MALE)
                     .biography("famous novelist")
                     .build();
 
@@ -484,8 +466,9 @@ public class BookControllerTest {
                     .description("Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.")
                     .pages(417)
                     .genre("Realismo mágico")
-                    .author(author)
+                    .authorId(author.getId())
                     .build();
+
             updatedBook = Book.builder()
                     .id(bookId)
                     .isbn("9780141439518")
@@ -496,13 +479,22 @@ public class BookControllerTest {
                     .genre("Realismo mágico")
                     .author(author)
                     .build();
+            bookResponseDTO = new BookResponseDTO(
+                    1L,
+                    "9780141439518",
+                    "Cien años de soledad",
+                    "Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.",
+                    417,
+                    new BigDecimal("10.0"),
+                    new AuthorSummaryDTO(author.getId(),author.getName(),author.getNationality(),author.getGender())
+            );
         }
 
         @Test
         @DisplayName("Should update book when valid data is provided")
         void shouldUpdateBookWhenValidDataIsProvided() throws Exception {
 
-            when(bookService.updateBook(any(CreateBookDTO.class), eq(bookId))).thenReturn(updatedBook);
+            when(bookService.updateBook(any(CreateBookDTO.class), eq(bookId))).thenReturn(bookResponseDTO);
 
             mockMvc.perform(put("/api/books/{id}", bookId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -542,6 +534,7 @@ public class BookControllerTest {
     class UpdateBookAuthor {
         private Author author;
         private Book updatedBook;
+        private BookResponseDTO bookResponseDTO;
         @BeforeEach
         void setUp(){
 
@@ -550,7 +543,7 @@ public class BookControllerTest {
                     .name("new author")
                     .nationality("American")
                     .birthDate(LocalDate.of(1980, 5, 15))
-                    .gender(Author.Gender.FEMALE)
+                    .gender(Gender.FEMALE)
                     .biography("new famous novelist")
                     .build();
 
@@ -564,6 +557,15 @@ public class BookControllerTest {
                     .genre("Realismo mágico")
                     .author(author)
                     .build();
+            bookResponseDTO = new BookResponseDTO(
+                    1L,
+                    "9780141439518",
+                    "Cien años de soledad",
+                    "Una obra maestra del realismo mágico que narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.",
+                    417,
+                    new BigDecimal("10.0"),
+                    new AuthorSummaryDTO(author.getId(),author.getName(),author.getNationality(),author.getGender())
+            );
         }
 
         @Test
@@ -576,7 +578,7 @@ public class BookControllerTest {
             updatedBook.setId(bookId);
             author.setId(newAuthorId);
 
-            when(bookService.updateAuthor(bookId, newAuthorId)).thenReturn(updatedBook);
+            when(bookService.updateAuthor(bookId, newAuthorId)).thenReturn(bookResponseDTO);
 
             mockMvc.perform(patch("/api/books/{id}/author/{newAuthorId}", bookId, newAuthorId))
                     .andExpect(status().isOk())
@@ -648,9 +650,7 @@ public class BookControllerTest {
             doNothing().when(bookService).deleteById(bookId);
 
             mockMvc.perform(delete("/api/books/{id}", bookId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"))
-                    .andExpect(content().string("Book deleted successfully"));
+                    .andExpect(status().isNoContent());
 
             verify(bookService).deleteById(bookId);
         }

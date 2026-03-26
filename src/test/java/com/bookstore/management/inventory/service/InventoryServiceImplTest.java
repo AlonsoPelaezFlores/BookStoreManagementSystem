@@ -3,6 +3,7 @@ package com.bookstore.management.inventory.service;
 import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.repository.BookRepository;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.mapper.InventoryMapper;
@@ -60,7 +61,7 @@ public class InventoryServiceImplTest {
                 .id(1L)
                 .name("Chimamanda Ngozi Adichie")
                 .nationality("Nigerian")
-                .gender(Author.Gender.FEMALE)
+                .gender(Gender.FEMALE)
                 .build();
 
         book = Book.builder()

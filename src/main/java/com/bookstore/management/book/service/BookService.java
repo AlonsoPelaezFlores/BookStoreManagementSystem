@@ -1,5 +1,7 @@
 package com.bookstore.management.book.service;
 
+import com.bookstore.management.book.dto.BookResponseDTO;
+import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.mapper.BookMapper;
 import com.bookstore.management.book.model.Author;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -27,76 +30,73 @@ public class BookService {
 
     private final BookMapper bookMapper;
 
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<BookSummaryDTO> findAll() {
+
+        return bookMapper.toBookSummaryDTOList(bookRepository.findAll());
     }
-    public Book findById(Long id) {
+    public BookResponseDTO findById(Long id) {
+        return bookMapper.toBookResponseDTO(findByIdOrThrow(id));
+    }
+    private Book findByIdOrThrow(Long id){
         return bookRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Book","Id",id));
     }
-    public Book findByISBN(String isbn) {
-        return bookRepository.findBookByIsbn(isbn).
+    public BookResponseDTO findByISBN(String isbn) {
+        Book book = bookRepository.findBookByIsbn(isbn).
                 orElseThrow(()-> new ResourceNotFoundException("Book", "ISBN", isbn));
+        return bookMapper.toBookResponseDTO(book);
     }
-    public List<Book> booksByAuthorId(Long authorId) {
-        if (!authorRepository.existsById(authorId)) {
+
+    public List<BookSummaryDTO> booksByAuthorId(Long authorId) {
+
+        if (!authorRepository.existsById(authorId)){
             throw new ResourceNotFoundException("Author","Id",authorId);
         }
-        return bookRepository.findBooksByAuthorId(authorId);
+        List<Book> books = bookRepository.findBooksByAuthorId(authorId);
+        return bookMapper.toBookSummaryDTOList(books);
     }
     @Transactional
-    public Book createBook(CreateBookDTO createBookDto) {
-
-        if(bookRepository.existsBookByIsbn(createBookDto.getIsbn())){
-            throw new DuplicateEntityException("Book","Isbn",createBookDto.getIsbn());
+    public BookResponseDTO createBook(CreateBookDTO createBookDto) {
+        Optional<Book> bookResponse = bookRepository.findBookByIsbn(createBookDto.getIsbn());
+        if (bookResponse.isPresent()) {
+            throw new DuplicateEntityException("Book","ISBN",createBookDto.getIsbn());
         }
-
         Book book = bookMapper.toEntity(createBookDto);
+        Author author = authorRepository
+                .findById(createBookDto.getAuthorId())
+                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",createBookDto.getAuthorId()));
+        book.setAuthor(author);
 
-        log.info("Created new book with id: {}", book.getId());
-
-        return bookRepository.save(book);
+        return bookMapper.toBookResponseDTO(bookRepository.save(book));
     }
     @Transactional
-    public Book updateBook(CreateBookDTO createBookDto, Long id){
-        Book existingBook = bookRepository
-                .findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Book", "Id", id));
-
+    public BookResponseDTO updateBook(CreateBookDTO createBookDto, Long id){
+        Book existingBook = findByIdOrThrow(id);
         bookMapper.updateEntityFromDto(createBookDto, existingBook);
-
-        log.info("Book updated with id: {}", existingBook.getId());
-
-        return bookRepository.save(existingBook);
+        Author author = authorRepository
+                .findById(createBookDto.getAuthorId())
+                .orElseThrow(()-> new ResourceNotFoundException("Author","Id",createBookDto.getAuthorId()));
+        existingBook.setAuthor(author);
+        return  bookMapper.toBookResponseDTO(bookRepository.save(existingBook));
     }
     @Transactional
     public void deleteById(Long id){
-        if(!bookRepository.existsById(id)){
-            throw new ResourceNotFoundException("Book", "Id", id);
-        }
-        log.info("Book deleted with id: {}", id);
+        findByIdOrThrow(id);
         bookRepository.deleteById(id);
     }
     @Transactional
-    public Book updateAuthor(Long bookId, Long newAuthorId){
-        Book existingBook = bookRepository
-                .findById(bookId)
-                .orElseThrow(()-> new ResourceNotFoundException("Book", "Id", bookId));
+    public BookResponseDTO updateAuthor(Long bookId, Long newAuthorId){
+        Book existingBook = findByIdOrThrow(bookId);
 
-        if (existingBook.getAuthor()!= null && newAuthorId.equals(existingBook.getAuthor().getId())) {
-            log.info("Book already has the same author with id: {}", newAuthorId);
-            return existingBook;
+        if (newAuthorId.equals(existingBook.getAuthor().getId())) {
+            return bookMapper.toBookResponseDTO(existingBook);
         }
+
         Author newAuthor = authorRepository
                 .findById(newAuthorId)
                         .orElseThrow(()-> new ResourceNotFoundException("Author", "Id", newAuthorId));
 
         existingBook.setAuthor(newAuthor);
 
-        log.info("Modified author with id: {}", existingBook.getAuthor().getId());
-
-        return bookRepository.save(existingBook);
+        return bookMapper.toBookResponseDTO(bookRepository.save(existingBook));
     }
-
-
-
 }

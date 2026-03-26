@@ -3,6 +3,7 @@ package com.bookstore.management.sale.service;
 import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
+import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.repository.BookRepository;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
@@ -82,7 +83,7 @@ public class SaleServiceImplTest {
                 .name("Gabriel García Márquez")
                 .nationality("Colombian")
                 .birthDate(LocalDate.of(1927, 3, 6))
-                .gender(Author.Gender.MALE)
+                .gender(Gender.MALE)
                 .build();
 
         book = Book.builder()
