@@ -1,6 +1,7 @@
 package com.bookstore.management.customer.controller;
 
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
@@ -39,30 +40,26 @@ class CustomerControllerTest {
     private ObjectMapper objectMapper;
 
     private CustomerCreateDTO customerCreateDTO;
-    private Customer customer;
-    private Customer anotherCustomer;
+    private CustomerSummaryDTO customer;
+    private CustomerSummaryDTO anotherCustomer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.builder()
-                .id(1L)
-                .name("John")
-                .surname("Doe")
-                .email("john.doe@email.com")
-                .birthDate(LocalDate.of(1990, 1, 1))
-                .build();
+        customer = new CustomerSummaryDTO(
+                1L,
+                "John",
+                "Doe",
+                "john.doe@email.com");
 
-        anotherCustomer = Customer.builder()
-                .id(2L)
-                .name("Jane")
-                .surname("Smith")
-                .email("jane.smith@email.com")
-                .birthDate(LocalDate.of(1985, 5, 15))
-                .build();
+        anotherCustomer = new CustomerSummaryDTO(
+                2L,
+                "Jane",
+                "Smith",
+                "jane.smith@email.com");
 
         customerCreateDTO = CustomerCreateDTO.builder()
                 .name("John")
-                .surname("Doe")
+                .lastName("Doe")
                 .email("john.doe@email.com")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
@@ -74,7 +71,7 @@ class CustomerControllerTest {
         @DisplayName("Should return all customers when customers exist")
         void shouldReturnAllCustomersWhenCustomersExist() throws Exception {
 
-            List<Customer> customers = Arrays.asList(customer, anotherCustomer);
+            List<CustomerSummaryDTO> customers = Arrays.asList(customer, anotherCustomer);
 
             when(customerService.findAll()).thenReturn(customers);
 
@@ -84,15 +81,13 @@ class CustomerControllerTest {
                     .andExpect(jsonPath("$", hasSize(2)))
                     .andExpect(jsonPath("$[0].id").value(1L))
                     .andExpect(jsonPath("$[0].name").value("John"))
-                    .andExpect(jsonPath("$[0].surname").value("Doe"))
+                    .andExpect(jsonPath("$[0].lastName").value("Doe"))
                     .andExpect(jsonPath("$[0].email").value("john.doe@email.com"))
-                    .andExpect(jsonPath("$[0].birthDate").value("1990-01-01"))
 
                     .andExpect(jsonPath("$[1].id").value(2L))
                     .andExpect(jsonPath("$[1].name").value("Jane"))
-                    .andExpect(jsonPath("$[1].surname").value("Smith"))
-                    .andExpect(jsonPath("$[1].email").value("jane.smith@email.com"))
-                    .andExpect(jsonPath("$[1].birthDate").value("1985-05-15"));
+                    .andExpect(jsonPath("$[1].lastName").value("Smith"))
+                    .andExpect(jsonPath("$[1].email").value("jane.smith@email.com"));
         }
         @Test
         @DisplayName("Should return empty list when no customers exist")
@@ -121,7 +116,7 @@ class CustomerControllerTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.name").value("John"))
-                    .andExpect(jsonPath("$.surname").value("Doe"))
+                    .andExpect(jsonPath("$.lastName").value("Doe"))
                     .andExpect(jsonPath("$.email").value("john.doe@email.com"));
         }
 
@@ -198,18 +193,16 @@ class CustomerControllerTest {
             Long customerId = 1L;
             CustomerCreateDTO updateDto = CustomerCreateDTO.builder()
                     .name("Updated John")
-                    .surname("Updated Doe")
+                    .lastName("Updated Doe")
                     .email("updated.john@email.com")
                     .birthDate(LocalDate.of(1991, 2, 2))
                     .build();
 
-            Customer updatedCustomer = Customer.builder()
-                    .id(customerId)
-                    .name(updateDto.getName())
-                    .surname(updateDto.getSurname())
-                    .email(updateDto.getEmail())
-                    .birthDate(updateDto.getBirthDate())
-                    .build();
+            CustomerSummaryDTO updatedCustomer = new CustomerSummaryDTO(
+                    customerId,
+                    updateDto.getName(),
+                    updateDto.getLastName(),
+                    updateDto.getEmail());
 
             when(customerService.update(any(CustomerCreateDTO.class), eq(customerId))).thenReturn(updatedCustomer);
 
@@ -268,8 +261,7 @@ class CustomerControllerTest {
             Long customerId = 1L;
 
             mockMvc.perform(delete("/api/customers/{id}", customerId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("Customer deleted successfully"));
+                    .andExpect(status().isNoContent());
         }
 
         @Test

@@ -17,7 +17,7 @@ public class CustomerCreateDTO {
 
     @NotBlank(message = "The surname is obligatory")
     @Size(min=2, max = 100, message = "The surname must be between 2 and 100 characters")
-    private String surname;
+    private String lastName;
 
     @Email(message = "The email must be valid")
     @NotBlank(message = "The email is obligatory")

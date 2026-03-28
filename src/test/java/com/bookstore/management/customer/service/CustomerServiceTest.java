@@ -1,6 +1,7 @@
 package com.bookstore.management.customer.service;
 
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
@@ -37,21 +38,21 @@ class CustomerServiceTest {
         customer = Customer.builder()
                 .id(1L)
                 .name("John")
-                .surname("Doe")
+                .lastName("Doe")
                 .email("john.doe@email.com")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
         anotherCustomer = Customer.builder()
                 .id(2L)
                 .name("Jane")
-                .surname("Smith")
+                .lastName("Smith")
                 .email("jane.smith@email.com")
                 .birthDate(LocalDate.of(1985,5,15))
                 .build();
 
         customerCreateDTO = CustomerCreateDTO.builder()
                 .name("John")
-                .surname("Doe")
+                .lastName("Doe")
                 .email("john.doe@email.com")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .build();
@@ -66,10 +67,9 @@ class CustomerServiceTest {
             List<Customer> customers = Arrays.asList(customer,anotherCustomer);
             when(customerRepository.findAll()).thenReturn(customers);
 
-            List<Customer> result = customerService.findAll();
+            List<CustomerSummaryDTO> result = customerService.findAll();
 
             assertThat(result).hasSize(2);
-            assertThat(result).containsExactlyElementsOf(customers);
             verify(customerRepository).findAll();
         }
         @Test
@@ -78,7 +78,7 @@ class CustomerServiceTest {
 
             when(customerRepository.findAll()).thenReturn(List.of());
 
-            List<Customer> result = customerService.findAll();
+            List<CustomerSummaryDTO> result = customerService.findAll();
 
             assertThat(result).isEmpty();
             verify(customerRepository).findAll();
@@ -95,9 +95,13 @@ class CustomerServiceTest {
             Long customerId = 1L;
             when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-            Customer result = customerService.findById(customerId);
+            CustomerSummaryDTO result = customerService.findById(customerId);
 
-            assertThat(result).isEqualTo(customer);
+            assertThat(result.id()).isEqualTo(customer.getId());
+            assertThat(result.name()).isEqualTo(customer.getName());
+            assertThat(result.lastName()).isEqualTo(customer.getLastName());
+            assertThat(result.email()).isEqualTo(customer.getEmail());
+
             verify(customerRepository).findById(customerId);
         }
 
@@ -127,13 +131,11 @@ class CustomerServiceTest {
 
             when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-            Customer result = customerService.create(customerCreateDTO);
+            CustomerSummaryDTO result = customerService.create(customerCreateDTO);
 
-            assertThat(result).isEqualTo(customer);
-            assertThat(result.getName()).isEqualTo(customerCreateDTO.getName());
-            assertThat(result.getSurname()).isEqualTo(customerCreateDTO.getSurname());
-            assertThat(result.getEmail()).isEqualTo(customerCreateDTO.getEmail());
-            assertThat(result.getBirthDate()).isEqualTo(customerCreateDTO.getBirthDate());
+            assertThat(result.name()).isEqualTo(customerCreateDTO.getName());
+            assertThat(result.lastName()).isEqualTo(customerCreateDTO.getLastName());
+            assertThat(result.email()).isEqualTo(customerCreateDTO.getEmail());
 
             verify(customerRepository).save(any(Customer.class));
         }
@@ -149,7 +151,7 @@ class CustomerServiceTest {
             Long customerId = 1L;
             CustomerCreateDTO updateDto = CustomerCreateDTO.builder()
                     .name("Updated John")
-                    .surname("Updated Doe")
+                    .lastName("Updated Doe")
                     .email("updated.john@email.com")
                     .birthDate(LocalDate.of(1991, 2, 2))
                     .build();
@@ -157,7 +159,7 @@ class CustomerServiceTest {
             Customer updatedCustomer = Customer.builder()
                     .id(customerId)
                     .name(updateDto.getName())
-                    .surname(updateDto.getSurname())
+                    .lastName(updateDto.getLastName())
                     .email(updateDto.getEmail())
                     .birthDate(updateDto.getBirthDate())
                     .build();
@@ -165,12 +167,11 @@ class CustomerServiceTest {
             when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
             when(customerRepository.save(any(Customer.class))).thenReturn(updatedCustomer);
 
-            Customer result = customerService.update(updateDto, customerId);
+            CustomerSummaryDTO result = customerService.update(updateDto, customerId);
 
-            assertThat(result.getName()).isEqualTo(updateDto.getName());
-            assertThat(result.getSurname()).isEqualTo(updateDto.getSurname());
-            assertThat(result.getEmail()).isEqualTo(updateDto.getEmail());
-            assertThat(result.getBirthDate()).isEqualTo(updateDto.getBirthDate());
+            assertThat(result.name()).isEqualTo(updateDto.getName());
+            assertThat(result.lastName()).isEqualTo(updateDto.getLastName());
+            assertThat(result.email()).isEqualTo(updateDto.getEmail());
 
             verify(customerRepository).findById(customerId);
             verify(customerRepository).save(any(Customer.class));
@@ -203,11 +204,11 @@ class CustomerServiceTest {
         void shouldDeleteCustomerWhenCustomerExists() {
 
             Long customerId = 1L;
-            when(customerRepository.existsById(customerId)).thenReturn(true);
+            when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
             customerService.deleteById(customerId);
 
-            verify(customerRepository).existsById(customerId);
+            verify(customerRepository).findById(customerId);
             verify(customerRepository).deleteById(customerId);
         }
 
@@ -216,7 +217,7 @@ class CustomerServiceTest {
         void shouldThrowExceptionWhenCustomerToDeleteDoesNotExist() {
 
             Long customerId = 999L;
-            when(customerRepository.existsById(customerId)).thenReturn(false);
+            when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> customerService.deleteById(customerId))
                     .isInstanceOf(ResourceNotFoundException.class)
@@ -224,7 +225,7 @@ class CustomerServiceTest {
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
 
-            verify(customerRepository).existsById(customerId);
+            verify(customerRepository).findById(customerId);
             verify(customerRepository, never()).deleteById(customerId);
         }
     }

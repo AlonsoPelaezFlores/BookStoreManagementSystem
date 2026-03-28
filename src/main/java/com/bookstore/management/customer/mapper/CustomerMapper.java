@@ -5,6 +5,8 @@ import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
     @Mapping(target = "id",ignore = true)
@@ -14,11 +16,8 @@ public interface CustomerMapper {
     @Mapping(target = "id",ignore = true)
     void updateEntityFromDto(CustomerCreateDTO customerCreateDTO, @MappingTarget Customer customer);
 
-    @Mapping(target = "fullName",source = ".", qualifiedByName="getFullName" )
-    CustomerSummaryDTO toSummaryResponseDTO(Customer customer);
+    CustomerSummaryDTO toSummaryDTO(Customer customer);
 
-    @Named("getFullName")
-    default String getFullName(Customer customer) {
-        return customer.getName() +" " + customer.getSurname();
-    }
+    List<CustomerSummaryDTO> toSummaryDTOList(List<Customer> customers);
+
 }

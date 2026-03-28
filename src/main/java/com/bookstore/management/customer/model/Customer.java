@@ -23,7 +23,7 @@ public class Customer {
     private String name;
 
     @Column(name = "surname", nullable = false, length = 100)
-    private String surname;
+    private String lastName;
 
     @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;

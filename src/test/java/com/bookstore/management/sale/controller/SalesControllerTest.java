@@ -53,7 +53,7 @@ class SalesControllerTest {
     }
 
     private CustomerSummaryDTO buildCustomer() {
-        return new CustomerSummaryDTO(1L, "Alonso García", "alonso@email.com");
+        return new CustomerSummaryDTO(1L, "Alonso","García", "alonso@email.com");
     }
 
     private SalesDetailResponseDTO buildDetail() {
@@ -134,7 +134,8 @@ class SalesControllerTest {
             mockMvc.perform(get("/api/sales/1"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1L))
-                    .andExpect(jsonPath("$.customer.fullName").value("Alonso García"))
+                    .andExpect(jsonPath("$.customer.name").value("Alonso"))
+                    .andExpect(jsonPath("$.customer.lastName").value("García"))
                     .andExpect(jsonPath("$.total").value(59.98));
 
             verify(saleService).findById(1L);
