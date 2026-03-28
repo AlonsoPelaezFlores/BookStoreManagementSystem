@@ -2,6 +2,7 @@ package com.bookstore.management.inventory.controller;
 
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.service.InventoryServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Inventory")
 @RestController
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor

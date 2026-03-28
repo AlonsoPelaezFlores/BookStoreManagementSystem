@@ -5,6 +5,7 @@ import com.bookstore.management.book.dto.CreateBookDTO;
 import com.bookstore.management.book.dto.BookResponseDTO;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.service.BookService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Books", description = "Book management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/books")
