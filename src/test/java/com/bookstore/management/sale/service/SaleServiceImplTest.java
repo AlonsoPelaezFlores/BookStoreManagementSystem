@@ -102,7 +102,7 @@ public class SaleServiceImplTest {
         customer = Customer.builder()
                 .id(1L)
                 .name("John")
-                .surname("Doe")
+                .lastName("Doe")
                 .email("john.doe@example.com")
                 .birthDate(LocalDate.of(1990, 1, 15))
                 .build();
@@ -135,7 +135,7 @@ public class SaleServiceImplTest {
 
         saleResponseDTO = new SaleResponseDTO(
                 1L,
-                new CustomerSummaryDTO(1L, "John Doe", "john.doe@example.com"),
+                new CustomerSummaryDTO(1L, "John","Doe", "john.doe@example.com"),
                 SalesStatus.COMPLETED,
                 PaymentMethod.CASH,
                 List.of(new SalesDetailResponseDTO(

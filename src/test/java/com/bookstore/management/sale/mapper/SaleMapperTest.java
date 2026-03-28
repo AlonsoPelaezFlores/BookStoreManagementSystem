@@ -53,7 +53,7 @@ class SaleMapperTest {
             Customer customer = Customer.builder()
                     .id(1L)
                     .name("John")
-                    .surname("Doe")
+                    .lastName("Doe")
                     .email("john.doe@example.com")
                     .birthDate(LocalDate.of(1990, 5, 15))
                     .build();
@@ -98,7 +98,8 @@ class SaleMapperTest {
 
             assertThat(result.customer()).isNotNull();
             assertThat(result.customer().id()).isEqualTo(1L);
-            assertThat(result.customer().fullName()).isEqualTo("John Doe");
+            assertThat(result.customer().name()).isEqualTo("John");
+            assertThat(result.customer().lastName()).isEqualTo("Doe");
             assertThat(result.customer().email()).isEqualTo("john.doe@example.com");
 
             assertThat(result.details()).hasSize(1);
@@ -155,7 +156,7 @@ class SaleMapperTest {
             Customer customer = Customer.builder()
                     .id(1L)
                     .name("Jane")
-                    .surname("Smith")
+                    .lastName("Smith")
                     .email("jane.smith@example.com")
                     .birthDate(LocalDate.of(1985, 8, 20))
                     .build();
@@ -176,7 +177,8 @@ class SaleMapperTest {
             assertThat(result).isNotNull();
             assertThat(result.id()).isEqualTo(3L);
             assertThat(result.customer()).isNotNull();
-            assertThat(result.customer().fullName()).isEqualTo("Jane Smith");
+            assertThat(result.customer().name()).isEqualTo("Jane");
+            assertThat(result.customer().lastName()).isEqualTo("Smith");
             assertThat(result.details()).isEmpty();
             assertThat(result.status()).isEqualTo(SalesStatus.CANCELLED);
         }
@@ -187,7 +189,7 @@ class SaleMapperTest {
             Customer customer = Customer.builder()
                     .id(1L)
                     .name("Alice")
-                    .surname("Johnson")
+                    .lastName("Johnson")
                     .email("alice.j@example.com")
                     .birthDate(LocalDate.of(1992, 3, 10))
                     .build();
@@ -326,12 +328,12 @@ class SaleMapperTest {
         }
 
         @Test
-        @DisplayName("should concatenate customer name and surname correctly in full name")
-        void shouldConcatenateCustomerNameAndSurnameCorrectlyInFullName() {
+        @DisplayName("should concatenate customer name and lastName correctly in full name")
+        void shouldConcatenateCustomerNameAndlastNameCorrectlyInFullName() {
             Customer customer = Customer.builder()
                     .id(1L)
                     .name("María")
-                    .surname("García López")
+                    .lastName("García López")
                     .email("maria.garcia@example.com")
                     .birthDate(LocalDate.of(1988, 12, 5))
                     .build();
@@ -342,7 +344,8 @@ class SaleMapperTest {
             SaleResponseDTO result = saleMapper.toResponseDto(sale);
 
             assertThat(result.customer()).isNotNull();
-            assertThat(result.customer().fullName()).isEqualTo("María García López");
+            assertThat(result.customer().name()).isEqualTo("María");
+            assertThat(result.customer().lastName()).isEqualTo("García López");
         }
     }
 
@@ -394,7 +397,7 @@ class SaleMapperTest {
             Customer customer = Customer.builder()
                     .id(1L)
                     .name("Bob")
-                    .surname("Williams")
+                    .lastName("Williams")
                     .email("bob.w@example.com")
                     .birthDate(LocalDate.of(1995, 7, 22))
                     .build();
@@ -411,7 +414,8 @@ class SaleMapperTest {
 
             assertThat(result).hasSize(2);
             assertThat(result.get(0).customer()).isNotNull();
-            assertThat(result.get(0).customer().fullName()).isEqualTo("Bob Williams");
+            assertThat(result.get(0).customer().name()).isEqualTo("Bob");
+            assertThat(result.get(0).customer().lastName()).isEqualTo("Williams");
             assertThat(result.get(1).customer()).isNull();
         }
     }
