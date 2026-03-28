@@ -4,6 +4,7 @@ import com.bookstore.management.sales.dto.SaleRequestDTO;
 import com.bookstore.management.sales.dto.SaleResponseDTO;
 import com.bookstore.management.sales.model.SalesStatus;
 import com.bookstore.management.sales.service.SaleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Tag(name = "Sales")
 @RestController
 @RequestMapping(value = "/api/sales")
 @RequiredArgsConstructor

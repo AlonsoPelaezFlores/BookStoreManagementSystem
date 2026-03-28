@@ -3,6 +3,7 @@ package com.bookstore.management.inventory.controller;
 import com.bookstore.management.inventory.dto.InventoryMovementResponseDTO;
 import com.bookstore.management.inventory.model.MovementType;
 import com.bookstore.management.inventory.service.InventoryMovementServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@Tag(name = "Inventory Movements")
 @RestController
 @RequestMapping(value = "/api/movements")
 @RequiredArgsConstructor

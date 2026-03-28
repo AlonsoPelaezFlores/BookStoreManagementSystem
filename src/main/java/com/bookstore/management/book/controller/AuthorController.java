@@ -5,6 +5,7 @@ import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.dto.AuthorResponseDTO;
 import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.service.AuthorService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+@Tag(name = "Authors", description = "Author management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/authors")
