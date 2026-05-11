@@ -1,8 +1,5 @@
 # 📚 Bookstore Management System
 
-REST API for comprehensive bookstore management built with Java and Spring Boot.
-
-
 ## 📖 About The Project
 A monolithic REST API designed for the complete management of bookstores. Built with a layered architecture and focused on clean code, comprehensive testing and backend development best practices.
 
@@ -21,35 +18,15 @@ The system handles book inventory control with ISBN tracking, user and role mana
 
 
 ## 🛠️ Tech Stack
-### Backend
 
 - Java 17
-- Spring Boot 3.5.5
+- Spring Boot 3.5
 - Spring Data JPA
-- Hibernate ORM
-
-### Database
-
+- Docker
 - PostgreSQL 15
-
-### Testing
-
 - JUnit 5
 - Mockito
-
-### Documentation
-
 - Swagger/OpenAPI
-
-### Build Tool
-
-- Maven
-
-### Development Tools
-
-- IntelliJ IDEA
-- Postman
-- Git/GitHub
 
 **Design Principles:**
 
@@ -73,17 +50,16 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Integration with book module
 - Inventory tracking implementation
 
-### Phase 3: Sales Module 🚧
+### Phase 3: Sales Module ✅
 - Direct sales registration
 - Sale details management
 - Transaction history
 - Integration with inventory and customer modules
 
-### Phase 4: Security & Authentication 📋
+### Phase 4: Security & Authentication 🚧
 - JWT authentication implementation
 - User registration and login
-- Role-based access control (Admin, Employee)
-- Password encryption with BCrypt
+- Role-based access control (Admin, Employee & Customer)
 
 ### Phase 5: Refactoring & Enhancements 📋
 - Book and author module improvements
@@ -95,58 +71,35 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Automated reports and analytics
 - Low stock alerts and notifications
 - Customer loyalty programs
+
 ## 🚀 Getting Started
 ### Prerequisites
-Before running this project, make sure you have:
+- Java 17+
+- Docker & Docker Compose
+- Maven 3.8+
 
-- Java 17 or higher installed
-- PostgreSQL 15 installed and running
-- Maven 3.8+ installed
-- Git for version control
-
-### Installation
-
-- Clone the repository  
+### 1. Clone the repository
 ```bash
 git clone https://github.com/AlonsoPelaezFlores/BookStoreManagementSystem.git
 cd BookStoreManagementSystem
 ```
 
-### Configure the database
-
-- Create a PostgreSQL database:  
-```sql
-CREATE DATABASE bookstore_db;
+### 2. Start the database
+```bash
+docker-compose up bookstore_db -d
 ```
 
-### Update application properties
-
-Edit `src/main/resources/application.properties:`
-```properties
-propertiesspring.datasource.url=jdbc:postgresql://localhost:5432/bookstore_db
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-```
-
-### Build the project
-
+### 3. Build and run
 ```bash
 mvn clean install
-```
-
-### Run the application
-
-```bash
 mvn spring-boot:run
 ```
+
 The API will be available at: `http://localhost:8080`
 
-<!-- ## 📚 API Documentation
+## 📚 API Documentation
 Once the application is running, access the Swagger UI documentation:
-http://localhost:8080/swagger-ui.html-->
+http://localhost:8080/swagger-ui.html
 
 ## 📁 Project Structure
 <pre>src/
