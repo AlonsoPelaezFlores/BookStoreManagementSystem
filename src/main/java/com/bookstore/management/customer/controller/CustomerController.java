@@ -2,13 +2,13 @@ package com.bookstore.management.customer.controller;
 
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
-import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +38,9 @@ public class CustomerController {
     public ResponseEntity<CustomerSummaryDTO> update(@RequestBody @Valid CustomerCreateDTO customerDto, @PathVariable @Positive Long id) {
         return ResponseEntity.ok(customerService.update(customerDto,id));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable @Positive Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable @Positive Long id) {
         customerService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

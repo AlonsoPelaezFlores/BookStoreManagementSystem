@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryServiceImpl.registerEntry(stockDTO, bookId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/book/{bookId}/adjustment/positive")
     public ResponseEntity<InventorySummaryDTO> positiveAdjustment(
             @RequestBody @Valid UpdateStockDTO stockDTO,
@@ -71,6 +73,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryServiceImpl.positiveAdjustment(stockDTO, bookId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/book/{bookId}/adjustment/negative")
     public ResponseEntity<InventorySummaryDTO> negativeAdjustment(
             @RequestBody @Valid UpdateStockDTO stockDTO,
@@ -97,6 +100,7 @@ public class InventoryController {
         inventoryServiceImpl.reserveStock(bookId, quantity);
         return ResponseEntity.noContent().build();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(value = "/book/{bookId}/thresholds")
     public ResponseEntity<InventoryResponseDTO> updateThresholds(
             @Positive @PathVariable Long bookId,
@@ -104,8 +108,9 @@ public class InventoryController {
             @Positive @RequestParam Integer stockMax){
         return ResponseEntity.ok(inventoryServiceImpl.updateThresholds(bookId, stockMin, stockMax));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(value = "/{inventoryId}/disable")
-    public ResponseEntity<String> disableById(
+    public ResponseEntity<Void> disableById(
             @Positive @PathVariable Long inventoryId){
         inventoryServiceImpl.disableById(inventoryId);
         return ResponseEntity.noContent().build();
