@@ -5,6 +5,8 @@ import com.bookstore.management.book.dto.AuthorSummaryDTO;
 import com.bookstore.management.book.dto.CreateAuthorDTO;
 import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.service.AuthorService;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +39,10 @@ class AuthorControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private AuthorService authorService;
+    @MockitoBean
+    private JwtUtils jwtUtils;
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -315,6 +322,18 @@ class AuthorControllerTest {
 
             mockMvc.perform(delete("/api/authors/{id}", nonExistingAuthorId))
                     .andExpect(status().isNotFound());
+        }
+        @Test
+        @DisplayName("Should return 409 when author is still referenced by books")
+        void shouldReturn409WhenAuthorIsReferencedByOtherRecords() throws Exception {
+            Long referencedAuthorId = 1L;
+
+            doThrow(new DataIntegrityViolationException("FK violation"))
+                    .when(authorService).deleteAuthorById(referencedAuthorId);
+
+            mockMvc.perform(delete("/api/authors/{id}", referencedAuthorId))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.status").value(409));
         }
         @Test
         @DisplayName("Should return 400 when invalid ID format is provided")
