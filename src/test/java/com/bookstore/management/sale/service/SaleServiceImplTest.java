@@ -25,6 +25,9 @@ import com.bookstore.management.shared.exception.custom.InsufficientReservedStoc
 import com.bookstore.management.shared.exception.custom.InsufficientStockException;
 import com.bookstore.management.shared.exception.custom.InvalidSalesStatusException;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
+import com.bookstore.management.user.entity.Role;
+import com.bookstore.management.user.entity.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,6 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -389,6 +394,22 @@ public class SaleServiceImplTest {
     @DisplayName("createSale")
     class CreateSale {
 
+        @BeforeEach
+        void authenticateAsEmployee() {
+            User authenticatedUser = User.builder()
+                    .id(42L)
+                    .email("employee@bookstore.com")
+                    .role(Role.EMPLOYEE)
+                    .build();
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(authenticatedUser, null, authenticatedUser.getAuthorities()));
+        }
+
+        @AfterEach
+        void clearAuthentication() {
+            SecurityContextHolder.clearContext();
+        }
+
         @Test
         @DisplayName("should create sale successfully when customer exists")
         void shouldCreateSaleSuccessfullyWhenCustomerExists() {
@@ -404,8 +425,23 @@ public class SaleServiceImplTest {
             verify(customerRepository, times(1)).findById(1L);
             verify(bookRepository, times(1)).findById(1L);
             verify(inventoryService, times(1)).reserveStock(1L, 2);
-            verify(saleRepository, times(1)).save(any(Sale.class));
             verify(saleMapper, times(1)).toResponseDto(sale);
+
+            org.mockito.ArgumentCaptor<Sale> saleCaptor = org.mockito.ArgumentCaptor.forClass(Sale.class);
+            verify(saleRepository, times(1)).save(saleCaptor.capture());
+            assertEquals(42L, saleCaptor.getValue().getCreatedBy());
+        }
+
+        @Test
+        @DisplayName("should throw when there is no authenticated user")
+        void shouldThrowWhenNoAuthenticatedUser() {
+            SecurityContextHolder.clearContext();
+
+            when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+            assertThrows(IllegalStateException.class, () -> saleService.createSale(saleRequestDTO));
+
+            verify(saleRepository, never()).save(any(Sale.class));
         }
 
         @Test

@@ -2,8 +2,9 @@ package com.bookstore.management.customer.controller;
 
 import com.bookstore.management.customer.dto.CustomerCreateDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
-import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.service.CustomerService;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,12 @@ class CustomerControllerTest {
 
     @MockitoBean
     private CustomerService customerService;
+
+    @MockitoBean
+    private JwtUtils jwtUtils;
+
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
 
     @Autowired
     private ObjectMapper objectMapper;

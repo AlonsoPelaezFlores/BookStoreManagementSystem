@@ -1,13 +1,13 @@
 package com.bookstore.management.inventory.mapper;
 
-import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.mapper.BookMapper;
-import com.bookstore.management.book.model.Book;
 import com.bookstore.management.inventory.dto.CreateInventoryDTO;
 import com.bookstore.management.inventory.dto.InventoryResponseDTO;
 import com.bookstore.management.inventory.dto.InventorySummaryDTO;
 import com.bookstore.management.inventory.model.Inventory;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 

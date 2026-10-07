@@ -10,6 +10,8 @@ import com.bookstore.management.sales.dto.SalesDetailResponseDTO;
 import com.bookstore.management.sales.model.PaymentMethod;
 import com.bookstore.management.sales.model.SalesStatus;
 import com.bookstore.management.sales.service.SaleService;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,12 @@ class SalesControllerTest {
 
     @MockitoBean
     private SaleService saleService;
+
+    @MockitoBean
+    private JwtUtils jwtUtils;
+
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
 
     @Autowired
     private ObjectMapper objectMapper;

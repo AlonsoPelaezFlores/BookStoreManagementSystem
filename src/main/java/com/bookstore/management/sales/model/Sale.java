@@ -37,6 +37,10 @@ public class Sale {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
+    @Column(name = "discount_percent_customer", nullable = false, precision = 5, scale = 2)
+    @Builder.Default
+    private BigDecimal discountPercent = BigDecimal.ZERO;
+
     @OneToMany( mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SalesDetail> details;
 

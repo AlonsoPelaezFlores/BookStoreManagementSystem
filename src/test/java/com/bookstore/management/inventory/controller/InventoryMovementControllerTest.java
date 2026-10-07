@@ -4,6 +4,8 @@ import com.bookstore.management.inventory.dto.InventoryMovementResponseDTO;
 import com.bookstore.management.inventory.dto.InventorySummaryDTO;
 import com.bookstore.management.inventory.model.MovementType;
 import com.bookstore.management.inventory.service.InventoryMovementServiceImpl;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.handler.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +46,12 @@ class InventoryMovementControllerTest {
 
     @MockitoBean
     private InventoryMovementServiceImpl inventoryMovementServiceImpl;
+
+    @MockitoBean
+    private JwtUtils jwtUtils;
+
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
 
     @Autowired
     private ObjectMapper objectMapper;
