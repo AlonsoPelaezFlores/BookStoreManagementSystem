@@ -20,6 +20,8 @@ import com.bookstore.management.shared.exception.custom.ResourceNotFoundExceptio
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,6 +102,10 @@ public class SaleServiceImpl implements SaleService {
                 .paymentMethod(saleRequestDTO.paymentMethod())
                 .observation(saleRequestDTO.observation())
                 .expiredAt(LocalDateTime.now().plusMinutes(5))
+                .createdBy(currentUserId())
+                .discountPercent(saleRequestDTO.discountPercentage() != null
+                        ? saleRequestDTO.discountPercentage()
+                        : BigDecimal.ZERO)
                 .build();
 
         List<SalesDetail> details = saleRequestDTO.items().stream()
@@ -189,6 +195,14 @@ public class SaleServiceImpl implements SaleService {
             }
         });
 
+    }
+
+    private Long currentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof com.bookstore.management.user.entity.User user) {
+            return user.getId();
+        }
+        throw new IllegalStateException("No authenticated user available to record as the sale's creator");
     }
 
     private void verifyStatusIsPending(SalesStatus status) {
