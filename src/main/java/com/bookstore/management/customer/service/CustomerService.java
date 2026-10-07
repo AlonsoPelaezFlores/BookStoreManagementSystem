@@ -8,7 +8,6 @@ import com.bookstore.management.customer.repository.CustomerRepository;
 import com.bookstore.management.shared.exception.custom.DuplicateEntityException;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
