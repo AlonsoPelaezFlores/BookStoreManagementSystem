@@ -8,6 +8,8 @@ import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.model.Book;
 import com.bookstore.management.book.model.Gender;
 import com.bookstore.management.book.service.BookService;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +43,10 @@ public class BookControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private BookService bookService;
+    @MockitoBean
+    private JwtUtils jwtUtils;
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
     @Autowired
     private ObjectMapper objectMapper;
 

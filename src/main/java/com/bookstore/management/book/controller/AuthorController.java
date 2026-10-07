@@ -1,9 +1,8 @@
 package com.bookstore.management.book.controller;
 
+import com.bookstore.management.book.dto.AuthorResponseDTO;
 import com.bookstore.management.book.dto.AuthorSummaryDTO;
 import com.bookstore.management.book.dto.CreateAuthorDTO;
-import com.bookstore.management.book.dto.AuthorResponseDTO;
-import com.bookstore.management.book.model.Author;
 import com.bookstore.management.book.service.AuthorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,6 +10,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +37,7 @@ public class AuthorController {
     public ResponseEntity<AuthorResponseDTO> save(@Valid @RequestBody CreateAuthorDTO createAuthorDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authorService.createAuthor(createAuthorDto));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable @Positive Long id) {
         authorService.deleteAuthorById(id);

@@ -1,11 +1,12 @@
 package com.bookstore.management.inventory.controller;
 
 import com.bookstore.management.book.dto.BookSummaryDTO;
-import com.bookstore.management.book.model.Book;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.model.AvailabilityStatus;
 import com.bookstore.management.inventory.model.MovementType;
 import com.bookstore.management.inventory.service.InventoryServiceImpl;
+import com.bookstore.management.security.CustomUserDetailService;
+import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.custom.*;
 import com.bookstore.management.shared.exception.handler.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,7 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(InventoryController.class)
 @Import(GlobalExceptionHandler.class)
@@ -44,6 +46,12 @@ public class InventoryControllerTest {
 
     @MockitoBean
     private InventoryServiceImpl inventoryServiceImpl;
+
+    @MockitoBean
+    private JwtUtils jwtUtils;
+
+    @MockitoBean
+    private CustomUserDetailService userDetailService;
 
     @Autowired
     private ObjectMapper objectMapper;
