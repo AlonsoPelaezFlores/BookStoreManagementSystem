@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -84,7 +85,7 @@ public class InventoryController {
     @PostMapping()
     public ResponseEntity<InventorySummaryDTO> create(
             @RequestBody @Valid CreateInventoryDTO inventoryDTO){
-        return ResponseEntity.ok(inventoryServiceImpl.create(inventoryDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(inventoryServiceImpl.create(inventoryDTO));
     }
     @DeleteMapping(value = "/book/{bookId}/reservations")
     public ResponseEntity<Void> releaseReservation(

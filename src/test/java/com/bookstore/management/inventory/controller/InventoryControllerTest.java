@@ -567,7 +567,7 @@ public class InventoryControllerTest {
             mockMvc.perform(post("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createDTO)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.quantityAvailable", is(50)));
 
             verify(inventoryServiceImpl, times(1)).create(any(CreateInventoryDTO.class));
