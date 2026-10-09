@@ -23,7 +23,7 @@ import java.time.LocalDate;
 public class InventoryMovementController {
 
     private final static int DEFAULT_SIZE = 10;
-    private final static String DEFAULT_SORT = "createdAT";
+    private final static String DEFAULT_SORT = "createdAt";
     private final InventoryMovementServiceImpl inventoryMovementServiceImpl;
 
     @GetMapping(value = "/by-inventory/{inventoryId}")

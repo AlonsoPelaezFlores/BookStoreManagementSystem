@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -133,7 +134,7 @@ class InventoryMovementControllerTest {
                     argThat(pageable ->
                             pageable.getPageSize() == 10 &&
                                     pageable.getPageNumber() == 0 &&
-                                    pageable.getSort().isSorted()
+                                    Sort.by(Sort.Direction.DESC, "createdAt").equals(pageable.getSort())
                     )
             );
         }
@@ -508,7 +509,7 @@ class InventoryMovementControllerTest {
                     argThat(pageable ->
                             pageable.getPageSize() == 10 &&
                                     pageable.getPageNumber() == 0 &&
-                                    pageable.getSort().isSorted()
+                                    Sort.by(Sort.Direction.DESC, "createdAt").equals(pageable.getSort())
                     )
             );
         }
