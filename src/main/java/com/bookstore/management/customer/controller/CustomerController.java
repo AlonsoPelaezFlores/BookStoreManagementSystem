@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.controller;
 
-import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CreateCustomerDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.service.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,11 +31,11 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.findById(id));
     }
     @PostMapping
-    public ResponseEntity<CustomerSummaryDTO> create(@RequestBody @Valid CustomerCreateDTO customerDto) {
+    public ResponseEntity<CustomerSummaryDTO> create(@RequestBody @Valid CreateCustomerDTO customerDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.create(customerDto));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerSummaryDTO> update(@RequestBody @Valid CustomerCreateDTO customerDto, @PathVariable @Positive Long id) {
+    public ResponseEntity<CustomerSummaryDTO> update(@RequestBody @Valid CreateCustomerDTO customerDto, @PathVariable @Positive Long id) {
         return ResponseEntity.ok(customerService.update(customerDto,id));
     }
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.controller;
 
-import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CreateCustomerDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.service.CustomerService;
 import com.bookstore.management.security.CustomUserDetailService;
@@ -46,7 +46,7 @@ class CustomerControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private CustomerCreateDTO customerCreateDTO;
+    private CreateCustomerDTO createCustomerDTO;
     private CustomerSummaryDTO customer;
     private CustomerSummaryDTO anotherCustomer;
 
@@ -64,7 +64,7 @@ class CustomerControllerTest {
                 "Smith",
                 "jane.smith@email.com");
 
-        customerCreateDTO = CustomerCreateDTO.builder()
+        createCustomerDTO = CreateCustomerDTO.builder()
                 .name("John")
                 .lastName("Doe")
                 .email("john.doe@email.com")
@@ -155,11 +155,11 @@ class CustomerControllerTest {
         @DisplayName("Should create customer when valid data provided")
         void shouldCreateCustomerWhenValidDataProvided() throws Exception {
 
-            when(customerService.create(any(CustomerCreateDTO.class))).thenReturn(customer);
+            when(customerService.create(any(CreateCustomerDTO.class))).thenReturn(customer);
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.id").value(1));
@@ -169,11 +169,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when name is missing")
         void shouldReturnBadRequestWhenNameIsMissing() throws Exception {
 
-            customerCreateDTO.setName(null);
+            createCustomerDTO.setName(null);
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -181,11 +181,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when email is invalid")
         void shouldReturnBadRequestWhenEmailIsInvalid() throws Exception {
 
-            customerCreateDTO.setEmail("invalid-email");
+            createCustomerDTO.setEmail("invalid-email");
 
             mockMvc.perform(post("/api/customers")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isBadRequest());
         }
     }
@@ -198,7 +198,7 @@ class CustomerControllerTest {
         void shouldUpdateCustomerWhenValidDataProvided() throws Exception {
 
             Long customerId = 1L;
-            CustomerCreateDTO updateDto = CustomerCreateDTO.builder()
+            CreateCustomerDTO updateDto = CreateCustomerDTO.builder()
                     .name("Updated John")
                     .lastName("Updated Doe")
                     .email("updated.john@email.com")
@@ -211,7 +211,7 @@ class CustomerControllerTest {
                     updateDto.getLastName(),
                     updateDto.getEmail());
 
-            when(customerService.update(any(CustomerCreateDTO.class), eq(customerId))).thenReturn(updatedCustomer);
+            when(customerService.update(any(CreateCustomerDTO.class), eq(customerId))).thenReturn(updatedCustomer);
 
             mockMvc.perform(put("/api/customers/{id}", customerId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -226,12 +226,12 @@ class CustomerControllerTest {
         void shouldReturnNotFoundWhenCustomerToUpdateDoesNotExist() throws Exception {
 
             Long customerId = 999L;
-            when(customerService.update(any(CustomerCreateDTO.class), eq(customerId)))
+            when(customerService.update(any(CreateCustomerDTO.class), eq(customerId)))
                     .thenThrow(new ResourceNotFoundException("Customer", "Id", customerId));
 
             mockMvc.perform(put("/api/customers/{id}", customerId)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isNotFound());
         }
 
@@ -241,7 +241,7 @@ class CustomerControllerTest {
 
             mockMvc.perform(put("/api/customers/{id}", -1L)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isBadRequest());
         }
 
@@ -249,11 +249,11 @@ class CustomerControllerTest {
         @DisplayName("Should return bad request when request body is invalid")
         void shouldReturnBadRequestWhenRequestBodyIsInvalid() throws Exception {
 
-            customerCreateDTO.setEmail("invalid-email");
+            createCustomerDTO.setEmail("invalid-email");
 
             mockMvc.perform(put("/api/customers/{id}", 1L)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(customerCreateDTO)))
+                            .content(objectMapper.writeValueAsString(createCustomerDTO)))
                     .andExpect(status().isBadRequest());
         }
     }
