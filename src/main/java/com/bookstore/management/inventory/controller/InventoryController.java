@@ -87,14 +87,14 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryServiceImpl.create(inventoryDTO));
     }
     @DeleteMapping(value = "/book/{bookId}/reservations")
-    public ResponseEntity<String> releaseReservation(
+    public ResponseEntity<Void> releaseReservation(
             @Positive @PathVariable Long bookId,
             @Positive @RequestParam Integer quantity){
         inventoryServiceImpl.releaseReservation(bookId, quantity);
         return ResponseEntity.noContent().build();
     }
     @PostMapping(value = "/book/{bookId}/reservations")
-    public ResponseEntity<String> reserveStock(
+    public ResponseEntity<Void> reserveStock(
             @Positive @PathVariable Long bookId,
             @Positive @RequestParam Integer quantity){
         inventoryServiceImpl.reserveStock(bookId, quantity);
