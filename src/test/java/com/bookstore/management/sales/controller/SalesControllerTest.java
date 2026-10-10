@@ -1,4 +1,4 @@
-package com.bookstore.management.sale.controller;
+package com.bookstore.management.sales.controller;
 
 import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;

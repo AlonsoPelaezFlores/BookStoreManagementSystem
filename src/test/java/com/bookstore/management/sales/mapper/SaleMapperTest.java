@@ -1,4 +1,4 @@
-package com.bookstore.management.sale.mapper;
+package com.bookstore.management.sales.mapper;
 
 
 import com.bookstore.management.book.mapper.AuthorMapperImpl;

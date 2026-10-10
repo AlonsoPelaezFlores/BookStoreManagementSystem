@@ -1,4 +1,4 @@
-package com.bookstore.management.sale.service;
+package com.bookstore.management.sales.service;
 
 import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.model.Author;
