@@ -25,8 +25,8 @@ import com.bookstore.management.shared.exception.custom.InsufficientReservedStoc
 import com.bookstore.management.shared.exception.custom.InsufficientStockException;
 import com.bookstore.management.shared.exception.custom.InvalidSalesStatusException;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
-import com.bookstore.management.user.entity.Role;
-import com.bookstore.management.user.entity.User;
+import com.bookstore.management.user.model.Role;
+import com.bookstore.management.user.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

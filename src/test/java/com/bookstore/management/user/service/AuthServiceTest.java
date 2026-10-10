@@ -6,8 +6,8 @@ import com.bookstore.management.shared.exception.custom.ResourceNotFoundExceptio
 import com.bookstore.management.user.dto.AuthResponseDTO;
 import com.bookstore.management.user.dto.LoginRequestDTO;
 import com.bookstore.management.user.dto.RegisterRequestDTO;
-import com.bookstore.management.user.entity.Role;
-import com.bookstore.management.user.entity.User;
+import com.bookstore.management.user.model.Role;
+import com.bookstore.management.user.model.User;
 import com.bookstore.management.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
