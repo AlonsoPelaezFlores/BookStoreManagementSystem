@@ -109,8 +109,11 @@ public class GlobalExceptionHandler {
         log.error("Method Validation error: {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
-        ex.getAllErrors().forEach(error ->
-                errors.put(error.getDefaultMessage(), error.getDefaultMessage()));
+        ex.getParameterValidationResults().forEach(result -> {
+            String parameterName = result.getMethodParameter().getParameterName();
+            result.getResolvableErrors().forEach(error ->
+                    errors.put(parameterName, error.getDefaultMessage()));
+        });
 
         ValidationErrorResponse response = ValidationErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

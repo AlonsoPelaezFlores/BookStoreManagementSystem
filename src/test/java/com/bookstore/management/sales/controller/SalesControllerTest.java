@@ -160,7 +160,9 @@ class SalesControllerTest {
         @DisplayName("Should return 400 when ID is zero")
         void shouldReturn400WhenIdIsZero() throws Exception {
             mockMvc.perform(get("/api/sales/0"))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("Validation Failed"))
+                    .andExpect(jsonPath("$.validationErrors.id").exists());
         }
     }
 
