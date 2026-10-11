@@ -1,4 +1,4 @@
-package com.bookstore.management.sale.service;
+package com.bookstore.management.sales.service;
 
 import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.book.model.Author;
@@ -9,7 +9,7 @@ import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
 import com.bookstore.management.inventory.dto.UpdateStockDTO;
-import com.bookstore.management.inventory.service.InventoryServiceImpl;
+import com.bookstore.management.inventory.service.InventoryService;
 import com.bookstore.management.sales.dto.SaleRequestDTO;
 import com.bookstore.management.sales.dto.SaleResponseDTO;
 import com.bookstore.management.sales.dto.SalesDetailRequestDTO;
@@ -25,8 +25,8 @@ import com.bookstore.management.shared.exception.custom.InsufficientReservedStoc
 import com.bookstore.management.shared.exception.custom.InsufficientStockException;
 import com.bookstore.management.shared.exception.custom.InvalidSalesStatusException;
 import com.bookstore.management.shared.exception.custom.ResourceNotFoundException;
-import com.bookstore.management.user.entity.Role;
-import com.bookstore.management.user.entity.User;
+import com.bookstore.management.user.model.Role;
+import com.bookstore.management.user.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,7 +61,7 @@ public class SaleServiceImplTest {
     private BookRepository bookRepository;
 
     @Mock
-    private InventoryServiceImpl inventoryService;
+    private InventoryService inventoryService;
 
     @Mock
     private CustomerRepository customerRepository;

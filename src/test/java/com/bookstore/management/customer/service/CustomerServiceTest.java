@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.service;
 
-import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CreateCustomerDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
@@ -31,7 +31,7 @@ class CustomerServiceTest {
 
     private Customer customer;
     private Customer anotherCustomer;
-    private CustomerCreateDTO customerCreateDTO;
+    private CreateCustomerDTO createCustomerDTO;
 
     @BeforeEach
     void setUp() {
@@ -50,7 +50,7 @@ class CustomerServiceTest {
                 .birthDate(LocalDate.of(1985,5,15))
                 .build();
 
-        customerCreateDTO = CustomerCreateDTO.builder()
+        createCustomerDTO = CreateCustomerDTO.builder()
                 .name("John")
                 .lastName("Doe")
                 .email("john.doe@email.com")
@@ -131,11 +131,11 @@ class CustomerServiceTest {
 
             when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-            CustomerSummaryDTO result = customerService.create(customerCreateDTO);
+            CustomerSummaryDTO result = customerService.create(createCustomerDTO);
 
-            assertThat(result.name()).isEqualTo(customerCreateDTO.getName());
-            assertThat(result.lastName()).isEqualTo(customerCreateDTO.getLastName());
-            assertThat(result.email()).isEqualTo(customerCreateDTO.getEmail());
+            assertThat(result.name()).isEqualTo(createCustomerDTO.getName());
+            assertThat(result.lastName()).isEqualTo(createCustomerDTO.getLastName());
+            assertThat(result.email()).isEqualTo(createCustomerDTO.getEmail());
 
             verify(customerRepository).save(any(Customer.class));
         }
@@ -149,7 +149,7 @@ class CustomerServiceTest {
         void shouldUpdateCustomerWhenCustomerExists() {
 
             Long customerId = 1L;
-            CustomerCreateDTO updateDto = CustomerCreateDTO.builder()
+            CreateCustomerDTO updateDto = CreateCustomerDTO.builder()
                     .name("Updated John")
                     .lastName("Updated Doe")
                     .email("updated.john@email.com")
@@ -184,7 +184,7 @@ class CustomerServiceTest {
             Long customerId = 999L;
             when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> customerService.update(customerCreateDTO, customerId))
+            assertThatThrownBy(() -> customerService.update(createCustomerDTO, customerId))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Customer")
                     .hasMessageContaining("Id")

@@ -199,7 +199,7 @@ public class SaleServiceImpl implements SaleService {
 
     private Long currentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof com.bookstore.management.user.entity.User user) {
+        if (authentication != null && authentication.getPrincipal() instanceof com.bookstore.management.user.model.User user) {
             return user.getId();
         }
         throw new IllegalStateException("No authenticated user available to record as the sale's creator");

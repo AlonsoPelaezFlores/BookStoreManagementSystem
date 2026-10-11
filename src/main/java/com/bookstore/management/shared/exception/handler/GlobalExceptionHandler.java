@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -108,8 +109,11 @@ public class GlobalExceptionHandler {
         log.error("Method Validation error: {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
-        ex.getAllErrors().forEach(error ->
-                errors.put(error.getDefaultMessage(), error.getDefaultMessage()));
+        ex.getParameterValidationResults().forEach(result -> {
+            String parameterName = result.getMethodParameter().getParameterName();
+            result.getResolvableErrors().forEach(error ->
+                    errors.put(parameterName, error.getDefaultMessage()));
+        });
 
         ValidationErrorResponse response = ValidationErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -260,6 +264,24 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErrorResponse> handlePropertyReference(
+            PropertyReferenceException ex,
+            HttpServletRequest request) {
+
+        log.warn("Invalid sort property '{}' at path: {}", ex.getPropertyName(), request.getRequestURI());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Invalid sort property: '" + ex.getPropertyName() + "'")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

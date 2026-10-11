@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerCreateDTO {
+public class CreateCustomerDTO {
 
     @NotBlank(message = "The name is obligatory")
     @Size(min=2, max = 100, message = "The name must be between 2 and 100 characters")

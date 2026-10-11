@@ -1,7 +1,7 @@
 package com.bookstore.management.user.repository;
 
-import com.bookstore.management.user.entity.Role;
-import com.bookstore.management.user.entity.User;
+import com.bookstore.management.user.model.Role;
+import com.bookstore.management.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

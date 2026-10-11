@@ -1,6 +1,6 @@
 package com.bookstore.management.customer.service;
 
-import com.bookstore.management.customer.dto.CustomerCreateDTO;
+import com.bookstore.management.customer.dto.CreateCustomerDTO;
 import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.mapper.CustomerMapper;
 import com.bookstore.management.customer.model.Customer;
@@ -32,7 +32,7 @@ public class CustomerService {
                 .orElseThrow(()-> new ResourceNotFoundException("Customer","Id",id));
     }
     @Transactional
-    public CustomerSummaryDTO create(CustomerCreateDTO customerDto) {
+    public CustomerSummaryDTO create(CreateCustomerDTO customerDto) {
         Customer customer = customerRepository.findByEmail(customerDto.getEmail());
         if (customer != null) {
             throw new DuplicateEntityException("Customer already exists with this email");
@@ -42,7 +42,7 @@ public class CustomerService {
         return customerMapper.toSummaryDTO(customerRepository.save(customer));
     }
     @Transactional
-    public CustomerSummaryDTO update(CustomerCreateDTO customerDto, Long id) {
+    public CustomerSummaryDTO update(CreateCustomerDTO customerDto, Long id) {
         Customer existingCustomer = findByIdOrThrow(id);
 
         customerMapper.updateEntityFromDto(customerDto, existingCustomer);

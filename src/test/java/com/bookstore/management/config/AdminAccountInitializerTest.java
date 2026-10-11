@@ -1,7 +1,7 @@
 package com.bookstore.management.config;
 
-import com.bookstore.management.user.entity.Role;
-import com.bookstore.management.user.entity.User;
+import com.bookstore.management.user.model.Role;
+import com.bookstore.management.user.model.User;
 import com.bookstore.management.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

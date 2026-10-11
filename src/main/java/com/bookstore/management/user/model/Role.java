@@ -1,4 +1,4 @@
-package com.bookstore.management.user.entity;
+package com.bookstore.management.user.model;
 
 public enum Role {
     ADMIN,
