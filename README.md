@@ -22,8 +22,9 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Java 17
 - Spring Boot 3.5
 - Spring Data JPA
+- Spring Security + JWT
 - Docker
-- PostgreSQL 15
+- PostgreSQL 16
 - JUnit 5
 - Mockito
 - Swagger/OpenAPI
@@ -56,10 +57,10 @@ The system handles book inventory control with ISBN tracking, user and role mana
 - Transaction history
 - Integration with inventory and customer modules
 
-### Phase 4: Security & Authentication 🚧
+### Phase 4: Security & Authentication ✅
 - JWT authentication implementation
 - User registration and login
-- Role-based access control (Admin, Employee & Customer)
+- Role-based access control (Admin & Employee)
 
 ### Phase 5: Refactoring & Enhancements 📋
 - Book and author module improvements
@@ -128,7 +129,7 @@ http://localhost:8080/swagger-ui.html
 ├── main/
 │   ├── java/
 │   │   └── com/bookstore/management/
-│   │       ├── config/                          # Configuraciones globales (Security, OpenAPI, DatabaseConfig, CorsConfig)
+│   │       ├── config/                          # Configuraciones globales (Security, OpenAPI, CORS, admin inicial)
 │   │       ├── shared/                          # Componentes comunes / reutilizables
 │   │       │   └── exception/
 │   │       │       ├── custom/                  # Excepciones personalizadas
@@ -156,10 +157,17 @@ http://localhost:8080/swagger-ui.html
 │   │       │   ├── model/
 │   │       │   ├── repository/
 │   │       │   └── service/
-│   │       └── sales/                           # Módulo de ventas
+│   │       ├── sales/                           # Módulo de ventas
+│   │       │   ├── controller/
+│   │       │   ├── dto/
+│   │       │   ├── mapper/
+│   │       │   ├── model/
+│   │       │   ├── repository/
+│   │       │   └── service/
+│   │       ├── security/                        # JWT (generación/validación, filtro) y respuestas 401/403
+│   │       └── user/                            # Módulo de usuarios y autenticación (login/registro)
 │   │           ├── controller/
 │   │           ├── dto/
-│   │           ├── mapper/
 │   │           ├── model/
 │   │           ├── repository/
 │   │           └── service/
@@ -179,8 +187,14 @@ http://localhost:8080/swagger-ui.html
             │── inventory/                        # Tests para inventario
             │   ├── controller/                   
             │   └── service/
-            └── sales/                            # Tests para ventas
-                ├── controller/                   
+            ├── config/                           # Tests de configuración (admin inicial)
+            ├── sales/                            # Tests para ventas
+            │   ├── controller/
+            │   ├── mapper/
+            │   └── service/
+            ├── security/                         # Tests de JWT y de integración de seguridad por rol
+            └── user/                             # Tests de autenticación
+                ├── controller/
                 └── service/
 </pre>
 
