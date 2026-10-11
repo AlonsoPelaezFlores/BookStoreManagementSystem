@@ -86,16 +86,38 @@ cd BookStoreManagementSystem
 
 ### 2. Start the database
 ```bash
-docker-compose up bookstore_db -d
+docker-compose up postgres -d
 ```
 
-### 3. Build and run
+### 3. Configure authentication (optional for local development)
+The API uses JWT authentication. These environment variables configure it; each one has a default so the project runs locally without setting anything:
+
+| Variable | Description | Default |
+|---|---|---|
+| `JWT_SECRET` | Secret used to sign tokens (32+ characters) | Local development value |
+| `JWT_EXPIRATION` | Token lifetime in milliseconds | `86400000` (24 h) |
+| `ADMIN_EMAIL` | Email of the first `ADMIN` account, created on startup if no admin exists | `admin@bookstore.com` |
+| `ADMIN_PASSWORD` | Password of that `ADMIN` account | `Admin123!` |
+
+> ⚠️ The defaults are for local development only. Override `JWT_SECRET`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` before running the API in any shared or production environment: anyone who knows the secret can forge tokens.
+
+### 4. Build and run
 ```bash
 mvn clean install
 mvn spring-boot:run
 ```
 
 The API will be available at: `http://localhost:8080`
+
+## 🔐 Authentication
+1. Log in with `POST /api/auth/login` (`{"email": "...", "password": "..."}`) to get a token. `POST /api/auth/register` creates a new `EMPLOYEE` account.
+2. Send the token in every request: `Authorization: Bearer <token>`.
+
+Roles:
+- `EMPLOYEE`: every endpoint except the admin-only operations below.
+- `ADMIN`: everything, including the admin-only operations: deleting books, authors and customers, stock adjustments, threshold updates and disabling inventory.
+
+Only `/api/auth/**` and the Swagger documentation are public.
 
 ## 📚 API Documentation
 Once the application is running, access the Swagger UI documentation:
