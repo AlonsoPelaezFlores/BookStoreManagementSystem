@@ -2,6 +2,7 @@ package com.bookstore.management.inventory.controller;
 
 import com.bookstore.management.inventory.dto.InventoryMovementResponseDTO;
 import com.bookstore.management.inventory.dto.InventorySummaryDTO;
+import com.bookstore.management.inventory.model.InventoryMovement;
 import com.bookstore.management.inventory.model.MovementType;
 import com.bookstore.management.inventory.service.InventoryMovementService;
 import com.bookstore.management.security.CustomUserDetailService;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -492,6 +495,19 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.totalElements", is(0)));
 
             verify(inventoryMovementService, times(1)).findRecentMovements(any(Pageable.class));
+        }
+
+        @Test
+        @DisplayName("Should return 400 when sorting by a non-existent property")
+        void shouldReturn400WhenSortingByNonExistentProperty() throws Exception {
+            when(inventoryMovementService.findRecentMovements(any(Pageable.class)))
+                    .thenThrow(new PropertyReferenceException(
+                            "nonExistent", TypeInformation.of(InventoryMovement.class), Collections.emptyList()));
+
+            mockMvc.perform(get("/api/movements/recent")
+                            .param("sort", "nonExistent"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message", is("Invalid sort property: 'nonExistent'")));
         }
 
         @Test
