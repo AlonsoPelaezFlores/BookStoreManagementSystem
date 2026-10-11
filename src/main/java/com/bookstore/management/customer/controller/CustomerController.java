@@ -6,6 +6,7 @@ import com.bookstore.management.customer.service.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,15 +14,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Tag(name = "Customers", description = "Customer management")
 @RestController
 @RequestMapping(value = "/api/customers")
 public class CustomerController {
     private final CustomerService customerService;
-
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
     @GetMapping
     public ResponseEntity<List<CustomerSummaryDTO>> findAll() {
         return ResponseEntity.ok(customerService.findAll());
