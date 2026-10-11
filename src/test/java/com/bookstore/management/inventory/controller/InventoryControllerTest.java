@@ -4,7 +4,7 @@ import com.bookstore.management.book.dto.BookSummaryDTO;
 import com.bookstore.management.inventory.dto.*;
 import com.bookstore.management.inventory.model.AvailabilityStatus;
 import com.bookstore.management.inventory.model.MovementType;
-import com.bookstore.management.inventory.service.InventoryServiceImpl;
+import com.bookstore.management.inventory.service.InventoryService;
 import com.bookstore.management.security.CustomUserDetailService;
 import com.bookstore.management.security.JwtUtils;
 import com.bookstore.management.shared.exception.custom.*;
@@ -45,7 +45,7 @@ public class InventoryControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private InventoryServiceImpl inventoryServiceImpl;
+    private InventoryService inventoryService;
 
     @MockitoBean
     private JwtUtils jwtUtils;
@@ -87,7 +87,7 @@ public class InventoryControllerTest {
 
             List<InventorySummaryDTO> inventories = Arrays.asList(inventory1, inventory2);
 
-            when(inventoryServiceImpl.findAll()).thenReturn(inventories);
+            when(inventoryService.findAll()).thenReturn(inventories);
 
             mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -98,20 +98,20 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$[1].id", is(2)))
                     .andExpect(jsonPath("$[1].quantityAvailable", is(30)));
 
-            verify(inventoryServiceImpl, times(1)).findAll();
+            verify(inventoryService, times(1)).findAll();
         }
 
         @Test
         @DisplayName("Should return empty list when no inventories exist")
         void shouldReturnEmptyListWhenNoInventoriesExist() throws Exception {
-            when(inventoryServiceImpl.findAll()).thenReturn(Collections.emptyList());
+            when(inventoryService.findAll()).thenReturn(Collections.emptyList());
 
             mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
 
-            verify(inventoryServiceImpl, times(1)).findAll();
+            verify(inventoryService, times(1)).findAll();
         }
     }
 
@@ -135,7 +135,7 @@ public class InventoryControllerTest {
                     45
             );
 
-            when(inventoryServiceImpl.findByBookId(bookId)).thenReturn(inventory);
+            when(inventoryService.findByBookId(bookId)).thenReturn(inventory);
 
             mockMvc.perform(get("/api/inventory/book/{bookId}", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -144,7 +144,7 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$.quantityAvailable", is(50)))
                     .andExpect(jsonPath("$.quantityReserved", is(5)));
 
-            verify(inventoryServiceImpl, times(1)).findByBookId(bookId);
+            verify(inventoryService, times(1)).findByBookId(bookId);
         }
 
         @Test
@@ -152,7 +152,7 @@ public class InventoryControllerTest {
         void shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
             Long bookId = 999L;
 
-            when(inventoryServiceImpl.findByBookId(bookId))
+            when(inventoryService.findByBookId(bookId))
                     .thenThrow(new ResourceNotFoundException("Book", "Id", bookId));
 
             mockMvc.perform(get("/api/inventory/book/{bookId}", bookId)
@@ -160,7 +160,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message", containsString("Book")));
 
-            verify(inventoryServiceImpl, times(1)).findByBookId(bookId);
+            verify(inventoryService, times(1)).findByBookId(bookId);
         }
 
         @Test
@@ -170,7 +170,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).findByBookId(any());
+            verify(inventoryService, never()).findByBookId(any());
         }
 
         @Test
@@ -180,7 +180,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).findByBookId(any());
+            verify(inventoryService, never()).findByBookId(any());
         }
     }
 
@@ -196,7 +196,7 @@ public class InventoryControllerTest {
                     50,
                     true);
 
-            when(inventoryServiceImpl.findByActiveStatusList(true))
+            when(inventoryService.findByActiveStatusList(true))
                     .thenReturn(Collections.singletonList(inventory));
 
             mockMvc.perform(get("/api/inventory/status")
@@ -206,7 +206,7 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$", hasSize(1)))
                     .andExpect(jsonPath("$[0].activeStatus", is(true)));
 
-            verify(inventoryServiceImpl, times(1)).findByActiveStatusList(true);
+            verify(inventoryService, times(1)).findByActiveStatusList(true);
         }
 
         @Test
@@ -218,7 +218,7 @@ public class InventoryControllerTest {
                     50,
                     false);
 
-            when(inventoryServiceImpl.findByActiveStatusList(false))
+            when(inventoryService.findByActiveStatusList(false))
                     .thenReturn(Collections.singletonList(inventory));
 
             mockMvc.perform(get("/api/inventory/status")
@@ -228,20 +228,20 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$", hasSize(1)))
                     .andExpect(jsonPath("$[0].activeStatus", is(false)));
 
-            verify(inventoryServiceImpl, times(1)).findByActiveStatusList(false);
+            verify(inventoryService, times(1)).findByActiveStatusList(false);
         }
 
         @Test
         @DisplayName("Should use default value true when status parameter is missing")
         void shouldUseDefaultValueTrueWhenStatusParameterIsMissing() throws Exception {
-            when(inventoryServiceImpl.findByActiveStatusList(true))
+            when(inventoryService.findByActiveStatusList(true))
                     .thenReturn(Collections.emptyList());
 
             mockMvc.perform(get("/api/inventory/status")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
-            verify(inventoryServiceImpl, times(1)).findByActiveStatusList(true);
+            verify(inventoryService, times(1)).findByActiveStatusList(true);
         }
     }
 
@@ -255,7 +255,7 @@ public class InventoryControllerTest {
 
             InventorySummaryDTO inventory = new InventorySummaryDTO(1L, bookSummary, 5, true);
 
-            when(inventoryServiceImpl.findByAlertLowStockList())
+            when(inventoryService.findByAlertLowStockList())
                     .thenReturn(Collections.singletonList(inventory));
 
             mockMvc.perform(get("/api/inventory/low-stock")
@@ -264,13 +264,13 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$", hasSize(1)))
                     .andExpect(jsonPath("$[0].quantityAvailable", is(5)));
 
-            verify(inventoryServiceImpl, times(1)).findByAlertLowStockList();
+            verify(inventoryService, times(1)).findByAlertLowStockList();
         }
 
         @Test
         @DisplayName("Should return empty list when no low stock alerts exist")
         void shouldReturnEmptyListWhenNoLowStockAlertsExist() throws Exception {
-            when(inventoryServiceImpl.findByAlertLowStockList())
+            when(inventoryService.findByAlertLowStockList())
                     .thenReturn(Collections.emptyList());
 
             mockMvc.perform(get("/api/inventory/low-stock")
@@ -278,7 +278,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
 
-            verify(inventoryServiceImpl, times(1)).findByAlertLowStockList();
+            verify(inventoryService, times(1)).findByAlertLowStockList();
         }
     }
 
@@ -298,7 +298,7 @@ public class InventoryControllerTest {
                             .quantityAvailable(50)
                             .build();
 
-            when(inventoryServiceImpl.checkBookAvailability(bookId)).thenReturn(availability);
+            when(inventoryService.checkBookAvailability(bookId)).thenReturn(availability);
 
             mockMvc.perform(get("/api/inventory/book/{bookId}/available", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -307,7 +307,7 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$.isAvailable", is(true)))
                     .andExpect(jsonPath("$.quantityAvailable", is(50)));
 
-            verify(inventoryServiceImpl, times(1)).checkBookAvailability(bookId);
+            verify(inventoryService, times(1)).checkBookAvailability(bookId);
         }
 
         @Test
@@ -315,14 +315,14 @@ public class InventoryControllerTest {
         void shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
             Long bookId = 999L;
 
-            when(inventoryServiceImpl.checkBookAvailability(bookId))
+            when(inventoryService.checkBookAvailability(bookId))
                     .thenThrow(new ResourceNotFoundException("Book", "Id", bookId));
 
             mockMvc.perform(get("/api/inventory/book/{bookId}/available", bookId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
 
-            verify(inventoryServiceImpl, times(1)).checkBookAvailability(bookId);
+            verify(inventoryService, times(1)).checkBookAvailability(bookId);
         }
 
         @Test
@@ -332,7 +332,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).checkBookAvailability(any());
+            verify(inventoryService, never()).checkBookAvailability(any());
         }
     }
 
@@ -347,7 +347,7 @@ public class InventoryControllerTest {
             UpdateStockDTO updateStock = new UpdateStockDTO(10, MovementType.EXIT);
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 40, true);
 
-            when(inventoryServiceImpl.registerSale(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.registerSale(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
@@ -356,7 +356,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.quantityAvailable", is(40)));
 
-            verify(inventoryServiceImpl, times(1)).registerSale(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).registerSale(any(UpdateStockDTO.class), eq(bookId));
         }
 
         @Test
@@ -370,7 +370,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).registerSale(any(), any());
+            verify(inventoryService, never()).registerSale(any(), any());
         }
 
         @Test
@@ -384,7 +384,7 @@ public class InventoryControllerTest {
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).registerSale(any(), any());
+            verify(inventoryService, never()).registerSale(any(), any());
         }
 
         @Test
@@ -397,7 +397,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).registerSale(any(), any());
+            verify(inventoryService, never()).registerSale(any(), any());
         }
 
         @Test
@@ -406,7 +406,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(100, MovementType.EXIT);
 
-            when(inventoryServiceImpl.registerSale(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.registerSale(any(UpdateStockDTO.class), eq(bookId)))
                     .thenThrow(new InsufficientStockException("Insufficient Stock"));
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/sales", bookId)
@@ -415,7 +415,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isConflict())
                     .andExpect(jsonPath("$.message", containsString("Insufficient Stock")));
 
-            verify(inventoryServiceImpl, times(1)).registerSale(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).registerSale(any(UpdateStockDTO.class), eq(bookId));
         }
     }
 
@@ -430,7 +430,7 @@ public class InventoryControllerTest {
             UpdateStockDTO updateStock = new UpdateStockDTO(20, MovementType.ENTRY);
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 70, true);
 
-            when(inventoryServiceImpl.registerEntry(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.registerEntry(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/entries", bookId)
@@ -439,7 +439,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.quantityAvailable", is(70)));
 
-            verify(inventoryServiceImpl, times(1)).registerEntry(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).registerEntry(any(UpdateStockDTO.class), eq(bookId));
         }
 
         @Test
@@ -453,7 +453,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).registerEntry(any(), any());
+            verify(inventoryService, never()).registerEntry(any(), any());
         }
 
         @Test
@@ -467,7 +467,7 @@ public class InventoryControllerTest {
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).registerEntry(any(), any());
+            verify(inventoryService, never()).registerEntry(any(), any());
         }
     }
 
@@ -482,7 +482,7 @@ public class InventoryControllerTest {
             UpdateStockDTO updateStock = new UpdateStockDTO(5, MovementType.POSITIVE_ADJUSTMENT);
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 55, true);
 
-            when(inventoryServiceImpl.positiveAdjustment(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.positiveAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/positive", bookId)
@@ -491,7 +491,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.quantityAvailable", is(55)));
 
-            verify(inventoryServiceImpl, times(1)).positiveAdjustment(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).positiveAdjustment(any(UpdateStockDTO.class), eq(bookId));
         }
 
         @Test
@@ -505,7 +505,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(updateStock)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).positiveAdjustment(any(), any());
+            verify(inventoryService, never()).positiveAdjustment(any(), any());
         }
     }
 
@@ -520,7 +520,7 @@ public class InventoryControllerTest {
             UpdateStockDTO updateStock = new UpdateStockDTO(5, MovementType.NEGATIVE_ADJUSTMENT);
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 45, true);
 
-            when(inventoryServiceImpl.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenReturn(response);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/negative", bookId)
@@ -529,7 +529,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.quantityAvailable", is(45)));
 
-            verify(inventoryServiceImpl, times(1)).negativeAdjustment(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).negativeAdjustment(any(UpdateStockDTO.class), eq(bookId));
         }
 
         @Test
@@ -538,7 +538,7 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             UpdateStockDTO updateStock = new UpdateStockDTO(100, MovementType.NEGATIVE_ADJUSTMENT);
 
-            when(inventoryServiceImpl.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
+            when(inventoryService.negativeAdjustment(any(UpdateStockDTO.class), eq(bookId)))
                     .thenThrow(new InvalidAdjustmentException("The adjustment would leave negative stock."));
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/adjustment/negative", bookId)
@@ -547,7 +547,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message", containsString("negative stock")));
 
-            verify(inventoryServiceImpl, times(1)).negativeAdjustment(any(UpdateStockDTO.class), eq(bookId));
+            verify(inventoryService, times(1)).negativeAdjustment(any(UpdateStockDTO.class), eq(bookId));
         }
     }
 
@@ -561,7 +561,7 @@ public class InventoryControllerTest {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, 50, 10, 100);
             InventorySummaryDTO response = new InventorySummaryDTO(1L, bookSummary, 50, true);
 
-            when(inventoryServiceImpl.create(any(CreateInventoryDTO.class)))
+            when(inventoryService.create(any(CreateInventoryDTO.class)))
                     .thenReturn(response);
 
             mockMvc.perform(post("/api/inventory")
@@ -570,7 +570,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.quantityAvailable", is(50)));
 
-            verify(inventoryServiceImpl, times(1)).create(any(CreateInventoryDTO.class));
+            verify(inventoryService, times(1)).create(any(CreateInventoryDTO.class));
         }
 
         @Test
@@ -578,7 +578,7 @@ public class InventoryControllerTest {
         void shouldReturnConflictWhenInventoryAlreadyExists() throws Exception {
             CreateInventoryDTO createDTO = new CreateInventoryDTO(1L, 50, 10, 100);
 
-            when(inventoryServiceImpl.create(any(CreateInventoryDTO.class)))
+            when(inventoryService.create(any(CreateInventoryDTO.class)))
                     .thenThrow(new DuplicateEntityException("Inventory", "BookId", 1L));
 
             mockMvc.perform(post("/api/inventory")
@@ -587,7 +587,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isConflict())
                     .andExpect(jsonPath("$.message", containsString("Inventory")));
 
-            verify(inventoryServiceImpl, times(1)).create(any(CreateInventoryDTO.class));
+            verify(inventoryService, times(1)).create(any(CreateInventoryDTO.class));
         }
 
         @Test
@@ -600,7 +600,7 @@ public class InventoryControllerTest {
                             .content(invalidJson))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).create(any());
+            verify(inventoryService, never()).create(any());
         }
 
         @Test
@@ -613,7 +613,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).create(any());
+            verify(inventoryService, never()).create(any());
         }
 
         @Test
@@ -626,7 +626,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).create(any());
+            verify(inventoryService, never()).create(any());
         }
 
         @Test
@@ -639,7 +639,7 @@ public class InventoryControllerTest {
                             .content(objectMapper.writeValueAsString(createDTO)))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).create(any());
+            verify(inventoryService, never()).create(any());
         }
     }
 
@@ -653,14 +653,14 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             Integer quantity = 5;
 
-            doNothing().when(inventoryServiceImpl).releaseReservation(bookId, quantity);
+            doNothing().when(inventoryService).releaseReservation(bookId, quantity);
 
             mockMvc.perform(delete("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
 
-            verify(inventoryServiceImpl, times(1)).releaseReservation(bookId, quantity);
+            verify(inventoryService, times(1)).releaseReservation(bookId, quantity);
         }
     }
 
@@ -674,14 +674,14 @@ public class InventoryControllerTest {
             Long bookId = 1L;
             Integer quantity = 10;
 
-            doNothing().when(inventoryServiceImpl).reserveStock(bookId, quantity);
+            doNothing().when(inventoryService).reserveStock(bookId, quantity);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
 
-            verify(inventoryServiceImpl, times(1)).reserveStock(bookId, quantity);
+            verify(inventoryService, times(1)).reserveStock(bookId, quantity);
         }
 
         @Test
@@ -694,7 +694,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).reserveStock(any(), any());
+            verify(inventoryService, never()).reserveStock(any(), any());
         }
 
         @Test
@@ -704,7 +704,7 @@ public class InventoryControllerTest {
             Integer quantity = 200;
 
             doThrow(new InsufficientStockException("Insufficient stock"))
-                    .when(inventoryServiceImpl).reserveStock(bookId, quantity);
+                    .when(inventoryService).reserveStock(bookId, quantity);
 
             mockMvc.perform(post("/api/inventory/book/{bookId}/reservations", bookId)
                             .param("quantity", quantity.toString())
@@ -712,7 +712,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isConflict())
                     .andExpect(jsonPath("$.message", containsString("Insufficient stock")));
 
-            verify(inventoryServiceImpl, times(1)).reserveStock(bookId, quantity);
+            verify(inventoryService, times(1)).reserveStock(bookId, quantity);
         }
     }
 
@@ -730,7 +730,7 @@ public class InventoryControllerTest {
                     1L, bookSummary, 50, 5, stockMin, stockMax, LocalDateTime.now(), true, 45
             );
 
-            when(inventoryServiceImpl.updateThresholds(bookId, stockMin, stockMax))
+            when(inventoryService.updateThresholds(bookId, stockMin, stockMax))
                     .thenReturn(response);
 
             mockMvc.perform(patch("/api/inventory/book/{bookId}/thresholds", bookId)
@@ -741,7 +741,7 @@ public class InventoryControllerTest {
                     .andExpect(jsonPath("$.stockMin", is(15)))
                     .andExpect(jsonPath("$.stockMax", is(120)));
 
-            verify(inventoryServiceImpl, times(1)).updateThresholds(bookId, stockMin, stockMax);
+            verify(inventoryService, times(1)).updateThresholds(bookId, stockMin, stockMax);
         }
 
         @Test
@@ -751,7 +751,7 @@ public class InventoryControllerTest {
             Integer stockMin = 100;
             Integer stockMax = 50;
 
-            when(inventoryServiceImpl.updateThresholds(bookId, stockMin, stockMax))
+            when(inventoryService.updateThresholds(bookId, stockMin, stockMax))
                     .thenThrow(new InvalidStockThresholdException("Minimum stock cannot be greater than or equal to the maximum stock"));
 
             mockMvc.perform(patch("/api/inventory/book/{bookId}/thresholds", bookId)
@@ -761,7 +761,7 @@ public class InventoryControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message", containsString("Minimum stock")));
 
-            verify(inventoryServiceImpl, times(1)).updateThresholds(bookId, stockMin, stockMax);
+            verify(inventoryService, times(1)).updateThresholds(bookId, stockMin, stockMax);
         }
 
         @Test
@@ -775,7 +775,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).updateThresholds(any(), any(), any());
+            verify(inventoryService, never()).updateThresholds(any(), any(), any());
         }
     }
 
@@ -788,13 +788,13 @@ public class InventoryControllerTest {
         void shouldDisableInventoryWhenIdIsValid() throws Exception {
             Long inventoryId = 1L;
 
-            doNothing().when(inventoryServiceImpl).disableById(inventoryId);
+            doNothing().when(inventoryService).disableById(inventoryId);
 
             mockMvc.perform(patch("/api/inventory/{inventoryId}/disable", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
 
-            verify(inventoryServiceImpl, times(1)).disableById(inventoryId);
+            verify(inventoryService, times(1)).disableById(inventoryId);
         }
 
         @Test
@@ -803,14 +803,14 @@ public class InventoryControllerTest {
             Long inventoryId = 999L;
 
             doThrow(new ResourceNotFoundException("Inventory", "Id", inventoryId))
-                    .when(inventoryServiceImpl).disableById(inventoryId);
+                    .when(inventoryService).disableById(inventoryId);
 
             mockMvc.perform(patch("/api/inventory/{inventoryId}/disable", inventoryId)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.message", containsString("Inventory")));
 
-            verify(inventoryServiceImpl, times(1)).disableById(inventoryId);
+            verify(inventoryService, times(1)).disableById(inventoryId);
         }
 
         @Test
@@ -820,7 +820,7 @@ public class InventoryControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(inventoryServiceImpl, never()).disableById(any());
+            verify(inventoryService, never()).disableById(any());
         }
     }
 }

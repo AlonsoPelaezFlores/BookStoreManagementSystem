@@ -9,7 +9,7 @@ import com.bookstore.management.customer.dto.CustomerSummaryDTO;
 import com.bookstore.management.customer.model.Customer;
 import com.bookstore.management.customer.repository.CustomerRepository;
 import com.bookstore.management.inventory.dto.UpdateStockDTO;
-import com.bookstore.management.inventory.service.InventoryServiceImpl;
+import com.bookstore.management.inventory.service.InventoryService;
 import com.bookstore.management.sales.dto.SaleRequestDTO;
 import com.bookstore.management.sales.dto.SaleResponseDTO;
 import com.bookstore.management.sales.dto.SalesDetailRequestDTO;
@@ -61,7 +61,7 @@ public class SaleServiceImplTest {
     private BookRepository bookRepository;
 
     @Mock
-    private InventoryServiceImpl inventoryService;
+    private InventoryService inventoryService;
 
     @Mock
     private CustomerRepository customerRepository;
