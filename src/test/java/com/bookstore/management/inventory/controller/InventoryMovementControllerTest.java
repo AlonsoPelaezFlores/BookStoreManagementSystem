@@ -96,8 +96,8 @@ class InventoryMovementControllerTest {
                     .andExpect(jsonPath("$.content[1].id", is(2)))
                     .andExpect(jsonPath("$.content[1].movementType", is("EXIT")))
                     .andExpect(jsonPath("$.content[1].affectedQuantity", is(-5)))
-                    .andExpect(jsonPath("$.totalElements", is(2)))
-                    .andExpect(jsonPath("$.size", is(10)));
+                    .andExpect(jsonPath("$.page.totalElements", is(2)))
+                    .andExpect(jsonPath("$.page.size", is(10)));
 
             verify(inventoryMovementService, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
         }
@@ -115,7 +115,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)))
-                    .andExpect(jsonPath("$.totalElements", is(0)));
+                    .andExpect(jsonPath("$.page.totalElements", is(0)));
 
             verify(inventoryMovementService, times(1)).findAllByInventoryId(eq(inventoryId), any(Pageable.class));
         }
@@ -492,7 +492,7 @@ class InventoryMovementControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)))
-                    .andExpect(jsonPath("$.totalElements", is(0)));
+                    .andExpect(jsonPath("$.page.totalElements", is(0)));
 
             verify(inventoryMovementService, times(1)).findRecentMovements(any(Pageable.class));
         }

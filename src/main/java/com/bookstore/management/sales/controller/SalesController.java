@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +25,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SalesController {
 
+    private final static int DEFAULT_SIZE = 10;
+    private final static String DEFAULT_SORT = "id";
+
     private final SaleService saleService;
     @GetMapping
-    public ResponseEntity<List<SaleResponseDTO>> getAllSales() {
-        return ResponseEntity.ok(saleService.findAll());
+    public ResponseEntity<Page<SaleResponseDTO>> getAllSales(
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(saleService.findAll(pageable));
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<SaleResponseDTO> getSaleById(@PathVariable @Positive Long id) {

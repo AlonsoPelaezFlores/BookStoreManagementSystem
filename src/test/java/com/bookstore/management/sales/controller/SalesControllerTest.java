@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -109,25 +111,26 @@ class SalesControllerTest {
         @Test
         @DisplayName("Should return 200 with list of sales")
         void shouldReturnAllSales() throws Exception {
-            when(saleService.findAll()).thenReturn(List.of(buildSaleResponse()));
+            when(saleService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(buildSaleResponse())));
 
             mockMvc.perform(get("/api/sales"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].status").value("PENDING"));
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].id").value(1L))
+                    .andExpect(jsonPath("$.content[0].status").value("PENDING"));
 
-            verify(saleService).findAll();
+            verify(saleService).findAll(any(Pageable.class));
         }
 
         @Test
         @DisplayName("Should return 200 with empty list when no sales exist")
         void shouldReturnEmptyListWhenNoSales() throws Exception {
-            when(saleService.findAll()).thenReturn(List.of());
+            when(saleService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/sales"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
         }
     }
 

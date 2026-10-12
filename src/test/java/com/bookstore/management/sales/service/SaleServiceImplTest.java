@@ -42,6 +42,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -213,35 +217,33 @@ public class SaleServiceImplTest {
         @Test
         @DisplayName("should return list of sale responses when sales exist")
         void shouldReturnListOfSaleResponsesWhenSalesExist() {
-            List<Sale> saleList = List.of(sale);
-            List<SaleResponseDTO> expectedList = List.of(saleResponseDTO);
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findAll()).thenReturn(saleList);
-            when(saleMapper.toResponseDtoList(saleList)).thenReturn(expectedList);
+            when(saleRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(sale), pageable, 1));
+            when(saleMapper.toResponseDto(sale)).thenReturn(saleResponseDTO);
 
-            List<SaleResponseDTO> result = saleService.findAll();
+            Page<SaleResponseDTO> result = saleService.findAll(pageable);
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals(expectedList, result);
-            verify(saleRepository, times(1)).findAll();
-            verify(saleMapper, times(1)).toResponseDtoList(saleList);
+            assertEquals(1, result.getTotalElements());
+            assertEquals(List.of(saleResponseDTO), result.getContent());
+            verify(saleRepository, times(1)).findAll(pageable);
+            verify(saleMapper, times(1)).toResponseDto(sale);
         }
 
         @Test
         @DisplayName("should return empty list when no sales exist")
         void shouldReturnEmptyListWhenNoSalesExist() {
-            List<Sale> emptyList = List.of();
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findAll()).thenReturn(emptyList);
-            when(saleMapper.toResponseDtoList(emptyList)).thenReturn(List.of());
+            when(saleRepository.findAll(pageable)).thenReturn(Page.empty(pageable));
 
-            List<SaleResponseDTO> result = saleService.findAll();
+            Page<SaleResponseDTO> result = saleService.findAll(pageable);
 
             assertNotNull(result);
-            assertTrue(result.isEmpty());
-            verify(saleRepository, times(1)).findAll();
-            verify(saleMapper, times(1)).toResponseDtoList(emptyList);
+            assertTrue(result.getContent().isEmpty());
+            verify(saleRepository, times(1)).findAll(pageable);
+            verify(saleMapper, never()).toResponseDto(any());
         }
     }
     @Nested

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -87,31 +89,32 @@ public class InventoryControllerTest {
 
             List<InventorySummaryDTO> inventories = Arrays.asList(inventory1, inventory2);
 
-            when(inventoryService.findAll()).thenReturn(inventories);
+            when(inventoryService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(inventories));
 
             mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[0].id", is(1)))
-                    .andExpect(jsonPath("$[0].quantityAvailable", is(50)))
-                    .andExpect(jsonPath("$[1].id", is(2)))
-                    .andExpect(jsonPath("$[1].quantityAvailable", is(30)));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.content[0].id", is(1)))
+                    .andExpect(jsonPath("$.content[0].quantityAvailable", is(50)))
+                    .andExpect(jsonPath("$.content[1].id", is(2)))
+                    .andExpect(jsonPath("$.content[1].quantityAvailable", is(30)));
 
-            verify(inventoryService, times(1)).findAll();
+            verify(inventoryService, times(1)).findAll(any(Pageable.class));
         }
 
         @Test
         @DisplayName("Should return empty list when no inventories exist")
         void shouldReturnEmptyListWhenNoInventoriesExist() throws Exception {
-            when(inventoryService.findAll()).thenReturn(Collections.emptyList());
+            when(inventoryService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
             mockMvc.perform(get("/api/inventory")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
 
-            verify(inventoryService, times(1)).findAll();
+            verify(inventoryService, times(1)).findAll(any(Pageable.class));
         }
     }
 

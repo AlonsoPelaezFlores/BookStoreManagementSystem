@@ -24,6 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -100,30 +104,33 @@ class BookServiceTest {
                     book2.getTitle(),
                     new BigDecimal("10.0"),
                     book2.getAuthor().getName());
-            List<BookSummaryDTO> expectedDTOs = Arrays.asList(bookSummaryDTO, bookSummaryDTO2);
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(bookRepository.findAll()).thenReturn(expectedBooks);
-            when(bookMapper.toBookSummaryDTOList(expectedBooks)).thenReturn(expectedDTOs);
+            when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(expectedBooks, pageable, 2));
+            when(bookMapper.toBookSummaryDTO(book)).thenReturn(bookSummaryDTO);
+            when(bookMapper.toBookSummaryDTO(book2)).thenReturn(bookSummaryDTO2);
 
-            List<BookSummaryDTO> actualBooks = bookService.findAll();
+            Page<BookSummaryDTO> actualBooks = bookService.findAll(pageable);
 
             assertThat(actualBooks).isNotNull();
-            assertThat(actualBooks).hasSize(2);
-            assertThat(actualBooks.get(0).title()).isEqualTo(book.getTitle());
+            assertThat(actualBooks.getContent()).containsExactly(bookSummaryDTO, bookSummaryDTO2);
+            assertThat(actualBooks.getTotalElements()).isEqualTo(2);
 
-            verify(bookRepository).findAll();
-            verify(bookMapper).toBookSummaryDTOList(expectedBooks);
+            verify(bookRepository).findAll(pageable);
+            verify(bookMapper).toBookSummaryDTO(book);
+            verify(bookMapper).toBookSummaryDTO(book2);
 
         }
         @Test
         @DisplayName("Should return empty list when no books exist")
         void shouldReturnEmptyListWhenNoBooksExist(){
-            List<Book> expectBooks = Collections.emptyList();
-            when(bookRepository.findAll()).thenReturn(expectBooks);
+            Pageable pageable = PageRequest.of(0, 10);
+            when(bookRepository.findAll(pageable)).thenReturn(Page.empty(pageable));
 
-            List<BookSummaryDTO> actualBooks = bookService.findAll();
+            Page<BookSummaryDTO> actualBooks = bookService.findAll(pageable);
 
-            assertThat(actualBooks).hasSize(0);
+            assertThat(actualBooks.getContent()).isEmpty();
+            assertThat(actualBooks.getTotalElements()).isZero();
         }
     }
 

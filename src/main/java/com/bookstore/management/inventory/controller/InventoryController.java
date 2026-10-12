@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,11 +22,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryController {
 
+    private final static int DEFAULT_SIZE = 10;
+    private final static String DEFAULT_SORT = "id";
+
     private final InventoryService inventoryService;
 
     @GetMapping
-    public ResponseEntity<List<InventorySummaryDTO>> getAll() {
-        return ResponseEntity.ok(inventoryService.findAll());
+    public ResponseEntity<Page<InventorySummaryDTO>> getAll(
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(inventoryService.findAll(pageable));
     }
 
     @GetMapping(value = "/book/{bookId}")

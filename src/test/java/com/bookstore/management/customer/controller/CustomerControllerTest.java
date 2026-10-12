@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -80,31 +82,32 @@ class CustomerControllerTest {
 
             List<CustomerSummaryDTO> customers = Arrays.asList(customer, anotherCustomer);
 
-            when(customerService.findAll()).thenReturn(customers);
+            when(customerService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(customers));
 
             mockMvc.perform(get("/api/customers"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].name").value("John"))
-                    .andExpect(jsonPath("$[0].lastName").value("Doe"))
-                    .andExpect(jsonPath("$[0].email").value("john.doe@email.com"))
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.content[0].id").value(1L))
+                    .andExpect(jsonPath("$.content[0].name").value("John"))
+                    .andExpect(jsonPath("$.content[0].lastName").value("Doe"))
+                    .andExpect(jsonPath("$.content[0].email").value("john.doe@email.com"))
 
-                    .andExpect(jsonPath("$[1].id").value(2L))
-                    .andExpect(jsonPath("$[1].name").value("Jane"))
-                    .andExpect(jsonPath("$[1].lastName").value("Smith"))
-                    .andExpect(jsonPath("$[1].email").value("jane.smith@email.com"));
+                    .andExpect(jsonPath("$.content[1].id").value(2L))
+                    .andExpect(jsonPath("$.content[1].name").value("Jane"))
+                    .andExpect(jsonPath("$.content[1].lastName").value("Smith"))
+                    .andExpect(jsonPath("$.content[1].email").value("jane.smith@email.com"));
         }
         @Test
         @DisplayName("Should return empty list when no customers exist")
         void shouldReturnEmptyListWhenNoCustomersExist() throws Exception {
-            when(customerService.findAll()).thenReturn(List.of());
+            when(customerService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/customers"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
         }
     }
     @Nested

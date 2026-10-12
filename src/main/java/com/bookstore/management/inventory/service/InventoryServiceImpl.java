@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 
@@ -32,9 +34,8 @@ public class InventoryServiceImpl implements InventoryService {
     private final InventoryMovementRepository inventoryMovementRepository;
 
     @Override
-    public List<InventorySummaryDTO> findAll() {
-        List<Inventory> inventorySummaries = inventoryRepository.findAll();
-        return inventoryMapper.toInventorySummaryDTOList(inventorySummaries);
+    public Page<InventorySummaryDTO> findAll(Pageable pageable) {
+        return inventoryRepository.findAll(pageable).map(inventoryMapper::toInventorySummaryDTO);
     }
 
     @Override

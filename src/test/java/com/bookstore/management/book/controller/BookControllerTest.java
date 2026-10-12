@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -89,34 +91,35 @@ public class BookControllerTest {
         void shouldReturnAllBooksWhenBooksExist() throws Exception {
             List<BookSummaryDTO> books = Arrays.asList(book, book2);
 
-            when(bookService.findAll()).thenReturn(books);
+            when(bookService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(books));
 
             mockMvc.perform(get("/api/books"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(2))
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].isbn").value("978-84-376-0494-7"))
-                    .andExpect(jsonPath("$[0].title").value("Cien años de soledad"))
-                    .andExpect(jsonPath("$[0].author").value("John Doe"))
-                    .andExpect(jsonPath("$[1].id").value(2L))
-                    .andExpect(jsonPath("$[1].isbn").value("978-84-663-1599-6"))
-                    .andExpect(jsonPath("$[1].title").value("El nombre del viento"))
-                    .andExpect(jsonPath("$[1].author").value("John Doe"));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andExpect(jsonPath("$.content[0].id").value(1L))
+                    .andExpect(jsonPath("$.content[0].isbn").value("978-84-376-0494-7"))
+                    .andExpect(jsonPath("$.content[0].title").value("Cien años de soledad"))
+                    .andExpect(jsonPath("$.content[0].author").value("John Doe"))
+                    .andExpect(jsonPath("$.content[1].id").value(2L))
+                    .andExpect(jsonPath("$.content[1].isbn").value("978-84-663-1599-6"))
+                    .andExpect(jsonPath("$.content[1].title").value("El nombre del viento"))
+                    .andExpect(jsonPath("$.content[1].author").value("John Doe"));
 
         }
 
         @Test
         @DisplayName("Should return empty list when no books exist")
         void shouldReturnEmptyListWhenNoBooksExist() throws Exception {
-            when(bookService.findAll()).thenReturn(List.of());
+            when(bookService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/books"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(0))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
         }
     }
     @Nested

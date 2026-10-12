@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +32,9 @@ public class BookService {
 
     private final BookMapper bookMapper;
 
-    public List<BookSummaryDTO> findAll() {
+    public Page<BookSummaryDTO> findAll(Pageable pageable) {
 
-        return bookMapper.toBookSummaryDTOList(bookRepository.findAll());
+        return bookRepository.findAll(pageable).map(bookMapper::toBookSummaryDTO);
     }
     public BookResponseDTO findById(Long id) {
         return bookMapper.toBookResponseDTO(findByIdOrThrow(id));

@@ -13,6 +13,10 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -65,23 +69,26 @@ class CustomerServiceTest {
         void shouldReturnAllCustomersWhenCustomersExist() {
 
             List<Customer> customers = Arrays.asList(customer,anotherCustomer);
-            when(customerRepository.findAll()).thenReturn(customers);
+            Pageable pageable = PageRequest.of(0, 10);
+            when(customerRepository.findAll(pageable)).thenReturn(new PageImpl<>(customers, pageable, 2));
 
-            List<CustomerSummaryDTO> result = customerService.findAll();
+            Page<CustomerSummaryDTO> result = customerService.findAll(pageable);
 
-            assertThat(result).hasSize(2);
-            verify(customerRepository).findAll();
+            assertThat(result.getContent()).hasSize(2);
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            verify(customerRepository).findAll(pageable);
         }
         @Test
         @DisplayName("Should return empty list when no customers exist")
         void shouldReturnEmptyListWhenNoCustomersExist() {
 
-            when(customerRepository.findAll()).thenReturn(List.of());
+            Pageable pageable = PageRequest.of(0, 10);
+            when(customerRepository.findAll(pageable)).thenReturn(Page.empty(pageable));
 
-            List<CustomerSummaryDTO> result = customerService.findAll();
+            Page<CustomerSummaryDTO> result = customerService.findAll(pageable);
 
-            assertThat(result).isEmpty();
-            verify(customerRepository).findAll();
+            assertThat(result.getContent()).isEmpty();
+            verify(customerRepository).findAll(pageable);
         }
     }
     @Nested

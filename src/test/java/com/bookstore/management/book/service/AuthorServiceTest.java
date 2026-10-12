@@ -18,8 +18,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,22 +61,25 @@ class AuthorServiceTest {
                     .build();
 
             List<Author> expectAuthors= Arrays.asList(author, author2);
-            when(authorRepository.findAll()).thenReturn(expectAuthors);
+            Pageable pageable = PageRequest.of(0, 10);
+            when(authorRepository.findAll(pageable)).thenReturn(new PageImpl<>(expectAuthors, pageable, 2));
 
-            List<AuthorSummaryDTO> actualAuthors = authorService.findAll();
+            Page<AuthorSummaryDTO> actualAuthors = authorService.findAll(pageable);
 
-            assertThat(actualAuthors).hasSize(2);
-            assertThat(actualAuthors).isEqualTo(authorMapper.toSummaryDTOList(expectAuthors));
+            assertThat(actualAuthors.getContent()).hasSize(2);
+            assertThat(actualAuthors.getTotalElements()).isEqualTo(2);
+            assertThat(actualAuthors.getContent()).isEqualTo(authorMapper.toSummaryDTOList(expectAuthors));
         }
         @Test
         @DisplayName("Should return empty list when no authors exist")
         void shouldReturnEmptyListWhenNoAuthorsExist(){
-            List<Author> expectAuthors = Collections.emptyList();
-            when(authorRepository.findAll()).thenReturn(expectAuthors);
+            Pageable pageable = PageRequest.of(0, 10);
+            when(authorRepository.findAll(pageable)).thenReturn(Page.empty(pageable));
 
-            List<AuthorSummaryDTO> actualAuthors = authorService.findAll();
+            Page<AuthorSummaryDTO> actualAuthors = authorService.findAll(pageable);
 
-            assertThat(actualAuthors).hasSize(0);
+            assertThat(actualAuthors.getContent()).isEmpty();
+            assertThat(actualAuthors.getTotalElements()).isZero();
         }
     }
     @Nested

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -68,32 +70,33 @@ class AuthorControllerTest {
 
             List<AuthorSummaryDTO> authors = Arrays.asList(authorSummaryDTO, authorSummaryDTO2);
 
-            when(authorService.findAll()).thenReturn(authors);
+            when(authorService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(authors));
 
             mockMvc.perform(get("/api/authors"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(2))
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].name").value("John Doe"))
-                    .andExpect(jsonPath("$[0].nationality").value("American"))
-                    .andExpect(jsonPath("$[0].gender").value("MALE"))
-                    .andExpect(jsonPath("$[1].id").value(2L))
-                    .andExpect(jsonPath("$[1].name").value("Jane Smith"))
-                    .andExpect(jsonPath("$[1].nationality").value("British"))
-                    .andExpect(jsonPath("$[1].gender").value("FEMALE"));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andExpect(jsonPath("$.content[0].id").value(1L))
+                    .andExpect(jsonPath("$.content[0].name").value("John Doe"))
+                    .andExpect(jsonPath("$.content[0].nationality").value("American"))
+                    .andExpect(jsonPath("$.content[0].gender").value("MALE"))
+                    .andExpect(jsonPath("$.content[1].id").value(2L))
+                    .andExpect(jsonPath("$.content[1].name").value("Jane Smith"))
+                    .andExpect(jsonPath("$.content[1].nationality").value("British"))
+                    .andExpect(jsonPath("$.content[1].gender").value("FEMALE"));
         }
         @Test
         @DisplayName("Should return empty list when no authors exist")
         void shouldReturnEmptyListWhenNoAuthorsExist() throws Exception{
-            when(authorService.findAll()).thenReturn(List.of());
+            when(authorService.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/authors"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(0))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
         }
     }
     @Nested

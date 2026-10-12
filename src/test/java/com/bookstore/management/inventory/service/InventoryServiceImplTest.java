@@ -24,6 +24,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -118,11 +122,15 @@ public class InventoryServiceImplTest {
 
             List<Inventory> inventories = Arrays.asList(inventory, anotherInventory);
 
-            when(inventoryRepository.findAll()).thenReturn(inventories);
+            Pageable pageable = PageRequest.of(0, 10);
 
-            List<InventorySummaryDTO> result = inventoryService.findAll();
+            when(inventoryRepository.findAll(pageable)).thenReturn(new PageImpl<>(inventories, pageable, 2));
+
+            Page<InventorySummaryDTO> page = inventoryService.findAll(pageable);
+            List<InventorySummaryDTO> result = page.getContent();
 
             assertNotNull(result);
+            assertEquals(2, page.getTotalElements());
             assertEquals(2, result.size());
             assertEquals(1L, result.get(0).id());
             assertEquals(100, result.get(0).quantityAvailable());
@@ -130,23 +138,22 @@ public class InventoryServiceImplTest {
             assertEquals(2L, result.get(1).id());
             assertEquals(200, result.get(1).quantityAvailable());
             assertEquals(2L, result.get(1).bookSummaryDTO().id());
-            verify(inventoryRepository, times(1)).findAll();
+            verify(inventoryRepository, times(1)).findAll(pageable);
         }
 
         @Test
         @DisplayName("Should return empty list when no inventories exist")
         void shouldReturnEmptyListWhenNoInventoriesExist() {
 
-            List<Inventory> emptyInventories = List.of();
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(inventoryRepository.findAll()).thenReturn(emptyInventories);
+            when(inventoryRepository.findAll(pageable)).thenReturn(Page.empty(pageable));
 
-            List<InventorySummaryDTO> result = inventoryService.findAll();
+            Page<InventorySummaryDTO> result = inventoryService.findAll(pageable);
 
-            assertThat(result).hasSize(0);
-            assertThat(result).hasSize(0).isEqualTo(List.of());
-            assertThat(result).isEmpty();
-            verify(inventoryRepository, times(1)).findAll();
+            assertThat(result.getContent()).isEmpty();
+            assertThat(result.getTotalElements()).isZero();
+            verify(inventoryRepository, times(1)).findAll(pageable);
         }
     }
     @Nested

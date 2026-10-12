@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,8 +22,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public List<CustomerSummaryDTO> findAll() {
-        return customerMapper.toSummaryDTOList(customerRepository.findAll());
+    public Page<CustomerSummaryDTO> findAll(Pageable pageable) {
+        return customerRepository.findAll(pageable).map(customerMapper::toSummaryDTO);
     }
     public CustomerSummaryDTO findById(Long id) {
         return customerMapper.toSummaryDTO(findByIdOrThrow(id));

@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,11 +24,15 @@ import java.util.List;
 @RequestMapping(value = "/api/books")
 public class BookController {
 
+    private final static int DEFAULT_SIZE = 10;
+    private final static String DEFAULT_SORT = "id";
+
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<List<BookSummaryDTO>> findAll(){
-        return ResponseEntity.ok(bookService.findAll());
+    public ResponseEntity<Page<BookSummaryDTO>> findAll(
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable){
+        return ResponseEntity.ok(bookService.findAll(pageable));
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<BookResponseDTO> findById(@PathVariable @Positive Long id) {

@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Slf4j
 @Service
@@ -23,9 +24,9 @@ public class AuthorService {
 
     private final AuthorMapper authorMapper;
 
-    public List<AuthorSummaryDTO> findAll(){
+    public Page<AuthorSummaryDTO> findAll(Pageable pageable){
 
-        return authorMapper.toSummaryDTOList(authorRepository.findAll());
+        return authorRepository.findAll(pageable).map(authorMapper::toSummaryDto);
     }
 
     public AuthorResponseDTO findById(long id){

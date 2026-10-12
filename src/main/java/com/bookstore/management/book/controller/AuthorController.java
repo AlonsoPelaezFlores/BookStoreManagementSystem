@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Tag(name = "Authors", description = "Author management")
 @RequiredArgsConstructor
@@ -21,11 +23,15 @@ import java.util.List;
 @RequestMapping(value = "/api/authors")
 public class AuthorController {
 
+    private final static int DEFAULT_SIZE = 10;
+    private final static String DEFAULT_SORT = "id";
+
     private final AuthorService authorService;
 
     @GetMapping
-    public ResponseEntity<List<AuthorSummaryDTO>> findAll() {
-        return ResponseEntity.ok(authorService.findAll());
+    public ResponseEntity<Page<AuthorSummaryDTO>> findAll(
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(authorService.findAll(pageable));
     }
 
     @GetMapping(value = "/{id}")

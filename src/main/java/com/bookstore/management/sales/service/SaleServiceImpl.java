@@ -25,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -55,9 +57,8 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public List<SaleResponseDTO> findAll() {
-        List<Sale> saleList = saleRepository.findAll();
-        return saleMapper.toResponseDtoList(saleList);
+    public Page<SaleResponseDTO> findAll(Pageable pageable) {
+        return saleRepository.findAll(pageable).map(saleMapper::toResponseDto);
     }
 
     @Override
