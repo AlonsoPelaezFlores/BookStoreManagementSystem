@@ -204,9 +204,9 @@ public class InventoryServiceImplTest {
         void shouldReturnListOfActiveInventoriesWhenActiveStatusIsTrue(){
             List<Inventory> activeInventories = Arrays.asList(inventory, anotherInventory);
             Boolean activeStatus = true;
-            when(inventoryRepository.findByActiveStatus(activeStatus)).thenReturn(activeInventories);
+            when(inventoryRepository.findByActiveStatus(activeStatus, PageRequest.of(0, 10))).thenReturn(new PageImpl<>(activeInventories));
 
-            List<InventorySummaryDTO> result = inventoryService.findByActiveStatusList(activeStatus);
+            List<InventorySummaryDTO> result = inventoryService.findByActiveStatus(activeStatus, PageRequest.of(0, 10)).getContent();
 
             assertThat(result).isNotNull();
             assertThat(result).hasSize(2);
@@ -215,7 +215,7 @@ public class InventoryServiceImplTest {
             assertThat(result.get(0).activeStatus()).isTrue();
             assertThat(result.get(1).id()).isEqualTo(2L);
             assertThat(result.get(1).quantityAvailable()).isEqualTo(200);
-            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus);
+            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus, PageRequest.of(0, 10));
         }
 
         @Test
@@ -227,15 +227,15 @@ public class InventoryServiceImplTest {
 
             List<Inventory> inactiveInventories = Collections.singletonList(inventory);
 
-            when(inventoryRepository.findByActiveStatus(activeStatus)).thenReturn(inactiveInventories);
+            when(inventoryRepository.findByActiveStatus(activeStatus, PageRequest.of(0, 10))).thenReturn(new PageImpl<>(inactiveInventories));
 
-            List<InventorySummaryDTO> result = inventoryService.findByActiveStatusList(activeStatus);
+            List<InventorySummaryDTO> result = inventoryService.findByActiveStatus(activeStatus, PageRequest.of(0, 10)).getContent();
 
             assertThat(result).isNotNull();
             assertThat(result).hasSize(1);
             assertThat(result.get(0).id()).isEqualTo(1L);
             assertThat(result.get(0).activeStatus()).isFalse();
-            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus);
+            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus, PageRequest.of(0, 10));
         }
         @Test
         @DisplayName("Should return empty list when no inventories match active status")
@@ -244,13 +244,13 @@ public class InventoryServiceImplTest {
             Boolean activeStatus = true;
             List<Inventory> emptyInventories = Collections.emptyList();
 
-            when(inventoryRepository.findByActiveStatus(activeStatus)).thenReturn(emptyInventories);
+            when(inventoryRepository.findByActiveStatus(activeStatus, PageRequest.of(0, 10))).thenReturn(new PageImpl<>(emptyInventories));
 
-            List<InventorySummaryDTO> result = inventoryService.findByActiveStatusList(activeStatus);
+            List<InventorySummaryDTO> result = inventoryService.findByActiveStatus(activeStatus, PageRequest.of(0, 10)).getContent();
 
             assertThat(result).isNotNull();
             assertThat(result).isEmpty();
-            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus);
+            verify(inventoryRepository, times(1)).findByActiveStatus(activeStatus, PageRequest.of(0, 10));
         }
     }
     @Nested
@@ -267,9 +267,9 @@ public class InventoryServiceImplTest {
 
             List<Inventory> lowStockInventories = Arrays.asList(inventory, anotherInventory);
 
-            when(inventoryRepository.findActiveInventoriesWithLowStock()).thenReturn(lowStockInventories);
+            when(inventoryRepository.findActiveInventoriesWithLowStock(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(lowStockInventories));
 
-            List<InventorySummaryDTO> result = inventoryService.findByAlertLowStockList();
+            List<InventorySummaryDTO> result = inventoryService.findLowStock(PageRequest.of(0, 10)).getContent();
 
             assertThat(result).isNotNull();
             assertThat(result).hasSize(2);
@@ -279,7 +279,7 @@ public class InventoryServiceImplTest {
             assertThat(result.get(1).id()).isEqualTo(2L);
             assertThat(result.get(1).quantityAvailable()).isEqualTo(5);
             assertThat(result.get(1).activeStatus()).isTrue();
-            verify(inventoryRepository, times(1)).findActiveInventoriesWithLowStock();
+            verify(inventoryRepository, times(1)).findActiveInventoriesWithLowStock(PageRequest.of(0, 10));
         }
 
         @Test
@@ -288,13 +288,13 @@ public class InventoryServiceImplTest {
 
             List<Inventory> emptyInventories = Collections.emptyList();
 
-            when(inventoryRepository.findActiveInventoriesWithLowStock()).thenReturn(emptyInventories);
+            when(inventoryRepository.findActiveInventoriesWithLowStock(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(emptyInventories));
 
-            List<InventorySummaryDTO> result = inventoryService.findByAlertLowStockList();
+            List<InventorySummaryDTO> result = inventoryService.findLowStock(PageRequest.of(0, 10)).getContent();
 
             assertThat(result).isNotNull();
             assertThat(result).isEmpty();
-            verify(inventoryRepository, times(1)).findActiveInventoriesWithLowStock();
+            verify(inventoryRepository, times(1)).findActiveInventoriesWithLowStock(PageRequest.of(0, 10));
         }
     }
     @Nested

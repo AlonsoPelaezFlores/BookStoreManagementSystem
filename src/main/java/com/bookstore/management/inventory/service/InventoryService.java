@@ -4,14 +4,13 @@ import com.bookstore.management.inventory.dto.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 public interface InventoryService {
 
     Page<InventorySummaryDTO> findAll(Pageable pageable);
     InventoryResponseDTO findByBookId(Long bookId);
-    List<InventorySummaryDTO> findByActiveStatusList(Boolean activeStatus);
-    List<InventorySummaryDTO> findByAlertLowStockList();
+    Page<InventorySummaryDTO> findByActiveStatus(Boolean activeStatus, Pageable pageable);
+    Page<InventorySummaryDTO> findLowStock(Pageable pageable);
     CheckAvailabilityResponseDTO checkBookAvailability (Long bookId);
     InventorySummaryDTO registerSale(UpdateStockDTO updateStockDTO, Long bookId);
     InventorySummaryDTO registerEntry(UpdateStockDTO updateStockDTO, Long bookId);

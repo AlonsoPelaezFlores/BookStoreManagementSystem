@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -199,17 +200,17 @@ public class InventoryControllerTest {
                     50,
                     true);
 
-            when(inventoryService.findByActiveStatusList(true))
-                    .thenReturn(Collections.singletonList(inventory));
+            when(inventoryService.findByActiveStatus(eq(true), any(Pageable.class)))
+                    .thenReturn(new PageImpl<>(Collections.singletonList(inventory)));
 
             mockMvc.perform(get("/api/inventory/status")
                             .param("active", "true")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].activeStatus", is(true)));
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].activeStatus", is(true)));
 
-            verify(inventoryService, times(1)).findByActiveStatusList(true);
+            verify(inventoryService, times(1)).findByActiveStatus(eq(true), any(Pageable.class));
         }
 
         @Test
@@ -221,30 +222,30 @@ public class InventoryControllerTest {
                     50,
                     false);
 
-            when(inventoryService.findByActiveStatusList(false))
-                    .thenReturn(Collections.singletonList(inventory));
+            when(inventoryService.findByActiveStatus(eq(false), any(Pageable.class)))
+                    .thenReturn(new PageImpl<>(Collections.singletonList(inventory)));
 
             mockMvc.perform(get("/api/inventory/status")
                             .param("active", "false")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].activeStatus", is(false)));
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].activeStatus", is(false)));
 
-            verify(inventoryService, times(1)).findByActiveStatusList(false);
+            verify(inventoryService, times(1)).findByActiveStatus(eq(false), any(Pageable.class));
         }
 
         @Test
         @DisplayName("Should use default value true when status parameter is missing")
         void shouldUseDefaultValueTrueWhenStatusParameterIsMissing() throws Exception {
-            when(inventoryService.findByActiveStatusList(true))
-                    .thenReturn(Collections.emptyList());
+            when(inventoryService.findByActiveStatus(eq(true), any(Pageable.class)))
+                    .thenReturn(Page.empty());
 
             mockMvc.perform(get("/api/inventory/status")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
 
-            verify(inventoryService, times(1)).findByActiveStatusList(true);
+            verify(inventoryService, times(1)).findByActiveStatus(eq(true), any(Pageable.class));
         }
     }
 
@@ -258,30 +259,30 @@ public class InventoryControllerTest {
 
             InventorySummaryDTO inventory = new InventorySummaryDTO(1L, bookSummary, 5, true);
 
-            when(inventoryService.findByAlertLowStockList())
-                    .thenReturn(Collections.singletonList(inventory));
+            when(inventoryService.findLowStock(any(Pageable.class)))
+                    .thenReturn(new PageImpl<>(Collections.singletonList(inventory)));
 
             mockMvc.perform(get("/api/inventory/low-stock")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].quantityAvailable", is(5)));
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].quantityAvailable", is(5)));
 
-            verify(inventoryService, times(1)).findByAlertLowStockList();
+            verify(inventoryService, times(1)).findLowStock(any(Pageable.class));
         }
 
         @Test
         @DisplayName("Should return empty list when no low stock alerts exist")
         void shouldReturnEmptyListWhenNoLowStockAlertsExist() throws Exception {
-            when(inventoryService.findByAlertLowStockList())
-                    .thenReturn(Collections.emptyList());
+            when(inventoryService.findLowStock(any(Pageable.class)))
+                    .thenReturn(Page.empty());
 
             mockMvc.perform(get("/api/inventory/low-stock")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)));
 
-            verify(inventoryService, times(1)).findByAlertLowStockList();
+            verify(inventoryService, times(1)).findLowStock(any(Pageable.class));
         }
     }
 

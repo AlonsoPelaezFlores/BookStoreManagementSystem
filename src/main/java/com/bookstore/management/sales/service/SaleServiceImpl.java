@@ -62,25 +62,22 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public List<SaleResponseDTO> findByCustomerId(Long customerId) {
+    public Page<SaleResponseDTO> findByCustomerId(Long customerId, Pageable pageable) {
 
         customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer","Id",customerId));
 
-        List<Sale> sales = saleRepository.findByCustomerId(customerId);
-        return saleMapper.toResponseDtoList(sales);
+        return saleRepository.findByCustomerId(customerId, pageable).map(saleMapper::toResponseDto);
     }
 
     @Override
-    public List<SaleResponseDTO> findByStatus(SalesStatus status) {
-        List<Sale> sales = saleRepository.findByStatus(status);
-        return saleMapper.toResponseDtoList(sales);
+    public Page<SaleResponseDTO> findByStatus(SalesStatus status, Pageable pageable) {
+        return saleRepository.findByStatus(status, pageable).map(saleMapper::toResponseDto);
     }
 
     @Override
-    public List<SaleResponseDTO> findByDateRange(LocalDate start, LocalDate end) {
-        List<Sale> sales = saleRepository.findByDateRange(start,end);
-        return saleMapper.toResponseDtoList(sales);
+    public Page<SaleResponseDTO> findByDateRange(LocalDate start, LocalDate end, Pageable pageable) {
+        return saleRepository.findByDateRange(start, end, pageable).map(saleMapper::toResponseDto);
     }
 
     @Transactional

@@ -29,7 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -743,35 +742,35 @@ class BookServiceTest {
                     book2.getAuthor().getName());
             List<Book> expectedBooks = Arrays.asList(book1, book2);
             List<BookSummaryDTO> expectedDTOs = Arrays.asList(bookSummaryDTO, bookSummaryDTO2);
+            Pageable pageable = PageRequest.of(0, 10);
 
             when(authorRepository.existsById(authorId)).thenReturn(true);
-            when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
-            when(bookMapper.toBookSummaryDTOList(expectedBooks)).thenReturn(expectedDTOs);
+            when(bookRepository.findBooksByAuthorId(authorId, pageable)).thenReturn(new PageImpl<>(expectedBooks, pageable, 2));
+            when(bookMapper.toBookSummaryDTO(book1)).thenReturn(bookSummaryDTO);
+            when(bookMapper.toBookSummaryDTO(book2)).thenReturn(bookSummaryDTO2);
 
-            List<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId);
+            Page<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId, pageable);
 
-            assertThat(actualBooks).isNotEmpty();
-            assertThat(actualBooks).hasSize(2);
-            assertThat(actualBooks).isEqualTo(expectedDTOs);
+            assertThat(actualBooks.getContent()).isEqualTo(expectedDTOs);
+            assertThat(actualBooks.getTotalElements()).isEqualTo(2);
         }
 
         @Test
         @DisplayName("Should return empty list when author exists but has no books")
         void shouldReturnEmptyListWhenAuthorExistsButHasNoBooks() {
             Long authorId = 2L;
-
-            List<Book> expectedBooks = Collections.emptyList();
+            Pageable pageable = PageRequest.of(0, 10);
 
             when(authorRepository.existsById(authorId)).thenReturn(true);
-            when(bookRepository.findBooksByAuthorId(authorId)).thenReturn(expectedBooks);
+            when(bookRepository.findBooksByAuthorId(authorId, pageable)).thenReturn(Page.empty(pageable));
 
-            List<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId);
+            Page<BookSummaryDTO> actualBooks = bookService.booksByAuthorId(authorId, pageable);
 
-            assertThat(actualBooks).isEmpty();
-            assertThat(actualBooks).hasSize(0);
+            assertThat(actualBooks.getContent()).isEmpty();
+            assertThat(actualBooks.getTotalElements()).isZero();
 
             verify(authorRepository).existsById(authorId);
-            verify(bookRepository).findBooksByAuthorId(authorId);
+            verify(bookRepository).findBooksByAuthorId(authorId, pageable);
 
         }
 
@@ -782,14 +781,14 @@ class BookServiceTest {
 
             when(authorRepository.existsById(authorIdNotExist)).thenReturn(false);
 
-            assertThatThrownBy(()-> bookService.booksByAuthorId(authorIdNotExist))
+            assertThatThrownBy(()-> bookService.booksByAuthorId(authorIdNotExist, PageRequest.of(0, 10)))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("999");
 
             verify(authorRepository).existsById(authorIdNotExist);
-            verify(bookRepository,never()).findBooksByAuthorId(anyLong());
+            verify(bookRepository,never()).findBooksByAuthorId(any(), any(Pageable.class));
 
         }
 
@@ -800,14 +799,14 @@ class BookServiceTest {
 
             when(authorRepository.existsById(nullAuthorId)).thenReturn(false);
 
-            assertThatThrownBy(()-> bookService.booksByAuthorId(nullAuthorId))
+            assertThatThrownBy(()-> bookService.booksByAuthorId(nullAuthorId, PageRequest.of(0, 10)))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Author")
                     .hasMessageContaining("Id")
                     .hasMessageContaining("null");
 
             verify(authorRepository).existsById(nullAuthorId);
-            verify(bookRepository,never()).findBooksByAuthorId(anyLong());
+            verify(bookRepository,never()).findBooksByAuthorId(any(), any(Pageable.class));
 
         }
 

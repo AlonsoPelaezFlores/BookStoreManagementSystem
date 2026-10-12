@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "Inventory")
 @RestController
 @RequestMapping("/api/inventory")
@@ -40,14 +38,16 @@ public class InventoryController {
     }
 
     @GetMapping(value = "/status")
-    public ResponseEntity<List<InventorySummaryDTO>> getAllByActiveStatus(
-            @RequestParam(name = "active", defaultValue = "true") Boolean activeStatus) {
-        return ResponseEntity.ok(inventoryService.findByActiveStatusList(activeStatus));
+    public ResponseEntity<Page<InventorySummaryDTO>> getAllByActiveStatus(
+            @RequestParam(name = "active", defaultValue = "true") Boolean activeStatus,
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(inventoryService.findByActiveStatus(activeStatus, pageable));
     }
 
     @GetMapping(value = "/low-stock")
-    public ResponseEntity<List<InventorySummaryDTO>> getByAlertLowStock() {
-        return ResponseEntity.ok(inventoryService.findByAlertLowStockList());
+    public ResponseEntity<Page<InventorySummaryDTO>> getByAlertLowStock(
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(inventoryService.findLowStock(pageable));
     }
 
     @GetMapping(value = "/book/{bookId}/available")

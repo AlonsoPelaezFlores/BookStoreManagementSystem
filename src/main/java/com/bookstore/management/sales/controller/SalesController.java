@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Tag(name = "Sales")
 @RestController
@@ -39,20 +38,25 @@ public class SalesController {
         return ResponseEntity.ok().body(saleService.findById(id));
     }
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<SaleResponseDTO>> getSalesByCustomer(@PathVariable @Positive Long customerId) {
-        return ResponseEntity.ok(saleService.findByCustomerId(customerId));
+    public ResponseEntity<Page<SaleResponseDTO>> getSalesByCustomer(
+            @PathVariable @Positive Long customerId,
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(saleService.findByCustomerId(customerId, pageable));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<SaleResponseDTO>> getSalesByStatus(@PathVariable SalesStatus status) {
-        return ResponseEntity.ok(saleService.findByStatus(status));
+    public ResponseEntity<Page<SaleResponseDTO>> getSalesByStatus(
+            @PathVariable SalesStatus status,
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(saleService.findByStatus(status, pageable));
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<List<SaleResponseDTO>> getSalesByDateRange(
+    public ResponseEntity<Page<SaleResponseDTO>> getSalesByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-        return ResponseEntity.ok(saleService.findByDateRange(start, end));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable) {
+        return ResponseEntity.ok(saleService.findByDateRange(start, end, pageable));
     }
 
     @PostMapping

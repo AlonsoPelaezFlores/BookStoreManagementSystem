@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "Books", description = "Book management")
 @RequiredArgsConstructor
 @RestController
@@ -43,8 +41,10 @@ public class BookController {
         return ResponseEntity.ok(bookService.findByISBN(isbn));
     }
     @GetMapping(value = "/author/{authorId}")
-    public ResponseEntity<List<BookSummaryDTO>> findByAuthorId(@PathVariable @Positive Long authorId){
-        return ResponseEntity.ok(bookService.booksByAuthorId(authorId));
+    public ResponseEntity<Page<BookSummaryDTO>> findByAuthorId(
+            @PathVariable @Positive Long authorId,
+            @PageableDefault(size = DEFAULT_SIZE, sort = DEFAULT_SORT) Pageable pageable){
+        return ResponseEntity.ok(bookService.booksByAuthorId(authorId, pageable));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")

@@ -267,21 +267,22 @@ public class BookControllerTest {
 
             List<BookSummaryDTO> books = Arrays.asList(book, book2);
 
-            when(bookService.booksByAuthorId(authorId)).thenReturn(books);
+            when(bookService.booksByAuthorId(eq(authorId), any(Pageable.class))).thenReturn(new PageImpl<>(books));
 
             mockMvc.perform(get("/api/books/author/{authorId}", authorId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].isbn").value("9780141439518"))
-                    .andExpect(jsonPath("$[0].title").value("Cien años de soledad"))
-                    .andExpect(jsonPath("$[0].author").value("John Doe"))
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content[0].id").value(1L))
+                    .andExpect(jsonPath("$.content[0].isbn").value("9780141439518"))
+                    .andExpect(jsonPath("$.content[0].title").value("Cien años de soledad"))
+                    .andExpect(jsonPath("$.content[0].author").value("John Doe"))
 
-                    .andExpect(jsonPath("$[1].id").value(2L))
-                    .andExpect(jsonPath("$[1].isbn").value("0756404746"))
-                    .andExpect(jsonPath("$[1].title").value("El nombre del viento"))
-                    .andExpect(jsonPath("$[1].author").value("John Doe"));
+                    .andExpect(jsonPath("$.content[1].id").value(2L))
+                    .andExpect(jsonPath("$.content[1].isbn").value("0756404746"))
+                    .andExpect(jsonPath("$.content[1].title").value("El nombre del viento"))
+                    .andExpect(jsonPath("$.content[1].author").value("John Doe"))
+                    .andExpect(jsonPath("$.page.totalElements").value(2));
 
         }
         @Test
@@ -289,13 +290,14 @@ public class BookControllerTest {
         void shouldReturnEmptyListWhenAuthorHasNoBooks() throws Exception {
             Long authorId= 1L;
 
-            when(bookService.booksByAuthorId(authorId)).thenReturn(List.of());
+            when(bookService.booksByAuthorId(eq(authorId), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/books/author/{authorId}", authorId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(0))
+                    .andExpect(jsonPath("$.page.totalElements").value(0));
         }
         @Test
         @DisplayName("Should return 400 when author ID is zero or negative")

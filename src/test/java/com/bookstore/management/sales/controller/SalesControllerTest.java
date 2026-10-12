@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -175,24 +176,24 @@ class SalesControllerTest {
         @Test
         @DisplayName("Should return 200 with sales for given customer")
         void shouldReturnSalesForCustomer() throws Exception {
-            when(saleService.findByCustomerId(1L)).thenReturn(List.of(buildSaleResponse()));
+            when(saleService.findByCustomerId(eq(1L), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(buildSaleResponse())));
 
             mockMvc.perform(get("/api/sales/customer/1"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].customer.id").value(1L));
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].customer.id").value(1L));
 
-            verify(saleService).findByCustomerId(1L);
+            verify(saleService).findByCustomerId(eq(1L), any(Pageable.class));
         }
 
         @Test
         @DisplayName("Should return 200 with empty list when customer has no sales")
         void shouldReturnEmptyListWhenCustomerHasNoSales() throws Exception {
-            when(saleService.findByCustomerId(99L)).thenReturn(List.of());
+            when(saleService.findByCustomerId(eq(99L), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/sales/customer/99"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)));
         }
 
         @Test
@@ -209,13 +210,13 @@ class SalesControllerTest {
         @Test
         @DisplayName("Should return 200 with PENDING sales")
         void shouldReturnPendingSales() throws Exception {
-            when(saleService.findByStatus(SalesStatus.PENDING)).thenReturn(List.of(buildSaleResponse()));
+            when(saleService.findByStatus(eq(SalesStatus.PENDING), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(buildSaleResponse())));
 
             mockMvc.perform(get("/api/sales/status/PENDING"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].status").value("PENDING"));
+                    .andExpect(jsonPath("$.content[0].status").value("PENDING"));
 
-            verify(saleService).findByStatus(SalesStatus.PENDING);
+            verify(saleService).findByStatus(eq(SalesStatus.PENDING), any(Pageable.class));
         }
 
         @Test
@@ -235,15 +236,15 @@ class SalesControllerTest {
             LocalDate start = LocalDate.of(2024, 1, 1);
             LocalDate end = LocalDate.of(2024, 12, 31);
 
-            when(saleService.findByDateRange(start, end)).thenReturn(List.of(buildSaleResponse()));
+            when(saleService.findByDateRange(eq(start), eq(end), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(buildSaleResponse())));
 
             mockMvc.perform(get("/api/sales/date-range")
                             .param("start", "2024-01-01")
                             .param("end", "2024-12-31"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)));
+                    .andExpect(jsonPath("$.content", hasSize(1)));
 
-            verify(saleService).findByDateRange(start, end);
+            verify(saleService).findByDateRange(eq(start), eq(end), any(Pageable.class));
         }
 
         @Test
@@ -276,13 +277,13 @@ class SalesControllerTest {
             LocalDate start = LocalDate.of(2024, 1, 1);
             LocalDate end = LocalDate.of(2024, 1, 31);
 
-            when(saleService.findByDateRange(start, end)).thenReturn(List.of());
+            when(saleService.findByDateRange(eq(start), eq(end), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
 
             mockMvc.perform(get("/api/sales/date-range")
                             .param("start", "2024-01-01")
                             .param("end", "2024-01-31"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)));
         }
     }
 

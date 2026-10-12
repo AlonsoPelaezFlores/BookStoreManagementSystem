@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -333,7 +336,7 @@ public class BookRepositoryTest {
             entityManager.persist(book2);
             entityManager.flush();
 
-            List<Book> booksFound = bookRepository.findBooksByAuthorId(author.getId());
+            List<Book> booksFound = bookRepository.findBooksByAuthorId(author.getId(), Pageable.unpaged()).getContent();
 
 
             assertThat(booksFound).isNotEmpty();
@@ -342,13 +345,18 @@ public class BookRepositoryTest {
                     extracting(Book::getTitle).
                     containsExactlyInAnyOrder("Harry Potter y la piedra filosofal", "El código Da Vinci");
 
+            Page<Book> firstPage = bookRepository.findBooksByAuthorId(author.getId(), PageRequest.of(0, 1));
+
+            assertThat(firstPage.getContent()).hasSize(1);
+            assertThat(firstPage.getTotalElements()).isEqualTo(2);
+            assertThat(firstPage.getTotalPages()).isEqualTo(2);
         }
 
         @Test
         @DisplayName("Should return empty list when author ID does not exists")
         void shouldReturnEmptyListWhenAuthorIdDoesNotExist() {
 
-            List<Book> booksFound = bookRepository.findBooksByAuthorId(2L);
+            List<Book> booksFound = bookRepository.findBooksByAuthorId(2L, Pageable.unpaged()).getContent();
 
             assertThat(booksFound).isNotNull();
             assertThat(booksFound).isEmpty();
@@ -365,7 +373,7 @@ public class BookRepositoryTest {
                     .build();
             entityManager.persistAndFlush(author);
 
-            List<Book> booksFound = bookRepository.findBooksByAuthorId(author.getId());
+            List<Book> booksFound = bookRepository.findBooksByAuthorId(author.getId(), Pageable.unpaged()).getContent();
 
             assertThat(booksFound).isNotNull();
             assertThat(booksFound).hasSize(0);
@@ -374,7 +382,7 @@ public class BookRepositoryTest {
         @DisplayName("Should return empty list when author ID is negative")
         void shouldReturnEmptyListWhenAuthorIdIsNegative() {
 
-            List<Book> booksFound = bookRepository.findBooksByAuthorId(-2L);
+            List<Book> booksFound = bookRepository.findBooksByAuthorId(-2L, Pageable.unpaged()).getContent();
 
             assertThat(booksFound).isNotNull();
             assertThat(booksFound).isEmpty();

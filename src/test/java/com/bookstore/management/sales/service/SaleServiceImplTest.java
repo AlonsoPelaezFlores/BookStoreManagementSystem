@@ -254,40 +254,38 @@ public class SaleServiceImplTest {
         @DisplayName("should return list of sale responses when customer exists and has sales")
         void shouldReturnListOfSaleResponsesWhenCustomerExistsAndHasSales() {
             Long customerId = 1L;
-            List<Sale> saleList = List.of(sale);
-            List<SaleResponseDTO> expectedList = List.of(saleResponseDTO);
+            Pageable pageable = PageRequest.of(0, 10);
 
             when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-            when(saleRepository.findByCustomerId(customerId)).thenReturn(saleList);
-            when(saleMapper.toResponseDtoList(saleList)).thenReturn(expectedList);
+            when(saleRepository.findByCustomerId(customerId, pageable)).thenReturn(new PageImpl<>(List.of(sale), pageable, 1));
+            when(saleMapper.toResponseDto(sale)).thenReturn(saleResponseDTO);
 
-            List<SaleResponseDTO> result = saleService.findByCustomerId(customerId);
+            Page<SaleResponseDTO> result = saleService.findByCustomerId(customerId, pageable);
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals(expectedList, result);
+            assertEquals(1, result.getTotalElements());
+            assertEquals(List.of(saleResponseDTO), result.getContent());
             verify(customerRepository, times(1)).findById(customerId);
-            verify(saleRepository, times(1)).findByCustomerId(customerId);
-            verify(saleMapper, times(1)).toResponseDtoList(saleList);
+            verify(saleRepository, times(1)).findByCustomerId(customerId, pageable);
+            verify(saleMapper, times(1)).toResponseDto(sale);
         }
 
         @Test
         @DisplayName("should return empty list when customer exists but has no sales")
         void shouldReturnEmptyListWhenCustomerExistsButHasNoSales() {
             Long customerId = 1L;
-            List<Sale> emptyList = List.of();
+            Pageable pageable = PageRequest.of(0, 10);
 
             when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-            when(saleRepository.findByCustomerId(customerId)).thenReturn(emptyList);
-            when(saleMapper.toResponseDtoList(emptyList)).thenReturn(List.of());
+            when(saleRepository.findByCustomerId(customerId, pageable)).thenReturn(Page.empty(pageable));
 
-            List<SaleResponseDTO> result = saleService.findByCustomerId(customerId);
+            Page<SaleResponseDTO> result = saleService.findByCustomerId(customerId, pageable);
 
             assertNotNull(result);
-            assertTrue(result.isEmpty());
+            assertTrue(result.getContent().isEmpty());
             verify(customerRepository, times(1)).findById(customerId);
-            verify(saleRepository, times(1)).findByCustomerId(customerId);
-            verify(saleMapper, times(1)).toResponseDtoList(emptyList);
+            verify(saleRepository, times(1)).findByCustomerId(customerId, pageable);
+            verify(saleMapper, never()).toResponseDto(any());
         }
 
         @Test
@@ -299,15 +297,15 @@ public class SaleServiceImplTest {
 
             ResourceNotFoundException exception = assertThrows(
                     ResourceNotFoundException.class,
-                    () -> saleService.findByCustomerId(nonExistentCustomerId)
+                    () -> saleService.findByCustomerId(nonExistentCustomerId, PageRequest.of(0, 10))
             );
 
             assertTrue(exception.getMessage().contains("Customer"));
             assertTrue(exception.getMessage().contains("Id"));
             assertTrue(exception.getMessage().contains("999"));
             verify(customerRepository, times(1)).findById(nonExistentCustomerId);
-            verify(saleRepository, never()).findByCustomerId(any());
-            verify(saleMapper, never()).toResponseDtoList(any());
+            verify(saleRepository, never()).findByCustomerId(any(), any(Pageable.class));
+            verify(saleMapper, never()).toResponseDto(any());
         }
     }
     @Nested
@@ -318,36 +316,34 @@ public class SaleServiceImplTest {
         @DisplayName("should return list of sale responses when sales with status exist")
         void shouldReturnListOfSaleResponsesWhenSalesWithStatusExist() {
             SalesStatus status = SalesStatus.COMPLETED;
-            List<Sale> saleList = List.of(sale);
-            List<SaleResponseDTO> expectedList = List.of(saleResponseDTO);
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findByStatus(status)).thenReturn(saleList);
-            when(saleMapper.toResponseDtoList(saleList)).thenReturn(expectedList);
+            when(saleRepository.findByStatus(status, pageable)).thenReturn(new PageImpl<>(List.of(sale), pageable, 1));
+            when(saleMapper.toResponseDto(sale)).thenReturn(saleResponseDTO);
 
-            List<SaleResponseDTO> result = saleService.findByStatus(status);
+            Page<SaleResponseDTO> result = saleService.findByStatus(status, pageable);
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals(expectedList, result);
-            verify(saleRepository, times(1)).findByStatus(status);
-            verify(saleMapper, times(1)).toResponseDtoList(saleList);
+            assertEquals(1, result.getTotalElements());
+            assertEquals(List.of(saleResponseDTO), result.getContent());
+            verify(saleRepository, times(1)).findByStatus(status, pageable);
+            verify(saleMapper, times(1)).toResponseDto(sale);
         }
 
         @Test
         @DisplayName("should return empty list when no sales with status exist")
         void shouldReturnEmptyListWhenNoSalesWithStatusExist() {
             SalesStatus status = SalesStatus.PENDING;
-            List<Sale> emptyList = List.of();
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findByStatus(status)).thenReturn(emptyList);
-            when(saleMapper.toResponseDtoList(emptyList)).thenReturn(List.of());
+            when(saleRepository.findByStatus(status, pageable)).thenReturn(Page.empty(pageable));
 
-            List<SaleResponseDTO> result = saleService.findByStatus(status);
+            Page<SaleResponseDTO> result = saleService.findByStatus(status, pageable);
 
             assertNotNull(result);
-            assertTrue(result.isEmpty());
-            verify(saleRepository, times(1)).findByStatus(status);
-            verify(saleMapper, times(1)).toResponseDtoList(emptyList);
+            assertTrue(result.getContent().isEmpty());
+            verify(saleRepository, times(1)).findByStatus(status, pageable);
+            verify(saleMapper, never()).toResponseDto(any());
         }
     }
     @Nested
@@ -359,19 +355,18 @@ public class SaleServiceImplTest {
         void shouldReturnListOfSaleResponsesWhenSalesInDateRangeExist() {
             LocalDate start = LocalDate.of(2024, 1, 1);
             LocalDate end = LocalDate.of(2024, 12, 31);
-            List<Sale> saleList = List.of(sale);
-            List<SaleResponseDTO> expectedList = List.of(saleResponseDTO);
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findByDateRange(start, end)).thenReturn(saleList);
-            when(saleMapper.toResponseDtoList(saleList)).thenReturn(expectedList);
+            when(saleRepository.findByDateRange(start, end, pageable)).thenReturn(new PageImpl<>(List.of(sale), pageable, 1));
+            when(saleMapper.toResponseDto(sale)).thenReturn(saleResponseDTO);
 
-            List<SaleResponseDTO> result = saleService.findByDateRange(start, end);
+            Page<SaleResponseDTO> result = saleService.findByDateRange(start, end, pageable);
 
             assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals(expectedList, result);
-            verify(saleRepository, times(1)).findByDateRange(start, end);
-            verify(saleMapper, times(1)).toResponseDtoList(saleList);
+            assertEquals(1, result.getTotalElements());
+            assertEquals(List.of(saleResponseDTO), result.getContent());
+            verify(saleRepository, times(1)).findByDateRange(start, end, pageable);
+            verify(saleMapper, times(1)).toResponseDto(sale);
         }
 
         @Test
@@ -379,17 +374,16 @@ public class SaleServiceImplTest {
         void shouldReturnEmptyListWhenNoSalesInDateRangeExist() {
             LocalDate start = LocalDate.of(2025, 1, 1);
             LocalDate end = LocalDate.of(2025, 1, 31);
-            List<Sale> emptyList = List.of();
+            Pageable pageable = PageRequest.of(0, 10);
 
-            when(saleRepository.findByDateRange(start, end)).thenReturn(emptyList);
-            when(saleMapper.toResponseDtoList(emptyList)).thenReturn(List.of());
+            when(saleRepository.findByDateRange(start, end, pageable)).thenReturn(Page.empty(pageable));
 
-            List<SaleResponseDTO> result = saleService.findByDateRange(start, end);
+            Page<SaleResponseDTO> result = saleService.findByDateRange(start, end, pageable);
 
             assertNotNull(result);
-            assertTrue(result.isEmpty());
-            verify(saleRepository, times(1)).findByDateRange(start, end);
-            verify(saleMapper, times(1)).toResponseDtoList(emptyList);
+            assertTrue(result.getContent().isEmpty());
+            verify(saleRepository, times(1)).findByDateRange(start, end, pageable);
+            verify(saleMapper, never()).toResponseDto(any());
         }
     }
     @Nested

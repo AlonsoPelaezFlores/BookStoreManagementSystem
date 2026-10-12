@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 
 @Slf4j
@@ -49,16 +48,15 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventorySummaryDTO> findByActiveStatusList(Boolean activeStatus) {
-
-        List<Inventory> activeInventories = inventoryRepository.findByActiveStatus(activeStatus);
-        return inventoryMapper.toInventorySummaryDTOList(activeInventories);
+    public Page<InventorySummaryDTO> findByActiveStatus(Boolean activeStatus, Pageable pageable) {
+        return inventoryRepository.findByActiveStatus(activeStatus, pageable)
+                .map(inventoryMapper::toInventorySummaryDTO);
     }
 
     @Override
-    public List<InventorySummaryDTO> findByAlertLowStockList() {
-        List<Inventory> activeInventories = inventoryRepository.findActiveInventoriesWithLowStock();
-        return inventoryMapper.toInventorySummaryDTOList(activeInventories);
+    public Page<InventorySummaryDTO> findLowStock(Pageable pageable) {
+        return inventoryRepository.findActiveInventoriesWithLowStock(pageable)
+                .map(inventoryMapper::toInventorySummaryDTO);
     }
 
     @Override
