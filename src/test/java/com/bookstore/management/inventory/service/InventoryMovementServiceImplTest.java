@@ -269,7 +269,7 @@ class InventoryMovementServiceImplTest {
             List<InventoryMovement> movements = Arrays.asList(movement, movement2, movement3);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 3);
 
-            when(inventoryMovementRepository.findByCreatedAtBetween(startDate, endDate, defaultPageable))
+            when(inventoryMovementRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(), defaultPageable))
                     .thenReturn(movementPage);
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
@@ -278,7 +278,7 @@ class InventoryMovementServiceImplTest {
             assertThat(result).isNotNull();
             assertThat(result.getContent()).hasSize(3);
             assertThat(result.getTotalElements()).isEqualTo(3);
-            verify(inventoryMovementRepository).findByCreatedAtBetween(startDate, endDate, defaultPageable);
+            verify(inventoryMovementRepository).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(), defaultPageable);
         }
 
         @Test
@@ -290,7 +290,7 @@ class InventoryMovementServiceImplTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Dates cannot be null");
 
-            verify(inventoryMovementRepository, never()).findByCreatedAtBetween(any(), any(), any());
+            verify(inventoryMovementRepository, never()).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(any(), any(), any());
         }
 
         @Test
@@ -302,7 +302,7 @@ class InventoryMovementServiceImplTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Dates cannot be null");
 
-            verify(inventoryMovementRepository, never()).findByCreatedAtBetween(any(), any(), any());
+            verify(inventoryMovementRepository, never()).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(any(), any(), any());
         }
 
         @Test
@@ -312,7 +312,7 @@ class InventoryMovementServiceImplTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Dates cannot be null");
 
-            verify(inventoryMovementRepository, never()).findByCreatedAtBetween(any(), any(), any());
+            verify(inventoryMovementRepository, never()).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(any(), any(), any());
         }
 
         @Test
@@ -325,7 +325,7 @@ class InventoryMovementServiceImplTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Start date must be before or equal to end date");
 
-            verify(inventoryMovementRepository, never()).findByCreatedAtBetween(any(), any(), any());
+            verify(inventoryMovementRepository, never()).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(any(), any(), any());
         }
 
         @Test
@@ -335,7 +335,7 @@ class InventoryMovementServiceImplTest {
             List<InventoryMovement> movements = Collections.singletonList(movement);
             Page<InventoryMovement> movementPage = new PageImpl<>(movements, defaultPageable, 1);
 
-            when(inventoryMovementRepository.findByCreatedAtBetween(sameDate, sameDate, defaultPageable))
+            when(inventoryMovementRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(sameDate.atStartOfDay(), sameDate.plusDays(1).atStartOfDay(), defaultPageable))
                     .thenReturn(movementPage);
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
@@ -343,7 +343,7 @@ class InventoryMovementServiceImplTest {
 
             assertThat(result).isNotNull();
             assertThat(result.getContent()).hasSize(1);
-            verify(inventoryMovementRepository).findByCreatedAtBetween(sameDate, sameDate, defaultPageable);
+            verify(inventoryMovementRepository).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(sameDate.atStartOfDay(), sameDate.plusDays(1).atStartOfDay(), defaultPageable);
         }
 
         @Test
@@ -353,7 +353,7 @@ class InventoryMovementServiceImplTest {
             LocalDate endDate = LocalDate.now().minusDays(9);
             Page<InventoryMovement> emptyPage = new PageImpl<>(Collections.emptyList(), defaultPageable, 0);
 
-            when(inventoryMovementRepository.findByCreatedAtBetween(startDate, endDate, defaultPageable))
+            when(inventoryMovementRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(), defaultPageable))
                     .thenReturn(emptyPage);
 
             Page<InventoryMovementResponseDTO> result = inventoryMovementServiceImpl
@@ -362,7 +362,7 @@ class InventoryMovementServiceImplTest {
             assertThat(result).isNotNull();
             assertThat(result.getContent()).isEmpty();
             assertThat(result.getTotalElements()).isZero();
-            verify(inventoryMovementRepository).findByCreatedAtBetween(startDate, endDate, defaultPageable);
+            verify(inventoryMovementRepository).findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(), defaultPageable);
         }
     }
 

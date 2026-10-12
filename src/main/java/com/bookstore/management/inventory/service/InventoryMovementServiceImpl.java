@@ -41,7 +41,9 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("Start date must be before or equal to end date");
         }
-        Page<InventoryMovement> page = inventoryMovementRepository.findByCreatedAtBetween(startDate, endDate, pageable);
+        // createdAt is a LocalDateTime: cover whole days with a half-open range [start 00:00, end+1 00:00)
+        Page<InventoryMovement> page = inventoryMovementRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(), pageable);
         return page.map(inventoryMovementMapper::toInventoryMovementResponseDTO);
     }
 
