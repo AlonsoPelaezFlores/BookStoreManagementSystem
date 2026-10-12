@@ -120,6 +120,26 @@ Roles:
 
 Only `/api/auth/**` and the Swagger documentation are public.
 
+## 📄 Pagination
+Every endpoint that returns a collection is paginated (books, authors, customers, inventory, inventory movements and sales, including their filtered versions).
+
+Query parameters:
+- `page`: page number, starting at `0` (default `0`)
+- `size`: items per page (default `10`, maximum `100`)
+- `sort`: `property,direction`, e.g. `sort=id,desc` (default `id`; inventory movements default to `createdAt,desc`)
+
+Example: `GET /api/books?page=0&size=20&sort=title,asc`
+
+Response format:
+```json
+{
+  "content": [ { "id": 1, "title": "Clean Code" } ],
+  "page": { "size": 20, "number": 0, "totalElements": 1, "totalPages": 1 }
+}
+```
+
+Sorting by a property that does not exist returns `400 Bad Request`.
+
 ## 📚 API Documentation
 Once the application is running, access the Swagger UI documentation:
 http://localhost:8080/swagger-ui.html
